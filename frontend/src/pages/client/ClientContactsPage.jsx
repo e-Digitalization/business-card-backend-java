@@ -31,7 +31,9 @@ const defaultScanStatus = {
   canScan: true,
   priceTzs: 10000,
   currency: 'TZS',
-  paymentProvider: 'mock'
+  paymentProvider: 'mock',
+  billingPeriod: 'monthly',
+  expiresAt: null
 };
 
 const formatMoney = (amount, currency = 'TZS') => {
@@ -44,6 +46,19 @@ const formatMoney = (amount, currency = 'TZS') => {
     }).format(amount);
   } catch {
     return `${amount.toLocaleString()} ${currency}`;
+  }
+};
+
+const formatDate = (iso) => {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleDateString('en-TZ', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  } catch {
+    return iso;
   }
 };
 
@@ -174,7 +189,10 @@ const ClientContactsPage = () => {
   }, [totalElements, q]);
 
   const quotaLabel = useMemo(() => {
-    if (aiScan.subscribed) return 'Unlimited AI scans';
+    if (aiScan.subscribed) {
+      const until = formatDate(aiScan.expiresAt);
+      return until ? `Unlimited AI scans · until ${until}` : 'Unlimited AI scans · monthly';
+    }
     const remaining = aiScan.remaining ?? Math.max(0, (aiScan.freeLimit || 2) - (aiScan.used || 0));
     return `${remaining} free AI scan${remaining === 1 ? '' : 's'} left`;
   }, [aiScan]);
@@ -489,11 +507,13 @@ const ClientContactsPage = () => {
             <p className="text-sm font-medium text-[#1a3d42]">{quotaLabel}</p>
             <p className="text-xs text-[#1a3d42]/50">
               {aiScan.subscribed
-                ? 'Your Selcom subscription is active.'
+                ? `Monthly Selcom subscription active${
+                    formatDate(aiScan.expiresAt) ? ` until ${formatDate(aiScan.expiresAt)}` : ''
+                  }.`
                 : `Free plan includes ${aiScan.freeLimit || 2} AI scans. Then ${formatMoney(
                     aiScan.priceTzs,
                     aiScan.currency
-                  )} via Selcom.`}
+                  )} / month via Selcom.`}
             </p>
           </div>
           {!aiScan.subscribed && (
@@ -709,7 +729,7 @@ const ClientContactsPage = () => {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Subscription</p>
-                  <h2 className="mt-1 font-display text-2xl font-semibold">Unlock AI scans</h2>
+                  <h2 className="mt-1 font-display text-2xl font-semibold">AI Scan Monthly</h2>
                 </div>
                 <button
                   type="button"
@@ -720,15 +740,15 @@ const ClientContactsPage = () => {
                 </button>
               </div>
               <p className="mt-3 text-sm text-[#1a3d42]/60">
-                You’ve used your {aiScan.freeLimit || 2} free AI card scans. Subscribe with Selcom (M-Pesa, Tigo Pesa,
-                Airtel Money, or card) for unlimited scanning.
+                You’ve used your {aiScan.freeLimit || 2} free AI card scans. Subscribe monthly with Selcom (M-Pesa, Tigo
+                Pesa, Airtel Money, or card) for unlimited scanning for 30 days.
               </p>
               <div className="mt-4 rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3">
-                <p className="text-sm text-[#1a3d42]/55">AI Scan plan</p>
+                <p className="text-sm text-[#1a3d42]/55">AI Scan Monthly</p>
                 <p className="mt-1 font-display text-2xl font-semibold text-[#1a3d42]">
                   {formatMoney(aiScan.priceTzs, aiScan.currency)}
                 </p>
-                <p className="mt-1 text-xs text-[#1a3d42]/50">One-time unlock · paid via Selcom</p>
+                <p className="mt-1 text-xs text-[#1a3d42]/50">Per month · billed via Selcom</p>
               </div>
 
               {pendingOrder?.mock ? (

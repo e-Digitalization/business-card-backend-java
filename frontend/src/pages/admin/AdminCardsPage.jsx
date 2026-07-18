@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api.js';
 import PaginationBar from '../../components/PaginationBar.jsx';
+import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import EditCardDialog from './EditCardDialog.jsx';
 
 const AdminCardsPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
@@ -51,6 +54,13 @@ const AdminCardsPage = () => {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.editId) {
+      setEditId(location.state.editId);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
+
   const onSearch = (e) => {
     e?.preventDefault?.();
     setPage(0);
@@ -85,7 +95,7 @@ const AdminCardsPage = () => {
             to="/admin/cards/new"
             className="rounded-md bg-[#9a6b45] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#865c3b]"
           >
-            + Create Card
+            + Create / Scan Card
           </Link>
         </div>
       </div>
@@ -163,10 +173,10 @@ const AdminCardsPage = () => {
               className="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-[1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:items-center lg:gap-3"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <img
-                  src={row.card.logoUrl || row.card.photoUrl || '/logos/swahili-systems.svg'}
-                  alt=""
-                  className="h-11 w-11 rounded-lg border border-black/5 object-cover"
+                <ProfileAvatar
+                  name={row.card.fullName}
+                  photoUrl={row.card.photoUrl}
+                  logoUrl={row.card.logoUrl}
                 />
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-[#1a3d42]">{row.card.fullName || '—'}</p>
@@ -226,7 +236,14 @@ const AdminCardsPage = () => {
                   Actions
                 </button>
                 {menuId === row.card.id && (
-                  <div className="absolute right-0 top-11 z-20 w-44 overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_16px_40px_rgba(26,61,66,0.12)]">
+                  <div className="absolute right-0 top-11 z-20 w-48 overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_16px_40px_rgba(26,61,66,0.12)]">
+                    <Link
+                      to={`/admin/cards/${row.card.id}`}
+                      className="block px-4 py-2.5 text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
+                      onClick={() => setMenuId(null)}
+                    >
+                      View profile
+                    </Link>
                     <button
                       type="button"
                       onClick={() => openEdit(row.card.id)}
@@ -234,6 +251,13 @@ const AdminCardsPage = () => {
                     >
                       Edit card
                     </button>
+                    <Link
+                      to={`/admin/cards/${row.card.id}`}
+                      className="block px-4 py-2.5 text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
+                      onClick={() => setMenuId(null)}
+                    >
+                      Link NFC
+                    </Link>
                     <a
                       href={`/u/${row.card.slug}`}
                       target="_blank"

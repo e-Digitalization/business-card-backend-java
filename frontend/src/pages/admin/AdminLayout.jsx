@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import BrandLogo from '../../components/BrandLogo.jsx';
 
 const Chevron = ({ open }) => (
   <svg
@@ -39,6 +40,15 @@ const icons = {
       <path d="M4 12h10M11 9l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
+  setups: (
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.7">
+      <circle cx="12" cy="12" r="3" />
+      <path
+        d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  ),
   pin: (
     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
       <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" />
@@ -56,6 +66,7 @@ const AdminLayout = () => {
       return 'nfc';
     }
     if (location.pathname.startsWith('/admin/cards')) return 'cards';
+    if (location.pathname.startsWith('/admin/setups')) return 'setups';
     return null;
   }, [location.pathname]);
 
@@ -67,9 +78,14 @@ const AdminLayout = () => {
 
   const pageTitle = useMemo(() => {
     if (location.pathname.startsWith('/admin/cards/new')) return 'Create Digital Card';
+    if (/^\/admin\/cards\/\d+/.test(location.pathname)) return 'Card profile';
     if (location.pathname.startsWith('/admin/cards')) return 'Digital Business Cards';
     if (location.pathname.startsWith('/admin/nfc-requests')) return 'NFC Card Requests';
     if (location.pathname.startsWith('/admin/tags')) return 'NFC Cards';
+    if (location.pathname.startsWith('/admin/setups/ai')) return 'Setups · AI & Google';
+    if (location.pathname.startsWith('/admin/setups/selcom')) return 'Setups · Selcom';
+    if (location.pathname.startsWith('/admin/setups/nmb')) return 'Setups · NMB';
+    if (location.pathname.startsWith('/admin/setups')) return 'Setups';
     return 'Dashibodi';
   }, [location.pathname]);
 
@@ -87,7 +103,7 @@ const AdminLayout = () => {
   const sidebar = (
     <aside className="snav flex h-full flex-col">
       <div className="snav-profile">
-        <div className="snav-avatar snav-avatar-fallback">KM</div>
+        <img src="/logos/kadi-moja-mark.png" alt="" className="snav-avatar" />
         <div className="min-w-0">
           <p className="truncate text-[15px] font-semibold text-[#243b45]">Kadi Moja Admin</p>
           <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-[#0d7377]">
@@ -191,6 +207,58 @@ const AdminLayout = () => {
             </div>
           </div>
         </div>
+
+        <div className={`snav-group ${openSection === 'setups' ? 'is-open' : ''}`}>
+          <button
+            type="button"
+            className={`snav-item w-full ${sectionFromPath === 'setups' ? 'is-active' : ''}`}
+            aria-expanded={openSection === 'setups'}
+            onClick={() => toggleSection('setups')}
+          >
+            <span className="snav-item-icon">{icons.setups}</span>
+            <span className="flex-1 text-left">Setups</span>
+            <Chevron open={openSection === 'setups'} />
+          </button>
+          <div className="snav-collapse">
+            <div className="snav-collapse-inner">
+              <div className="snav-sub">
+                <NavLink
+                  to="/admin/setups"
+                  end
+                  onClick={closeMobile}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  Overview
+                </NavLink>
+                <NavLink
+                  to="/admin/setups/ai"
+                  onClick={closeMobile}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  AI & Google
+                </NavLink>
+                <NavLink
+                  to="/admin/setups/selcom"
+                  onClick={closeMobile}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  Selcom
+                </NavLink>
+                <NavLink
+                  to="/admin/setups/nmb"
+                  onClick={closeMobile}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  NMB
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
       </nav>
 
       <div className="border-t border-black/5 p-3">
@@ -210,7 +278,7 @@ const AdminLayout = () => {
             <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
           </svg>
         </button>
-        <p className="font-display text-lg font-bold text-white">Kadi Moja</p>
+        <BrandLogo tone="light" textClassName="text-lg" markClassName="h-7 w-7" />
       </div>
 
       {mobileOpen && (
@@ -229,8 +297,8 @@ const AdminLayout = () => {
         <div className="hidden w-[292px] shrink-0 border-r border-black/5 bg-white lg:block">{sidebar}</div>
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mb-6 hidden lg:block">
-            <p className="text-xs uppercase tracking-[0.16em] text-[#9a6b45]">Kadi Moja Admin</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold text-[#1a3d42]">{pageTitle}</h1>
+            <BrandLogo tone="color" textClassName="text-lg" markClassName="h-8 w-8" to="/" />
+            <h1 className="mt-3 font-display text-3xl font-semibold text-[#1a3d42]">{pageTitle}</h1>
           </div>
           <Outlet />
         </main>

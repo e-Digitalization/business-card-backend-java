@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
 
 /**
@@ -40,7 +41,11 @@ const LoginPage = () => {
   useEffect(() => {
     api
       .get('/api/auth/google/status')
-      .then((res) => setGoogleEnabled(Boolean(res.data?.enabled) && Boolean(googleClientId)))
+      .then((res) => {
+        const enabled = Boolean(res.data?.enabled);
+        const apiId = res.data?.clientId || '';
+        setGoogleEnabled(enabled && Boolean(apiId || googleClientId));
+      })
       .catch(() => setGoogleEnabled(Boolean(googleClientId)));
   }, [googleClientId]);
 
@@ -103,9 +108,7 @@ const LoginPage = () => {
         <div className="absolute inset-0 admin-login-hero" />
         <div className="relative z-10 flex h-full flex-col justify-between p-10">
           <div>
-            <Link to="/" className="font-display text-3xl font-bold tracking-tight">
-              Kadi Moja
-            </Link>
+            <BrandLogo to="/" tone="light" textClassName="text-3xl" markClassName="h-10 w-10" />
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">
               One login for your digital card, contacts, and admin tools across Tanzania.
             </p>
@@ -126,9 +129,7 @@ const LoginPage = () => {
       <main className="flex items-center justify-center bg-[#f7f4ef] px-5 py-12">
         <div className="w-full max-w-md">
           <div className="mb-6 lg:hidden">
-            <Link to="/" className="font-display text-2xl font-bold text-[#0d7377]">
-              Kadi Moja
-            </Link>
+            <BrandLogo to="/" tone="color" textClassName="text-2xl" markClassName="h-9 w-9" />
           </div>
 
           <div className="rounded-xl border border-black/5 bg-white p-7 shadow-[0_24px_60px_rgba(26,61,66,0.08)] sm:p-9">

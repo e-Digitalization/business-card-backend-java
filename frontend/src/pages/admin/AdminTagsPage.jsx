@@ -8,16 +8,24 @@ const AdminTagsPage = () => {
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
 
+  const extractItems = (data) => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.items)) return data.items;
+    return [];
+  };
+
   const fetchCards = () => {
-    api.get('/api/admin/cards').then((response) => setCards(response.data.data || []));
+    api
+      .get('/api/admin/cards', { params: { page: 0, size: 50 } })
+      .then((response) => setCards(extractItems(response.data.data)));
   };
 
   useEffect(() => {
     let mounted = true;
     api
-      .get('/api/admin/cards')
+      .get('/api/admin/cards', { params: { page: 0, size: 50 } })
       .then((response) => {
-        if (mounted) setCards(response.data.data || []);
+        if (mounted) setCards(extractItems(response.data.data));
       })
       .finally(() => {
         if (mounted) setLoading(false);

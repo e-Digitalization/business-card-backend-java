@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
 
 const slides = [
@@ -78,9 +79,7 @@ const AdminLogin = () => {
         <div className="absolute inset-0 admin-login-hero" />
 
         <div className="relative z-10 flex h-full flex-col p-10">
-          <Link to="/" className="font-display text-3xl font-bold tracking-tight">
-            Kadi Moja
-          </Link>
+          <BrandLogo to="/" tone="light" textClassName="text-3xl" markClassName="h-10 w-10" />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">
             Manage digital business cards and NFC tags for professionals across Tanzania.
           </p>
@@ -149,16 +148,12 @@ const AdminLogin = () => {
       <main className="flex items-center justify-center px-5 py-12 bg-[#f7f4ef]">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
-            <Link to="/" className="font-display text-2xl font-bold text-[#0d7377]">
-              Kadi Moja
-            </Link>
+            <BrandLogo to="/" tone="color" textClassName="text-2xl" markClassName="h-9 w-9" />
           </div>
 
           <div className="rounded-xl bg-white border border-black/5 shadow-[0_24px_60px_rgba(26,61,66,0.08)] p-8 sm:p-10">
             <div className="flex items-center gap-3 mb-8">
-              <div className="h-11 w-11 rounded-lg bg-[#9a6b45] text-white flex items-center justify-center font-display font-bold text-lg">
-                KM
-              </div>
+              <img src="/logos/kadi-moja-mark.png" alt="" className="h-11 w-11 rounded-lg" />
               <div>
                 <h1 className="font-display text-2xl font-semibold text-[#1a3d42]">Karibu tena</h1>
                 <p className="text-sm text-[#1a3d42]/60">Sign in to your admin dashboard</p>

@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import BrandLogo from '../components/BrandLogo.jsx';
+import ContactCardVisual from './client/ContactCardVisual';
+
+const heroDemoContact = {
+  fullName: 'Neema Hassan',
+  title: 'Brand Strategist',
+  company: 'Dar Collective',
+  email: 'neema@darcollective.co.tz',
+  phone: '+255 712 345 678',
+  whatsapp: '+255 712 345 678',
+  website: 'www.darcollective.co.tz',
+  location: 'Dar es Salaam, Tanzania',
+  photoUrl: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80'
+};
 
 const products = [
   {
     name: 'Kadi Moja NFC Card',
     tag: 'Available now',
     price: 'TZS 100,000',
-    blurb: 'Physical PVC NFC card linked to your private Kadi Moja profile. Tap once—share everything.',
-    points: ['Works with iPhone & Android', 'Private profile link', 'QR code backup', 'Selcom payment'],
+    blurb: 'Physical PVC NFC card linked to your private profile. Tap once—share everything.',
+    points: ['iPhone & Android', 'Private profile link', 'QR backup', 'Pay once with Selcom'],
     featured: true,
     active: true
   },
@@ -16,15 +30,15 @@ const products = [
     tag: 'Coming soon',
     price: 'TZS 75,000',
     blurb: 'Fully customised with your logo and brand colours for meetings that leave a mark.',
-    points: ['Custom logo & design', 'Works with iPhone & Android', 'No monthly fees', 'Priority support'],
+    points: ['Custom logo & design', 'iPhone & Android', 'No monthly fees', 'Priority support'],
     active: false
   },
   {
     name: 'Kadi Moja Metal',
     tag: 'Coming soon',
     price: 'From TZS 145,000',
-    blurb: 'Precision-finished metal card. Sleek, durable, and built to impress at every handshake.',
-    points: ['Metal finish', 'Works with iPhone & Android', 'No monthly fees', 'Long-lasting'],
+    blurb: 'Precision-finished metal card. Sleek, durable, built to impress at every handshake.',
+    points: ['Metal finish', 'iPhone & Android', 'No monthly fees', 'Long-lasting'],
     active: false
   }
 ];
@@ -33,146 +47,208 @@ const steps = [
   {
     n: '01',
     title: 'Tap',
-    body: 'Works instantly on most smartphones. No app required.',
+    body: 'Hold the card to any modern phone. No app required.',
     image: '/illustrations/how-tap.png'
   },
   {
     n: '02',
-    title: 'Share',
-    body: 'Your digital profile opens with your details, links and more.',
+    title: 'Open',
+    body: 'Your private profile appears with contacts, links, and socials.',
     image: '/illustrations/how-share.png'
   },
   {
     n: '03',
     title: 'Saved',
-    body: 'They can save you to contacts on the spot. QR backup included.',
+    body: 'They save you instantly. QR is there when NFC isn’t.',
     image: '/illustrations/how-saved.png'
   }
 ];
 
+const aiScanSteps = [
+  {
+    n: '01',
+    title: 'Snap the card',
+    body: 'Take a photo of any paper business card with your phone.'
+  },
+  {
+    n: '02',
+    title: 'AI reads everything',
+    body: 'Name, title, company, phone, email, WhatsApp, and website are extracted automatically.'
+  },
+  {
+    n: '03',
+    title: 'Saved to contacts',
+    body: 'Review once, then save — no typing, no lost cards in your pocket.'
+  }
+];
+
+const aiScanPerson = {
+  tag: 'TAG-GRACE',
+  name: 'Grace Kimaro',
+  title: 'Creative Director',
+  company: 'Studio Bahari',
+  location: 'Zanzibar, Tanzania',
+  phone: '+255 777 889 900',
+  email: 'grace@studiobahari.co.tz',
+  whatsapp: '+255 777 889 900',
+  website: 'www.studiobahari.co.tz',
+  photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
+  logo: '/logos/studio-bahari.svg',
+  accent: '#c46a4a',
+  tint: '#f6e4dc'
+};
+
+const navLinks = [
+  ['#products', 'Cards'],
+  ['#samples', 'Samples'],
+  ['#ai-scan', 'AI Scan'],
+  ['#how', 'How it works'],
+  ['#teams', 'For teams'],
+  ['#faq', 'FAQ']
+];
+
 const reasons = [
   {
-    title: 'Reusable & sustainable',
-    body: 'Update your details anytime. One card replaces thousands of paper cards.'
+    title: 'One card, forever',
+    body: 'Update phone, title, or company from the dashboard. Never reprint for content changes.'
   },
   {
-    title: 'Fully-optimised profile',
-    body: 'Photo, bio, socials, portfolio—share your complete story with a single tap.'
+    title: 'Complete profile',
+    body: 'Photo, bio, WhatsApp, LinkedIn, portfolio—everything in a single tap.'
   },
   {
-    title: 'Instant updates',
-    body: 'Change phone, title, or company from the dashboard. No reprinting. Ever.'
+    title: 'Built for Tanzania',
+    body: 'Delivered nationwide. Designed for Dar, Arusha, Zanzibar, and teams on the move.'
   },
   {
-    title: 'QR for every phone',
-    body: 'NFC plus QR means your profile is reachable on virtually any device.'
+    title: 'NFC + QR',
+    body: 'Works on virtually any phone. Tap when you can, scan when you need to.'
   }
 ];
 
 const faqs = [
   {
     q: 'What is an NFC business card?',
-    a: 'A smart contactless card. One tap on a phone shares your contacts, socials, website, and more—faster and cleaner than paper.'
+    a: 'A contactless card. One tap on a phone shares your contacts, socials, website, and more—faster and cleaner than paper.'
   },
   {
     q: 'Do I need an app?',
-    a: 'No app needed on either side. Most modern iPhones and Androids read NFC out of the box. Older phones can scan the QR code.'
+    a: 'No. Most modern iPhones and Androids read NFC out of the box. Older phones can scan the QR code.'
   },
   {
     q: 'Can I update my details after purchase?',
-    a: 'Yes. Log into the dashboard and edit anytime. The physical card never needs reprinting for content changes.'
+    a: 'Yes. Edit anytime in the dashboard. The physical card never needs reprinting for content changes.'
   },
   {
     q: 'Do you offer team / bulk pricing?',
-    a: 'Yes. Volume discounts and a shared admin dashboard for assigning cards, updating profiles, and keeping brand consistency.'
+    a: 'Yes. Volume discounts and a shared admin dashboard for assigning cards and keeping brand consistency.'
   },
   {
     q: 'Where do you deliver?',
-    a: 'Yes. We deliver across Tanzania (Dar, Arusha, Mwanza, Dodoma, Zanzibar and more) and can ship internationally. Typical local fulfilment is a few working days after design approval.'
+    a: 'Across Tanzania (Dar, Arusha, Mwanza, Dodoma, Zanzibar and more), with international shipping available.'
+  },
+  {
+    q: 'What is AI Scan?',
+    a: 'Photograph any paper business card and Kadi Moja reads the details for you—name, phone, email, company, and more—then saves them to your contacts. You get free scans to start, then a low monthly Selcom subscription for unlimited use.'
   }
 ];
 
-const sampleProfiles = [
-  {
-    tag: 'TAG12345',
-    name: 'Japhari Mbaru',
-    title: 'Founder & Systems Architect',
-    company: 'Swahili Systems',
-    location: 'Dar es Salaam',
-    phone: '+255 714 076 404',
-    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/swahili-systems.svg',
-    accent: '#d4783a',
-    tint: '#f8e8d8'
-  },
-  {
-    tag: 'TAG67890',
-    name: 'Amina Kassim',
-    title: 'Product Lead',
-    company: 'Swahili Systems',
-    location: 'Dar es Salaam',
-    phone: '+255 754 221 100',
-    photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/swahili-systems.svg',
-    accent: '#0d7377',
-    tint: '#d9efef'
-  },
-  {
-    tag: 'TAG-DAVID',
-    name: 'David Mwakyusa',
-    title: 'Sales Director',
-    company: 'Safiri Logistics',
-    location: 'Arusha',
-    phone: '+255 762 334 455',
-    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/ealogistics.svg',
-    accent: '#2f6fad',
-    tint: '#dde9f6'
-  },
-  {
-    tag: 'TAG-GRACE',
-    name: 'Grace Kimaro',
-    title: 'Creative Director',
-    company: 'Studio Bahari',
-    location: 'Zanzibar',
-    phone: '+255 777 889 900',
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/studio-bahari.svg',
-    accent: '#c46a4a',
-    tint: '#f6e4dc'
-  },
-  {
-    tag: 'TAG-JAMES',
-    name: 'James Mwakasege',
-    title: 'Head of Engineering',
-    company: 'FinLink Tanzania',
-    location: 'Mwanza',
-    phone: '+255 688 112 233',
-    photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/finlink.svg',
-    accent: '#3d8b5a',
-    tint: '#dcefe3'
-  },
-  {
-    tag: 'TAG-NEEMA',
-    name: 'Neema Hassan',
-    title: 'Brand Strategist',
-    company: 'Coastal Collective',
-    location: 'Dodoma',
-    phone: '+255 755 667 788',
-    photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80',
-    logo: '/logos/coastal.svg',
-    accent: '#9a5fb0',
-    tint: '#f0e4f5'
-  }
-];
+const sampleCard = {
+  tag: 'TAG12345',
+  name: 'Japhari Masha',
+  title: 'Founder & Systems Architect',
+  company: 'Swahili Systems',
+  location: 'Dar es Salaam, Tanzania',
+  phone: '+255 714 076 990',
+  email: 'japhari@swahilisystems.com',
+  whatsapp: '+255 714 076 990',
+  website: 'www.swahilisystems.com',
+  photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+  logo: '/logos/swahili-systems.svg',
+  accent: '#d4783a',
+  tint: '#f8e8d8'
+};
+
+const toContact = (person) => ({
+  fullName: person.name,
+  title: person.title,
+  company: person.company,
+  email: person.email,
+  phone: person.phone,
+  whatsapp: person.whatsapp,
+  website: person.website,
+  location: person.location,
+  photoUrl: person.photo
+});
+
+const NfcCardSample = ({ person, className = '' }) => (
+  <div className={`km-nfc-card km-sample-nfc-card ${className}`}>
+    <div className="km-nfc-card-shine" aria-hidden="true" />
+    <div className="km-nfc-card-inner">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-8 w-8" />
+          <div>
+            <p className="font-display text-lg font-bold tracking-tight text-white">Kadi Moja</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-white/55">Digital NFC</p>
+          </div>
+        </div>
+        <div className="km-nfc-waves" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+      <div className="mt-auto">
+        <div className="flex items-center gap-3">
+          <img
+            src={person.photo}
+            alt=""
+            className="h-12 w-12 rounded-full border-2 border-white/50 object-cover"
+          />
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-white">{person.name}</p>
+            <p className="truncate text-xs text-white/70">{person.title}</p>
+            <p className="truncate text-[11px] italic text-white/50">{person.company}</p>
+          </div>
+        </div>
+        <p className="mt-4 text-[11px] text-white/55">Tap phone to open digital card</p>
+      </div>
+    </div>
+  </div>
+);
+
+const DigitalCardSample = ({ person, className = '' }) => (
+  <div className={`km-phone-frame km-sample-digital-phone ${className}`}>
+    <div className="km-phone-notch" aria-hidden="true" />
+    <div className="km-phone-screen km-sample-digital-screen">
+      <div className="km-phone-card-scale km-sample-digital-scale">
+        <ContactCardVisual
+          contact={toContact(person)}
+          variant="lagoon"
+          footer={
+            <div className="flex flex-col gap-2">
+              <div className="rounded-xl bg-[#0d7377] py-2.5 text-center text-[11px] font-semibold text-white">
+                Save contact details
+              </div>
+              <div className="rounded-xl border border-[#0d7377]/35 bg-white py-2.5 text-center text-[11px] font-semibold text-[#0d7377]">
+                Save to my Contacts
+              </div>
+            </div>
+          }
+        />
+      </div>
+    </div>
+    <div className="km-phone-home" aria-hidden="true" />
+  </div>
+);
 
 const HomePage = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -183,48 +259,49 @@ const HomePage = () => {
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/90 backdrop-blur-md border-b border-km-ink/8 shadow-sm'
+            ? 'border-b border-km-ink/10 bg-white shadow-sm'
             : 'bg-transparent'
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 lg:px-8">
-          <a
+          <BrandLogo
             href="#top"
-            className={`font-display text-2xl font-bold tracking-tight transition-colors ${
-              scrolled ? 'text-km-lagoon' : 'text-white'
-            }`}
-          >
-            Kadi Moja
-          </a>
-          <nav className="hidden items-center gap-8 md:flex">
-            <a href="#products" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
-              Cards
-            </a>
-            <a href="#samples" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
-              Samples
-            </a>
-            <a href="#how" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
-              How it works
-            </a>
-            <a href="#teams" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
-              For teams
-            </a>
-            <a href="#faq" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
-              FAQ
-            </a>
-            <Link to="/login" className={scrolled ? 'km-nav-link-dark' : 'km-nav-link'}>
+            tone={scrolled ? 'color' : 'light'}
+            textClassName="text-2xl"
+            markClassName="h-9 w-9"
+          />
+          <nav className="hidden items-center gap-7 md:flex">
+            {navLinks.map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className={`text-sm font-medium transition-colors ${
+                  scrolled
+                    ? 'text-[#1a3d42] hover:text-[#0d7377]'
+                    : 'text-white hover:text-white/90'
+                }`}
+              >
+                {label}
+              </a>
+            ))}
+            <Link
+              to="/login"
+              className={`text-sm font-medium transition-colors ${
+                scrolled
+                  ? 'text-[#1a3d42] hover:text-[#0d7377]'
+                  : 'text-white hover:text-white/90'
+              }`}
+            >
               Sign in
             </Link>
-            <Link to="/login" className="km-btn-primary !py-2.5 !px-5">
+            <Link to="/login" className="km-btn-primary !px-5 !py-2.5">
               Create account
             </Link>
           </nav>
           <button
             type="button"
-            className={`md:hidden text-sm border px-3 py-2 ${
-              scrolled
-                ? 'text-km-ink border-km-ink/20'
-                : 'text-white border-white/30'
+            className={`border px-3 py-2 text-sm md:hidden ${
+              scrolled ? 'border-km-ink/20 text-km-ink' : 'border-white/30 text-white'
             }`}
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
@@ -234,20 +311,9 @@ const HomePage = () => {
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden border-t border-km-ink/8 bg-white px-5 py-4 space-y-3">
-            {[
-              ['#products', 'Cards'],
-              ['#samples', 'Samples'],
-              ['#how', 'How it works'],
-              ['#teams', 'For teams'],
-              ['#faq', 'FAQ']
-            ].map(([href, label]) => (
-              <a
-                key={href}
-                href={href}
-                className="block text-km-ink/80"
-                onClick={() => setMenuOpen(false)}
-              >
+          <div className="space-y-3 border-t border-km-ink/8 bg-white px-5 py-4 md:hidden">
+            {navLinks.map(([href, label]) => (
+              <a key={href} href={href} className="block text-km-ink/80" onClick={() => setMenuOpen(false)}>
                 {label}
               </a>
             ))}
@@ -261,98 +327,197 @@ const HomePage = () => {
         )}
       </header>
 
-      <section id="top" className="km-grain relative min-h-[100svh] overflow-hidden text-white">
-        <div className="pointer-events-none absolute inset-0 opacity-50">
-          <div className="absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-km-ember/30 blur-3xl" />
-          <div className="absolute -right-16 bottom-1/4 h-80 w-80 rounded-full bg-white/20 blur-3xl" />
+      {/* Hero — meeting atmosphere + tap exchange + full digital card */}
+      <section id="top" className="km-landing-hero km-landing-hero--v2 relative overflow-hidden text-white">
+        <div className="km-landing-hero-bg" aria-hidden="true">
+          <img
+            src="https://images.unsplash.com/photo-1758599543278-32d9d073941e?auto=format&fit=crop&w=1800&q=80"
+            alt=""
+            className="km-landing-hero-bg-img km-landing-hero-bg-img--exchange"
+          />
+          <div className="km-landing-hero-bg-veil" />
+          <div className="km-landing-hero-bg-glow" />
         </div>
 
-        <div className="relative mx-auto grid min-h-[100svh] max-w-6xl items-center gap-8 px-5 pb-12 pt-24 lg:grid-cols-12 lg:gap-10 lg:px-8 lg:pb-16 lg:pt-20">
-          <div className="lg:col-span-5">
-            <p className="animate-fade-up font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-              Kadi Moja
+        <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-6xl items-center gap-10 px-5 pb-16 pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6 lg:px-8 lg:pb-20 lg:pt-24">
+          <div className="km-landing-hero-copy max-w-xl">
+            <p className="animate-fade-up text-[11px] font-semibold uppercase tracking-[0.28em] text-[#e8913a]/90">
+              Made for Tanzania · NFC digital card
             </p>
-            <h1 className="animate-fade-up-delay mt-4 font-display text-2xl font-semibold leading-snug text-white sm:text-3xl lg:text-[2.15rem] lg:leading-tight">
-              The last card you&apos;ll ever need
+            <div className="animate-fade-up mt-4 flex items-center gap-4">
+              <img
+                src="/logos/kadi-moja-mark.png"
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.25)] sm:h-16 sm:w-16"
+              />
+              <p className="font-display text-[clamp(3rem,9vw,5.75rem)] font-bold leading-[0.92] tracking-tight">
+                Kadi Moja
+              </p>
+            </div>
+            <h1 className="animate-fade-up-delay mt-6 font-display text-[clamp(1.75rem,4.2vw,2.85rem)] font-semibold leading-[1.12]">
+              The <span className="km-landing-accent-text">last card</span>
+              <br />
+              you&apos;ll ever need
             </h1>
-            <p className="animate-fade-up-delay-2 mt-4 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">
-              Share your contact details, links and social profiles with a simple tap. Works with
-              iPhone and Android. No app required.
+            <p className="animate-fade-up-delay-2 mt-5 max-w-md text-base leading-relaxed text-white/72 sm:text-lg">
+              In the meeting, tap once — your contacts, WhatsApp, and socials open on their phone. No app required.
             </p>
-            <div className="animate-fade-up-delay-2 mt-7 flex flex-wrap gap-3">
-              <a href="#products" className="km-btn-primary">
-                Get your card
+            <div className="animate-fade-up-delay-2 mt-9 flex flex-wrap gap-3">
+              <a href="#products" className="km-btn-primary km-landing-cta-primary">
+                Get your card →
               </a>
-              <Link to="/c/TAG12345" className="km-btn-ghost">
+              <Link to="/c/TAG12345" className="km-btn-ghost km-landing-cta-ghost">
                 See live demo
               </Link>
             </div>
+            <div className="animate-fade-up-delay-2 mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/50 sm:text-sm">
+              <span>TZS 100,000 once</span>
+              <span className="text-white/25">·</span>
+              <span>No monthly fees</span>
+              <span className="text-white/25">·</span>
+              <span>Delivered nationwide</span>
+            </div>
           </div>
 
-          <div className="relative lg:col-span-7">
-            <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/35 animate-pulse-ring" />
-            <div
-              className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full border border-km-ember/40 animate-pulse-ring"
-              style={{ animationDelay: '0.8s' }}
-            />
-            <img
-              src="/kadi-moja-hero-card.png?v=3"
-              alt="Kadi Moja NFC business card"
-              className="animate-float relative z-10 mx-auto w-full max-w-lg object-contain drop-shadow-[0_30px_60px_rgba(13,80,85,0.45)] lg:max-w-none"
-            />
+          <div className="km-landing-hero-props relative mx-auto w-full max-w-[460px] lg:max-w-none lg:justify-self-end">
+            <div className="km-landing-hero-prop-stage km-landing-hero-prop-stage--tap">
+              {/* Physical NFC approaching the phone — tap exchange */}
+              <div className="km-hero-nfc km-hero-nfc--tap" aria-hidden="true">
+                <div className="km-hero-nfc-shine" />
+                <div className="km-hero-nfc-inner">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-7 w-7" />
+                      <div>
+                        <p className="font-display text-base font-bold tracking-tight text-white">Kadi Moja</p>
+                        <p className="mt-0.5 text-[9px] uppercase tracking-[0.18em] text-white/50">Digital NFC</p>
+                      </div>
+                    </div>
+                    <div className="km-hero-nfc-waves">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </div>
+                  <div className="mt-auto flex items-end justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-white">Neema Hassan</p>
+                      <p className="text-[10px] text-white/55">Tap to exchange</p>
+                    </div>
+                    <div className="mt-3 h-px w-10 bg-gradient-to-r from-[#e8913a] to-transparent" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="km-hero-tap-pulse" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+
+              {/* Phone — full digital card after tap */}
+              <div className="km-landing-hero-device km-landing-hero-device--profile" aria-label="Digital business card on phone">
+                <div className="km-phone-frame km-landing-hero-phone-frame">
+                  <div className="km-phone-notch" />
+                  <div className="km-phone-screen km-landing-hero-phone-screen">
+                    <div className="km-phone-card-scale km-landing-hero-card-scale">
+                      <ContactCardVisual
+                        contact={heroDemoContact}
+                        variant="lagoon"
+                        footer={
+                          <div className="flex flex-col gap-2">
+                            <div className="rounded-xl bg-[#0d7377] py-2.5 text-center text-[11px] font-semibold text-white">
+                              Save contact details
+                            </div>
+                            <div className="rounded-xl border border-[#0d7377]/35 bg-white py-2.5 text-center text-[11px] font-semibold text-[#0d7377]">
+                              Save to my Contacts
+                            </div>
+                          </div>
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="km-phone-home" />
+                </div>
+              </div>
+            </div>
+            <p className="mt-5 text-center text-[11px] font-medium uppercase tracking-[0.16em] text-white/40 lg:text-left lg:pl-6">
+              Meeting tap · profile opens instantly
+            </p>
           </div>
         </div>
       </section>
 
       <section className="border-y border-km-lagoon/10 bg-km-foam">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-5 text-sm text-km-ink/70 lg:px-8">
-          <span>No monthly fees. Ever.</span>
-          <span>Works with iPhone + Android</span>
-          <span>Custom design included</span>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-5 text-sm text-km-ink/65 lg:px-8">
+          <span>Pay once · no monthly fees</span>
+          <span>iPhone + Android</span>
+          <span>Update forever from dashboard</span>
           <span>Delivered across Tanzania</span>
         </div>
       </section>
 
-      <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+      {/* Digital + NFC card showcase */}
+      <section className="km-landing-showcase relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">
-              Why switch
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Your cards</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              Make an impression that stays
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-km-ink/65">
+              One physical NFC card. One live digital profile. Both work together—tap in a meeting, save contacts in
+              seconds.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/login" className="km-btn-dark">
+                Create my free account
+              </Link>
+              <a href="#samples" className="km-btn-outline">
+                See sample
+              </a>
+            </div>
+          </div>
+          <div className="km-landing-duo relative mx-auto flex w-full max-w-lg flex-col items-center gap-8 sm:flex-row sm:items-end sm:justify-center lg:max-w-none">
+            <div className="km-landing-duo-nfc">
+              <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-km-ink/45">
+                NFC card
+              </p>
+              <NfcCardSample person={sampleCard} />
+            </div>
+            <div className="km-landing-duo-digital">
+              <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-km-ink/45">
+                Digital card
+              </p>
+              <DigitalCardSample person={sampleCard} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Why switch</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
               Most business cards get lost. Yours shouldn&apos;t.
             </h2>
           </div>
-          <div className="space-y-5 text-base leading-relaxed text-km-ink/70">
-            <p>
-              Paper cards disappear into pockets, drawers and bins. Kadi Moja lets you share your
-              details with a simple tap so people can save you instantly—and you can update your
-              profile whenever life changes.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <a href="#products" className="km-btn-dark">
-                Get Kadi Moja
-              </a>
-              <a href="#teams" className="km-btn-outline">
-                Team pricing
-              </a>
-            </div>
-          </div>
+          <p className="text-base leading-relaxed text-km-ink/65 lg:pb-1">
+            Paper disappears into pockets and bins. Kadi Moja puts your full professional identity on a tap—so people
+            save you now, and you stay current forever.
+          </p>
         </div>
       </section>
 
       <section id="products" className="bg-white px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">
-              NFC Business Cards
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              Share everything with a tap
-            </h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">NFC cards</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">Share everything with a tap</h2>
             <p className="mt-4 text-km-ink/65 leading-relaxed">
-              Your all-in-one professional card. Tap any phone and instantly share contacts,
-              website, socials, and more. Perfect for professionals, sales teams, and founders.
+              One physical card. One private profile. Perfect for founders, sales teams, and professionals who network
+              every week.
             </p>
           </div>
 
@@ -360,25 +525,16 @@ const HomePage = () => {
             {products.map((p) => (
               <article
                 key={p.name}
-                className={`flex flex-col border p-7 text-km-ink ${
+                className={`flex flex-col border p-7 ${
                   p.featured
-                    ? 'border-km-copper/35 bg-white shadow-soft lg:-translate-y-2'
-                    : 'border-km-lagoon/15 bg-km-bone opacity-80'
+                    ? 'border-km-copper/40 bg-white shadow-soft lg:-translate-y-1'
+                    : 'border-km-lagoon/12 bg-km-bone/80 opacity-85'
                 }`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-km-copper">
-                    {p.tag}
-                  </p>
-                  {p.featured && (
-                    <span className="rounded-sm bg-km-ember/15 px-2 py-0.5 text-[11px] font-semibold text-km-copper">
-                      Recommended
-                    </span>
-                  )}
-                </div>
-                <h3 className="mt-4 font-display text-2xl font-semibold text-km-ink">{p.name}</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-km-copper">{p.tag}</p>
+                <h3 className="mt-4 font-display text-2xl font-semibold">{p.name}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-km-ink/65">{p.blurb}</p>
-                <p className="mt-6 font-display text-3xl font-semibold text-km-ink">{p.price}</p>
+                <p className="mt-6 font-display text-3xl font-semibold">{p.price}</p>
                 <ul className="mt-6 space-y-2.5 text-sm text-km-ink/70">
                   {p.points.map((point) => (
                     <li key={point} className="flex gap-2">
@@ -392,7 +548,7 @@ const HomePage = () => {
                     Request this card
                   </Link>
                 ) : (
-                  <span className="mt-auto pt-8 inline-flex cursor-not-allowed items-center justify-center rounded-md border border-km-ink/10 px-4 py-2.5 text-sm font-semibold text-km-ink/40">
+                  <span className="mt-auto inline-flex cursor-not-allowed items-center justify-center border border-km-ink/10 px-4 py-2.5 pt-8 text-sm font-semibold text-km-ink/40">
                     Not available yet
                   </span>
                 )}
@@ -402,112 +558,165 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="samples" className="km-section-foam px-5 py-20 text-km-ink lg:px-8 lg:py-28">
+      <section id="samples" className="km-section-foam px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">
-              Live profiles
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              See Kadi Moja in action
-            </h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Live sample</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">See both cards in action</h2>
             <p className="mt-4 text-km-ink/65 leading-relaxed">
-              Branded digital cards with company logos—open any sample and experience the tap-ready profile.
+              Physical NFC card and the digital profile it unlocks.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sampleProfiles.map((person) => (
-              <Link
-                key={person.tag}
-                to={`/c/${person.tag}`}
-                className="km-sample group"
-              >
-                <article
-                  className="km-sample-card"
-                  style={{
-                    '--sample-accent': person.accent,
-                    '--sample-tint': person.tint
-                  }}
-                >
-                  <div className="km-sample-band" />
-                  <div className="km-sample-top">
-                    <img src={person.logo} alt={`${person.company} logo`} className="km-sample-logo" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-km-ink/55">
-                        {person.company}
-                      </p>
-                      <p className="truncate text-[11px] text-km-ink/40">
-                        {person.location}, Tanzania
-                      </p>
-                    </div>
-                    <span className="km-sample-nfc" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6">
-                        <path d="M7 8c2.5-2.5 7.5-2.5 10 0" strokeLinecap="round" />
-                        <path d="M9 11c1.5-1.5 4.5-1.5 6 0" strokeLinecap="round" />
-                        <path d="M11.5 14c.7-.7 1.8-.7 2.5 0" strokeLinecap="round" />
-                        <circle cx="12.75" cy="16.5" r="1" fill="currentColor" stroke="none" />
-                      </svg>
-                    </span>
-                  </div>
-
-                  <div className="km-sample-body">
-                    <div className="km-sample-photo-wrap">
-                      <img src={person.photo} alt={person.name} className="km-sample-photo" />
-                    </div>
-                    <h3 className="mt-5 font-display text-2xl font-semibold tracking-tight text-km-ink">
-                      {person.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-km-ink/60">{person.title}</p>
-                    <p className="mt-2 text-sm font-medium text-km-lagoon">{person.phone}</p>
-                    <div className="mt-6 flex items-center justify-between border-t border-km-ink/8 pt-4">
-                      <span className="text-xs text-km-ink/40">Tap to open</span>
-                      <span className="text-sm font-semibold text-[var(--sample-accent)] transition group-hover:translate-x-0.5">
-                        View profile →
-                      </span>
-                    </div>
-                  </div>
-                </article>
+          <div className="km-sample-featured mt-14">
+            <div className="km-sample-featured-copy">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-km-copper">Sample card</p>
+              <h3 className="mt-2 font-display text-2xl font-semibold text-km-ink sm:text-3xl">
+                {sampleCard.name}
+              </h3>
+              <p className="mt-1 text-sm text-km-ink/60">
+                {sampleCard.title} · {sampleCard.company}
+              </p>
+              <p className="mt-4 text-sm leading-relaxed text-km-ink/65">
+                Hand over the NFC card in a meeting — their phone opens this digital profile with contacts,
+                WhatsApp, and socials ready to save.
+              </p>
+              <Link to={`/c/${sampleCard.tag}`} className="km-btn-primary mt-6 inline-flex">
+                Open live digital card →
               </Link>
-            ))}
+            </div>
+            <div className="km-sample-featured-visuals">
+              <div className="km-sample-featured-nfc">
+                <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-km-ink/45">
+                  NFC card
+                </p>
+                <NfcCardSample person={sampleCard} />
+              </div>
+              <div className="km-sample-featured-digital">
+                <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-km-ink/45">
+                  Digital card
+                </p>
+                <DigitalCardSample person={sampleCard} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="how" className="km-section-foam px-5 py-20 text-km-ink lg:px-8 lg:py-28">
+      <section id="ai-scan" className="km-ai-scan relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-sea">
-              How it works
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              How Kadi Moja works
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">AI Scan</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              Snap a paper card.
+              <br />
+              Every detail is saved.
             </h2>
-            <p className="mt-3 text-lg font-semibold text-km-ink/80">
-              Networking has never been easier or more impressive.
+            <p className="mt-5 text-base leading-relaxed text-km-ink/65">
+              Still collecting paper cards in meetings? Photograph one with Kadi Moja — AI reads the name, phone,
+              email, company, and more, then opens your Kadi Moja digital card. No retyping.
             </p>
+          </div>
+
+          <div className="km-ai-scan-stage mt-12" aria-hidden="true">
+            <div className="km-ai-scan-col">
+              <p className="km-ai-scan-label">Paper business card</p>
+              <div className="km-ai-paper">
+                <div className="km-ai-paper-texture" />
+                <div className="km-ai-paper-inner">
+                  <div className="km-ai-paper-top">
+                    <img src={aiScanPerson.photo} alt="" className="km-ai-paper-photo" />
+                    <div>
+                      <p className="km-ai-paper-company">{aiScanPerson.company}</p>
+                      <p className="km-ai-paper-name">{aiScanPerson.name}</p>
+                      <p className="km-ai-paper-title">{aiScanPerson.title}</p>
+                    </div>
+                  </div>
+                  <div className="km-ai-paper-rule" />
+                  <div className="km-ai-paper-details">
+                    <p>{aiScanPerson.phone}</p>
+                    <p>{aiScanPerson.email}</p>
+                    <p>{aiScanPerson.website}</p>
+                    <p>{aiScanPerson.location}</p>
+                  </div>
+                </div>
+                <div className="km-ai-scan-beam">
+                  <span className="km-ai-scan-beam-line" />
+                </div>
+                <div className="km-ai-scan-particles">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </div>
+              </div>
+            </div>
+
+            <div className="km-ai-scan-bridge">
+              <div className="km-ai-scan-pulse">
+                <span className="km-ai-scan-pulse-ring" />
+                <span className="km-ai-scan-pulse-ring" />
+                <span className="km-ai-scan-pulse-core">AI</span>
+              </div>
+              <p className="km-ai-scan-bridge-caption">Scanning…</p>
+            </div>
+
+            <div className="km-ai-scan-col km-ai-scan-col--out">
+              <p className="km-ai-scan-label">Kadi Moja digital card</p>
+              <div className="km-ai-digital">
+                <span className="km-ai-digital-badge">Auto-filled</span>
+                <DigitalCardSample person={aiScanPerson} className="km-ai-digital-phone" />
+              </div>
+            </div>
+          </div>
+
+          <ol className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-3">
+            {aiScanSteps.map((step) => (
+              <li key={step.n} className="text-center sm:text-left">
+                <span className="km-ai-scan-step-n mx-auto sm:mx-0">{step.n}</span>
+                <h3 className="mt-3 font-display text-lg font-semibold text-km-ink">{step.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-km-ink/60">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/login" className="km-btn-primary">
+              Try AI Scan →
+            </Link>
+            <p className="text-sm text-km-ink/50">2 free scans · then from TZS 10,000 / month</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" className="bg-white px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-sea">How it works</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">Three steps. Zero friction.</h2>
             <p className="mt-4 text-km-ink/60 leading-relaxed">
-              With Kadi Moja, you can share your complete professional profile in seconds. No apps,
-              no typing, and no paper. Just a simple tap delivers your contact details, social links,
-              and portfolio directly to any smartphone.
+              No apps to install. No numbers to type. Tap, open, save.
             </p>
           </div>
 
           <div className="mt-14 grid gap-6 md:grid-cols-3">
             {steps.map((step) => (
-              <article key={step.title} className="km-how-card overflow-hidden bg-white shadow-soft">
+              <article key={step.title} className="km-how-card overflow-hidden bg-km-sand/40">
                 <div className="bg-white px-5 pt-6">
                   <img
                     src={`${step.image}?v=2`}
-                    alt={step.title}
+                    alt=""
                     width={600}
                     height={900}
-                    className="mx-auto h-64 w-auto max-w-full object-contain sm:h-72"
+                    className="mx-auto h-56 w-auto max-w-full object-contain sm:h-64"
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-km-sand/80 px-6 py-6 text-center">
-                  <h3 className="font-display text-2xl font-semibold">{step.title}</h3>
+                <div className="px-6 py-6 text-center">
+                  <p className="text-xs font-semibold tracking-[0.16em] text-km-copper">{step.n}</p>
+                  <h3 className="mt-2 font-display text-2xl font-semibold">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-km-ink/60">{step.body}</p>
                 </div>
               </article>
@@ -516,93 +725,61 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 lg:px-8 lg:py-28">
+      <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-4xl font-semibold sm:text-5xl">Paper vs Kadi Moja</h2>
-            <p className="mt-4 text-km-ink/60">
-              The difference between handing out cards… and actually capturing connections.
-            </p>
+            <p className="mt-4 text-km-ink/60">Handing out cards vs capturing connections.</p>
           </div>
 
           <div className="mt-12 grid gap-6 md:grid-cols-2">
-            <article className="overflow-hidden rounded-[1.5rem] bg-[#eceff3]">
+            <article className="overflow-hidden bg-[#eceff3]">
               <img
                 src="/illustrations/compare-paper.png?v=2"
                 alt="Scattered paper business cards"
-                width={900}
-                height={600}
                 className="aspect-[4/3] w-full object-cover grayscale"
                 loading="lazy"
               />
               <div className="px-6 py-5">
-                <h3 className="font-display text-xl font-semibold text-km-ink">Paper Business Cards</h3>
+                <h3 className="font-display text-xl font-semibold">Paper</h3>
+                <ul className="mt-4 space-y-2 text-sm text-km-ink/55">
+                  <li>Hope they keep it</li>
+                  <li>Manual typing later</li>
+                  <li>Reprint when details change</li>
+                </ul>
               </div>
             </article>
-
-            <article className="overflow-hidden rounded-[1.5rem] bg-km-lagoon p-2.5 shadow-soft">
+            <article className="overflow-hidden bg-km-lagoon">
               <img
                 src="/illustrations/compare-nfc.png?v=2"
                 alt="NFC card saving a contact on a phone"
-                width={900}
-                height={600}
-                className="aspect-[4/3] w-full rounded-[1.1rem] object-cover"
+                className="aspect-[4/3] w-full object-cover"
                 loading="lazy"
               />
-              <div className="px-4 py-5">
-                <h3 className="font-display text-xl font-semibold text-white">
-                  NFC Business Cards (Kadi Moja)
-                </h3>
+              <div className="px-6 py-5 text-white">
+                <h3 className="font-display text-xl font-semibold">Kadi Moja</h3>
+                <ul className="mt-4 space-y-2 text-sm text-white/80">
+                  <li>Tap once—details appear</li>
+                  <li>Save to contacts in seconds</li>
+                  <li>Update anytime from dashboard</li>
+                </ul>
               </div>
             </article>
-          </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <ul className="space-y-3 text-sm text-km-ink/55">
-              <li>Hand out cards and hope people keep them</li>
-              <li>Details get lost in wallets or thrown away</li>
-              <li>Contacts must be typed in manually later</li>
-              <li>No way to update without reprinting</li>
-              <li>No analytics on who viewed your details</li>
-            </ul>
-            <ul className="space-y-3 text-sm text-km-lagoon">
-              <li>Tap once—details appear instantly</li>
-              <li>Contacts can save you in seconds</li>
-              <li>Links, socials, and portfolio in one place</li>
-              <li>Update your profile anytime from the dashboard</li>
-              <li>See when people view your profile</li>
-            </ul>
-          </div>
-
-          <div className="mt-10 text-center">
-            <p className="font-display text-2xl font-semibold text-km-ink sm:text-3xl">
-              Every conversation has the chance to become a client.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <a href="#products" className="km-btn-dark">
-                Get your Kadi Moja
-              </a>
-              <a href="#teams" className="km-btn-outline">
-                Get team pricing
-              </a>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
+      <section className="bg-white px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">
-              Why Kadi Moja
-            </p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Why Kadi Moja</p>
             <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
               Built for professionals who move
             </h2>
           </div>
-          <div className="mt-14 grid gap-8 sm:grid-cols-2">
+          <div className="mt-14 grid gap-10 sm:grid-cols-2">
             {reasons.map((r) => (
-              <div key={r.title} className="border-l-2 border-km-copper/60 pl-5">
+              <div key={r.title} className="border-l-2 border-km-copper/55 pl-5">
                 <h3 className="font-display text-xl font-semibold">{r.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-km-ink/65">{r.body}</p>
               </div>
@@ -612,56 +789,45 @@ const HomePage = () => {
       </section>
 
       <section id="teams" className="km-section-lagoon px-5 py-20 text-white lg:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-ember">
-              For teams
-            </p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-ember">For teams</p>
             <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              Want Kadi Moja for your team?
+              One brand. Every teammate.
             </h2>
-            <p className="mt-5 text-white/75 leading-relaxed">
-              Give every teammate a branded profile. Manage access, update details, and reassign
-              cards from one dashboard—perfect for sales, events, and growing companies.
+            <p className="mt-5 max-w-md text-white/75 leading-relaxed">
+              Assign NFC cards, manage profiles, and keep everyone consistent—ideal for sales floors and growing
+              companies.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#contact" className="km-btn-primary">
                 Get team pricing
               </a>
               <Link to="/c/TAG12345" className="km-btn-ghost">
-                Explore a sample profile
+                Explore a sample
               </Link>
             </div>
           </div>
-          <div className="border border-white/20 bg-white/10 p-8 backdrop-blur-sm">
-            <ul className="space-y-4 text-sm text-white/85">
-              <li className="flex gap-3">
+          <ul className="space-y-5 border border-white/15 bg-white/8 p-8 text-sm text-white/85 backdrop-blur-[2px]">
+            {[
+              'Centralised admin for all profiles',
+              'Instant updates when roles change',
+              'Reassign lost or returned cards',
+              'Consistent brand across the company'
+            ].map((item) => (
+              <li key={item} className="flex gap-3">
                 <span className="text-km-ember">→</span>
-                Centralised admin for all profiles
+                {item}
               </li>
-              <li className="flex gap-3">
-                <span className="text-km-ember">→</span>
-                Instant updates when roles change
-              </li>
-              <li className="flex gap-3">
-                <span className="text-km-ember">→</span>
-                Reassign lost or returned cards
-              </li>
-              <li className="flex gap-3">
-                <span className="text-km-ember">→</span>
-                Consistent brand across the company
-              </li>
-            </ul>
-          </div>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section id="faq" className="bg-white px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-display text-4xl font-semibold sm:text-5xl">Common questions</h2>
-          <p className="mt-4 text-km-ink/65">
-            New to NFC networking? These answers cover the essentials.
-          </p>
+          <p className="mt-4 text-km-ink/65">New to NFC networking? Start here.</p>
           <div className="mt-10 divide-y divide-km-ink/10 border-y border-km-ink/10">
             {faqs.map((item) => (
               <details key={item.q} className="km-faq group py-5">
@@ -676,15 +842,16 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="contact" className="km-grain px-5 py-24 text-white lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="font-display text-5xl font-bold tracking-tight sm:text-6xl">Kadi Moja</p>
+      <section id="contact" className="km-landing-cta relative overflow-hidden px-5 py-24 text-white lg:px-8">
+        <div className="relative mx-auto max-w-3xl text-center">
+          <div className="flex flex-col items-center gap-3">
+            <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-14 w-14 rounded-2xl" />
+            <p className="font-display text-5xl font-bold tracking-tight sm:text-6xl">Kadi Moja</p>
+          </div>
           <h2 className="mt-5 font-display text-3xl font-semibold sm:text-4xl">
             Ready to upgrade how you connect?
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-white/80">
-            Pay once. Share instantly. Stay up to date.
-          </p>
+          <p className="mx-auto mt-4 max-w-lg text-white/75">Pay once. Share instantly. Stay up to date.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link to="/login" className="km-btn-primary">
               Create your account
@@ -693,18 +860,15 @@ const HomePage = () => {
               Sign in
             </Link>
           </div>
-          <p className="mt-8 text-sm text-white/60">
-            No monthly fees · Custom design included · iPhone + Android
-          </p>
         </div>
       </section>
 
-      <footer className="border-t border-km-lagoon/20 bg-km-foam px-5 py-12 text-km-ink lg:px-8">
+      <footer className="border-t border-km-lagoon/15 bg-km-foam px-5 py-12 lg:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:justify-between">
           <div>
-            <p className="font-display text-2xl font-bold text-km-lagoon">Kadi Moja</p>
+            <BrandLogo tone="color" textClassName="text-2xl" markClassName="h-9 w-9" href="#top" />
             <p className="mt-2 max-w-xs text-sm text-km-ink/55">
-              Your professional identity, reimagined. Effortless networking with one card.
+              Your professional identity, reimagined—for Tanzania and beyond.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-10 text-sm">
@@ -712,6 +876,9 @@ const HomePage = () => {
               <p className="font-semibold text-km-ink/80">Explore</p>
               <a href="#products" className="block text-km-ink/50 hover:text-km-lagoon">
                 NFC cards
+              </a>
+              <a href="#ai-scan" className="block text-km-ink/50 hover:text-km-lagoon">
+                AI Scan
               </a>
               <a href="#how" className="block text-km-ink/50 hover:text-km-lagoon">
                 How it works

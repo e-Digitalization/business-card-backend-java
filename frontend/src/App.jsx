@@ -19,8 +19,14 @@ import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import AdminCardsPage from './pages/admin/AdminCardsPage.jsx';
 import AdminCreateCardPage from './pages/admin/AdminCreateCardPage.jsx';
+import AdminCardDetailPage from './pages/admin/AdminCardDetailPage.jsx';
 import AdminTagsPage from './pages/admin/AdminTagsPage.jsx';
 import AdminNfcRequestsPage from './pages/admin/AdminNfcRequestsPage.jsx';
+import AdminSetupsOverviewPage from './pages/admin/setups/AdminSetupsOverviewPage.jsx';
+import AdminSetupsAiPage from './pages/admin/setups/AdminSetupsAiPage.jsx';
+import AdminSetupsSelcomPage from './pages/admin/setups/AdminSetupsSelcomPage.jsx';
+import AdminSetupsNmbPage from './pages/admin/setups/AdminSetupsNmbPage.jsx';
+import ClaimAccountPage from './pages/ClaimAccountPage.jsx';
 
 const AppShell = () => {
   const { pathname } = useLocation();
@@ -29,7 +35,8 @@ const AppShell = () => {
     !pathname.startsWith('/me') &&
     !pathname.startsWith('/u/') &&
     pathname !== '/' &&
-    pathname !== '/login';
+    pathname !== '/login' &&
+    pathname !== '/claim';
 
   return (
     <>
@@ -39,6 +46,7 @@ const AppShell = () => {
         <Route path="/u/:slug" element={<ProfilePage />} />
         <Route path="/c/:tagCode" element={<RedirectPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/claim" element={<ClaimAccountPage />} />
         <Route path="/signup" element={<Navigate to="/login" replace state={{ mode: 'signup' }} />} />
         <Route path="/admin/login" element={<Navigate to="/login" replace state={{ role: 'admin' }} />} />
         <Route
@@ -68,9 +76,14 @@ const AppShell = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="cards" element={<AdminCardsPage />} />
           <Route path="cards/new" element={<AdminCreateCardPage />} />
+          <Route path="cards/:id" element={<AdminCardDetailPage />} />
           <Route path="cards/:id/edit" element={<Navigate to="/admin/cards" replace />} />
           <Route path="tags" element={<AdminTagsPage />} />
           <Route path="nfc-requests" element={<AdminNfcRequestsPage />} />
+          <Route path="setups" element={<AdminSetupsOverviewPage />} />
+          <Route path="setups/ai" element={<AdminSetupsAiPage />} />
+          <Route path="setups/selcom" element={<AdminSetupsSelcomPage />} />
+          <Route path="setups/nmb" element={<AdminSetupsNmbPage />} />
         </Route>
         <Route path="/not-found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />

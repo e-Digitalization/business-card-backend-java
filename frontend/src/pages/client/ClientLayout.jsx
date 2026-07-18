@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import BrandLogo from '../../components/BrandLogo.jsx';
 import api from '../../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
 
@@ -273,7 +274,7 @@ const ClientLayout = () => {
               <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
             </svg>
           </button>
-          <p className="font-display text-lg font-bold text-white">Kadi Moja</p>
+          <BrandLogo tone="light" textClassName="text-lg" markClassName="h-7 w-7" />
         </div>
 
         {mobileOpen && (

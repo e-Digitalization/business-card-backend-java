@@ -1,48 +1,46 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api.js';
+import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import EditCardDialog from './EditCardDialog.jsx';
 
 const AdminDashboard = () => {
-  const [cards, setCards] = useState([]);
+  const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    tags: 0,
+    activeTags: 0
+  });
 
-  useEffect(() => {
-    let mounted = true;
-    api
-      .get('/api/admin/cards')
-      .then((response) => {
-        if (mounted) setCards(response.data.data || []);
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const [statsRes, cardsRes] = await Promise.all([
+        api.get('/api/admin/cards/stats'),
+        api.get('/api/admin/cards', { params: { page: 0, size: 5 } })
+      ]);
+      const s = statsRes.data.data || {};
+      const page = cardsRes.data.data || {};
+      setStats({
+        total: s.totalCards ?? 0,
+        active: s.activeCards ?? 0,
+        tags: s.assignedTags ?? 0,
+        activeTags: s.activeTags ?? s.assignedTags ?? 0
       });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const refresh = () => {
-    api.get('/api/admin/cards').then((response) => setCards(response.data.data || []));
+      setRecent(Array.isArray(page.items) ? page.items : []);
+    } catch {
+      setRecent([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const stats = useMemo(() => {
-    const active = cards.filter((c) => c.card?.active).length;
-    const tags = cards.reduce((acc, c) => acc + (c.tags?.length || 0), 0);
-    const activeTags = cards.reduce(
-      (acc, c) => acc + (c.tags?.filter((t) => t.active).length || 0),
-      0
-    );
-    return {
-      total: cards.length,
-      active,
-      tags,
-      activeTags
-    };
-  }, [cards]);
-
-  const recent = cards.slice(0, 5);
+  useEffect(() => {
+    load();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -120,10 +118,10 @@ const AdminDashboard = () => {
           )}
           {recent.map((row) => (
             <div key={row.card.id} className="flex items-center gap-4 px-5 py-4">
-              <img
-                src={row.card.logoUrl || row.card.photoUrl || '/logos/swahili-systems.svg'}
-                alt=""
-                className="h-11 w-11 rounded-lg object-cover border border-black/5"
+              <ProfileAvatar
+                name={row.card.fullName}
+                photoUrl={row.card.photoUrl}
+                logoUrl={row.card.logoUrl}
               />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-[#1a3d42] truncate">{row.card.fullName}</p>
@@ -135,6 +133,12 @@ const AdminDashboard = () => {
                 <p className="text-sm font-medium text-[#0d7377]">{row.card.phone || '—'}</p>
                 <p className="text-xs text-[#1a3d42]/40">{row.tags?.length || 0} NFC tag(s)</p>
               </div>
+              <Link
+                to={`/admin/cards/${row.card.id}`}
+                className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
+              >
+                View
+              </Link>
               <button
                 type="button"
                 onClick={() => setEditId(row.card.id)}
@@ -151,7 +155,7 @@ const AdminDashboard = () => {
         open={Boolean(editId)}
         cardId={editId}
         onClose={() => setEditId(null)}
-        onSaved={refresh}
+        onSaved={load}
       />
     </div>
   );

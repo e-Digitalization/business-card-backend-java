@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
 
 const persistSession = (data) => {
@@ -78,9 +79,7 @@ const ClientLogin = () => {
   return (
     <div className="min-h-screen bg-[#f7f4ef] px-5 py-10">
       <div className="mx-auto flex w-full max-w-md flex-col">
-        <Link to="/" className="font-display text-2xl font-bold text-[#0d7377]">
-          Kadi Moja
-        </Link>
+        <BrandLogo to="/" tone="color" textClassName="text-2xl" markClassName="h-9 w-9" />
         <p className="mt-1 text-sm text-[#1a3d42]/55">Create your digital business card account</p>
 
         <div className="mt-8 rounded-xl border border-black/5 bg-white p-7 shadow-[0_20px_50px_rgba(26,61,66,0.08)]">

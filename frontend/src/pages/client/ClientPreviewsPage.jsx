@@ -54,15 +54,46 @@ const ClientPreviewsPage = () => {
   };
 
   const loadCatalog = async () => {
+    setError('');
+    const fallbackProducts = [
+      {
+        code: 'NFC_CARD',
+        name: 'Kadi Moja NFC Card',
+        description: 'Physical PVC NFC card linked to your private profile.',
+        priceTzs: 100000,
+        currency: 'TZS',
+        active: true
+      },
+      {
+        code: 'NFC_CARD_PRO',
+        name: 'Kadi Moja Pro',
+        description: 'Custom logo & brand colours — coming soon.',
+        priceTzs: 75000,
+        currency: 'TZS',
+        active: false
+      },
+      {
+        code: 'NFC_CARD_METAL',
+        name: 'Kadi Moja Metal',
+        description: 'Premium metal finish — coming soon.',
+        priceTzs: 145000,
+        currency: 'TZS',
+        active: false
+      }
+    ];
+
     try {
-      const [prodRes, reqRes] = await Promise.all([
-        api.get('/api/client/nfc/products'),
-        api.get('/api/client/nfc/requests')
-      ]);
-      setProducts(prodRes.data.data?.products || []);
+      const prodRes = await api.get('/api/client/nfc/products');
+      setProducts(prodRes.data.data?.products || fallbackProducts);
+    } catch {
+      setProducts(fallbackProducts);
+    }
+
+    try {
+      const reqRes = await api.get('/api/client/nfc/requests');
       setRequests(reqRes.data.data || []);
     } catch {
-      setError('Could not load NFC products.');
+      setRequests([]);
     }
   };
 
@@ -214,9 +245,12 @@ const ClientPreviewsPage = () => {
               <div className="km-nfc-card-shine" aria-hidden="true" />
               <div className="km-nfc-card-inner">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-display text-lg font-bold tracking-tight text-white">Kadi Moja</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-white/55">Digital NFC</p>
+                  <div className="flex items-center gap-2">
+                    <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-8 w-8" />
+                    <div>
+                      <p className="font-display text-lg font-bold tracking-tight text-white">Kadi Moja</p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-white/55">Digital NFC</p>
+                    </div>
                   </div>
                   <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/85">
                     NFC
@@ -266,8 +300,8 @@ const ClientPreviewsPage = () => {
           <div>
             <h2 className="font-display text-xl font-semibold text-[#1a3d42]">Request an NFC card</h2>
             <p className="mt-1 text-sm text-[#1a3d42]/55">
-              Active option: physical NFC card at {formatMoney(activeNfc?.priceTzs || 100000, activeNfc?.currency)}.
-              Other options stay inactive for now.
+              Active option: physical NFC card at {formatMoney(activeNfc?.priceTzs || 100000, activeNfc?.currency)}{' '}
+              (one-time). Other options stay inactive for now.
             </p>
           </div>
           <Link to="/me/share" className="text-sm font-semibold text-[#0d7377] hover:underline">

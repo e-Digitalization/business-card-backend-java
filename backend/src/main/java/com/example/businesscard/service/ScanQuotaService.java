@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,9 +29,19 @@ public class ScanQuotaService {
         return freeLimit;
     }
 
+    public boolean hasActiveSubscription(ClientUser user) {
+        if (user == null || !user.isScanSubscribed()) return false;
+        Instant expires = user.getScanSubscriptionExpiresAt();
+        if (expires == null) {
+            // Legacy one-time unlock: treat as active until we set an expiry on renew.
+            return true;
+        }
+        return expires.isAfter(Instant.now());
+    }
+
     public Map<String, Object> quotaSnapshot(ClientUser user) {
         int used = Math.max(0, user.getAiScanCount());
-        boolean subscribed = user.isScanSubscribed();
+        boolean subscribed = hasActiveSubscription(user);
         int remaining = subscribed ? Integer.MAX_VALUE : Math.max(0, freeLimit - used);
         boolean canScan = subscribed || used < freeLimit;
 
@@ -40,16 +51,19 @@ public class ScanQuotaService {
         map.put("remaining", subscribed ? null : remaining);
         map.put("subscribed", subscribed);
         map.put("canScan", canScan);
+        map.put("billingPeriod", "monthly");
+        map.put("subscribedAt", user.getScanSubscribedAt() == null ? null : user.getScanSubscribedAt().toString());
+        map.put("expiresAt", user.getScanSubscriptionExpiresAt() == null ? null : user.getScanSubscriptionExpiresAt().toString());
         map.put("priceTzs", null);
         return map;
     }
 
     public void assertCanScan(ClientUser user) {
-        if (user.isScanSubscribed()) return;
+        if (hasActiveSubscription(user)) return;
         if (user.getAiScanCount() < freeLimit) return;
         throw new ResponseStatusException(
             HttpStatus.PAYMENT_REQUIRED,
-            "Free AI scans used up. Subscribe to continue scanning cards."
+            "Free AI scans used up. Subscribe monthly to continue scanning cards."
         );
     }
 
@@ -57,7 +71,7 @@ public class ScanQuotaService {
     public ClientUser recordSuccessfulScan(ClientUser user) {
         ClientUser fresh = clientUserRepository.findById(user.getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
-        if (!fresh.isScanSubscribed()) {
+        if (!hasActiveSubscription(fresh)) {
             fresh.setAiScanCount(fresh.getAiScanCount() + 1);
             fresh = clientUserRepository.save(fresh);
         }

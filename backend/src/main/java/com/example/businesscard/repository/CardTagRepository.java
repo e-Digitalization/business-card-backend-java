@@ -15,5 +15,7 @@ public interface CardTagRepository extends JpaRepository<CardTag, Long> {
 
     List<CardTag> findByCard_IdIn(List<Long> cardIds);
 
+    long countByActiveTrue();
+
     void deleteByCard_Id(Long cardId);
 }

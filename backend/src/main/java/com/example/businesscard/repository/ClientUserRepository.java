@@ -9,4 +9,6 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Long> {
     Optional<ClientUser> findByGoogleSub(String googleSub);
 
     Optional<ClientUser> findByEmailIgnoreCase(String email);
+
+    Optional<ClientUser> findByCard_Id(Long cardId);
 }

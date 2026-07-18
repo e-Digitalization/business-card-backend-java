@@ -39,74 +39,63 @@ public class SelcomCheckoutService {
     private final ClientUserRepository clientUserRepository;
     private final NfcCardRequestRepository nfcCardRequestRepository;
     private final ProductCatalogService productCatalogService;
+    private final ScanQuotaService scanQuotaService;
+    private final AppSettingsService appSettingsService;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    private final String baseUrl;
-    private final String apiKey;
-    private final String apiSecret;
-    private final String vendor;
-    private final int amountTzs;
-    private final String currency;
     private final String frontendBaseUrl;
     private final String webhookBaseUrl;
-    private final boolean forceMock;
 
     public SelcomCheckoutService(
         PaymentOrderRepository paymentOrderRepository,
         ClientUserRepository clientUserRepository,
         NfcCardRequestRepository nfcCardRequestRepository,
         ProductCatalogService productCatalogService,
+        ScanQuotaService scanQuotaService,
+        AppSettingsService appSettingsService,
         ObjectMapper objectMapper,
-        @Value("${app.selcom.base-url:https://apigw.selcommobile.com}") String baseUrl,
-        @Value("${app.selcom.api-key:}") String apiKey,
-        @Value("${app.selcom.api-secret:}") String apiSecret,
-        @Value("${app.selcom.vendor:}") String vendor,
-        @Value("${app.selcom.amount-tzs:10000}") int amountTzs,
-        @Value("${app.selcom.currency:TZS}") String currency,
         @Value("${app.frontend.base-url:http://localhost:5173}") String frontendBaseUrl,
-        @Value("${app.public.base-url:http://localhost:8080}") String webhookBaseUrl,
-        @Value("${app.selcom.mock:false}") boolean forceMock
+        @Value("${app.public.base-url:http://localhost:8080}") String webhookBaseUrl
     ) {
         this.paymentOrderRepository = paymentOrderRepository;
         this.clientUserRepository = clientUserRepository;
         this.nfcCardRequestRepository = nfcCardRequestRepository;
         this.productCatalogService = productCatalogService;
+        this.scanQuotaService = scanQuotaService;
+        this.appSettingsService = appSettingsService;
         this.objectMapper = objectMapper;
-        this.baseUrl = trimSlash(baseUrl);
-        this.apiKey = blankToNull(apiKey);
-        this.apiSecret = blankToNull(apiSecret);
-        this.vendor = blankToNull(vendor);
-        this.amountTzs = amountTzs;
-        this.currency = currency;
         this.frontendBaseUrl = trimSlash(frontendBaseUrl);
         this.webhookBaseUrl = trimSlash(webhookBaseUrl);
-        this.forceMock = forceMock;
     }
 
     public boolean isLiveConfigured() {
-        return !forceMock && apiKey != null && apiSecret != null && vendor != null;
+        return appSettingsService.selcomLiveConfigured();
     }
 
     public int amountTzs() {
-        return amountTzs;
+        return appSettingsService.selcomAmountTzs();
     }
 
     public String currency() {
-        return currency;
+        return appSettingsService.selcomCurrency();
     }
 
     @Transactional
     public Map<String, Object> startCheckout(ClientUser user, String phone) {
-        if (user.isScanSubscribed()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You already have an active AI scan subscription.");
+        if (scanQuotaService.hasActiveSubscription(user)) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Your AI scan monthly subscription is still active until "
+                    + (user.getScanSubscriptionExpiresAt() == null ? "further notice" : user.getScanSubscriptionExpiresAt())
+            );
         }
         return createAndPay(
             user,
             phone,
             ProductCatalogService.AI_SCAN,
-            amountTzs,
-            "Kadi Moja AI scan subscription",
+            amountTzs(),
+            "Kadi Moja AI scan monthly subscription",
             "/me/contacts",
             null
         );
@@ -122,7 +111,7 @@ public class SelcomCheckoutService {
         request.setProductCode(ProductCatalogService.NFC_CARD);
         request.setProductName(String.valueOf(product.get("name")));
         request.setAmount(price);
-        request.setCurrency(currency);
+        request.setCurrency(currency());
         request.setStatus("PENDING_PAYMENT");
         request.setPhone(normalizePhone(phone));
         request.setDeliveryNotes(deliveryNotes == null ? null : deliveryNotes.trim());
@@ -161,7 +150,8 @@ public class SelcomCheckoutService {
         result.put("orderId", order.getOrderId());
         result.put("status", order.getStatus());
         result.put("purpose", order.getPurpose());
-        result.put("subscribed", fresh.isScanSubscribed());
+        result.put("subscribed", scanQuotaService.hasActiveSubscription(fresh));
+        result.put("expiresAt", fresh.getScanSubscriptionExpiresAt() == null ? null : fresh.getScanSubscriptionExpiresAt().toString());
         return result;
     }
 
@@ -212,7 +202,8 @@ public class SelcomCheckoutService {
         map.put("orderId", order.getOrderId());
         map.put("status", order.getStatus());
         map.put("purpose", order.getPurpose());
-        map.put("subscribed", fresh.isScanSubscribed());
+        map.put("subscribed", scanQuotaService.hasActiveSubscription(fresh));
+        map.put("expiresAt", fresh.getScanSubscriptionExpiresAt() == null ? null : fresh.getScanSubscriptionExpiresAt().toString());
         map.put("paymentGatewayUrl", order.getPaymentGatewayUrl() == null ? "" : order.getPaymentGatewayUrl());
         map.put("nfcRequestId", order.getNfcRequestId());
         return map;
@@ -232,7 +223,7 @@ public class SelcomCheckoutService {
         order.setOwner(user);
         order.setOrderId(orderId);
         order.setAmount(amount);
-        order.setCurrency(currency);
+        order.setCurrency(currency());
         order.setPurpose(purpose);
         order.setStatus("PENDING");
         order.setPhone(normalizePhone(phone));
@@ -315,11 +306,19 @@ public class SelcomCheckoutService {
     private void ensureSubscribed(ClientUser owner) {
         ClientUser user = clientUserRepository.findById(owner.getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
-        if (!user.isScanSubscribed()) {
-            user.setScanSubscribed(true);
-            user.setScanSubscribedAt(Instant.now());
-            clientUserRepository.save(user);
+        Instant now = Instant.now();
+        ZoneId zone = ZoneId.of("Africa/Dar_es_Salaam");
+        Instant currentExpiry = user.getScanSubscriptionExpiresAt();
+        ZonedDateTime base = (currentExpiry != null && currentExpiry.isAfter(now))
+            ? currentExpiry.atZone(zone)
+            : now.atZone(zone);
+        Instant newExpiry = base.plusMonths(1).toInstant();
+        user.setScanSubscribed(true);
+        if (user.getScanSubscribedAt() == null) {
+            user.setScanSubscribedAt(now);
         }
+        user.setScanSubscriptionExpiresAt(newExpiry);
+        clientUserRepository.save(user);
     }
 
     private Map<String, Object> buildMinimalOrderPayload(
@@ -333,7 +332,7 @@ public class SelcomCheckoutService {
         String webhook = webhookBaseUrl + "/api/payments/selcom/webhook";
 
         Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("vendor", vendor);
+        payload.put("vendor", appSettingsService.selcomVendor());
         payload.put("order_id", order.getOrderId());
         payload.put("buyer_email", user.getEmail());
         payload.put("buyer_name", user.getFullName() == null ? user.getEmail() : user.getFullName());
@@ -351,9 +350,16 @@ public class SelcomCheckoutService {
     }
 
     private JsonNode postSelcom(String path, Map<String, Object> payload) throws Exception {
+        String apiKey = appSettingsService.selcomApiKey();
+        String apiSecret = appSettingsService.selcomApiSecret();
+        String baseUrl = appSettingsService.selcomBaseUrl();
+        if (apiKey == null || apiSecret == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Selcom credentials are not configured");
+        }
+
         String timestamp = ZonedDateTime.now(ZoneId.of("Africa/Dar_es_Salaam")).format(TIMESTAMP);
         String signedFields = String.join(",", payload.keySet());
-        String digest = computeDigest(payload, signedFields, timestamp);
+        String digest = computeDigest(payload, signedFields, timestamp, apiSecret);
         String authorization = Base64.getEncoder().encodeToString(apiKey.getBytes(StandardCharsets.UTF_8));
         String body = objectMapper.writeValueAsString(payload);
 
@@ -376,7 +382,8 @@ public class SelcomCheckoutService {
         return objectMapper.readTree(response.body());
     }
 
-    private String computeDigest(Map<String, Object> payload, String signedFields, String timestamp) throws Exception {
+    private String computeDigest(Map<String, Object> payload, String signedFields, String timestamp, String apiSecret)
+        throws Exception {
         StringBuilder signData = new StringBuilder("timestamp=").append(timestamp);
         for (String field : signedFields.split(",")) {
             Object value = payload.get(field);

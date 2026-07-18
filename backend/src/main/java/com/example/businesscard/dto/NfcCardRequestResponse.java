@@ -1,5 +1,7 @@
 package com.example.businesscard.dto;
 
+import com.example.businesscard.entity.Card;
+import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.entity.NfcCardRequest;
 
 import java.time.Instant;
@@ -21,13 +23,15 @@ public class NfcCardRequestResponse {
     private final String ownerName;
     private final String ownerEmail;
     private final String cardSlug;
+    private final String ownerTitle;
+    private final String ownerCompany;
+    private final String ownerPhone;
+    private final String ownerPhotoUrl;
+    private final String ownerLocation;
 
-    public NfcCardRequestResponse(
-        NfcCardRequest request,
-        String ownerName,
-        String ownerEmail,
-        String cardSlug
-    ) {
+    public NfcCardRequestResponse(NfcCardRequest request) {
+        ClientUser owner = request.getOwner();
+        Card card = owner == null ? null : owner.getCard();
         this.id = request.getId();
         this.productCode = request.getProductCode();
         this.productName = request.getProductName();
@@ -40,10 +44,35 @@ public class NfcCardRequestResponse {
         this.createdAt = request.getCreatedAt();
         this.paidAt = request.getPaidAt();
         this.fulfilledAt = request.getFulfilledAt();
-        this.ownerId = request.getOwner() == null ? null : request.getOwner().getId();
-        this.ownerName = ownerName;
-        this.ownerEmail = ownerEmail;
-        this.cardSlug = cardSlug;
+        this.ownerId = owner == null ? null : owner.getId();
+        this.ownerName = firstNonBlank(
+            card == null ? null : card.getFullName(),
+            owner == null ? null : owner.getFullName()
+        );
+        this.ownerEmail = firstNonBlank(
+            card == null ? null : card.getEmail(),
+            owner == null ? null : owner.getEmail()
+        );
+        this.cardSlug = card == null ? null : card.getSlug();
+        this.ownerTitle = card == null ? null : card.getTitle();
+        this.ownerCompany = card == null ? null : card.getCompany();
+        this.ownerPhone = firstNonBlank(
+            request.getPhone(),
+            card == null ? null : card.getPhone()
+        );
+        this.ownerPhotoUrl = firstNonBlank(
+            card == null ? null : card.getPhotoUrl(),
+            owner == null ? null : owner.getPictureUrl()
+        );
+        this.ownerLocation = card == null || card.getLocation() == null || card.getLocation().isBlank()
+            ? "Tanzania"
+            : card.getLocation();
+    }
+
+    private static String firstNonBlank(String a, String b) {
+        if (a != null && !a.isBlank()) return a;
+        if (b != null && !b.isBlank()) return b;
+        return null;
     }
 
     public Long getId() { return id; }
@@ -62,4 +91,9 @@ public class NfcCardRequestResponse {
     public String getOwnerName() { return ownerName; }
     public String getOwnerEmail() { return ownerEmail; }
     public String getCardSlug() { return cardSlug; }
+    public String getOwnerTitle() { return ownerTitle; }
+    public String getOwnerCompany() { return ownerCompany; }
+    public String getOwnerPhone() { return ownerPhone; }
+    public String getOwnerPhotoUrl() { return ownerPhotoUrl; }
+    public String getOwnerLocation() { return ownerLocation; }
 }

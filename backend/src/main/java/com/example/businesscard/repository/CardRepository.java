@@ -27,4 +27,14 @@ public interface CardRepository extends JpaRepository<Card, Long> {
           LOWER(COALESCE(c.location, '')) LIKE LOWER(CONCAT('%', :q, '%'))
         """)
     Page<Card> search(@Param("q") String q, Pageable pageable);
+
+    @Query("""
+        SELECT c FROM Card c
+        WHERE LOWER(c.email) = LOWER(:email)
+          AND c.id NOT IN (
+            SELECT u.card.id FROM ClientUser u WHERE u.card IS NOT NULL
+          )
+        ORDER BY c.id ASC
+        """)
+    Optional<Card> findFirstUnclaimedByEmailIgnoreCase(@Param("email") String email);
 }

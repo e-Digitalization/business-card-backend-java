@@ -3,7 +3,6 @@ package com.example.businesscard.controller;
 import com.example.businesscard.dto.ApiResponse;
 import com.example.businesscard.dto.NfcCardRequestResponse;
 import com.example.businesscard.dto.PageResponse;
-import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.entity.NfcCardRequest;
 import com.example.businesscard.repository.NfcCardRequestRepository;
 import org.springframework.data.domain.Page;
@@ -40,8 +39,15 @@ public class AdminNfcRequestController {
         String query = q == null || q.isBlank() ? null : q.trim();
         String statusFilter = status == null || status.isBlank() ? null : status.trim();
         Page<NfcCardRequest> result = nfcCardRequestRepository.search(query, statusFilter, pageable);
-        Page<NfcCardRequestResponse> mapped = result.map(this::toResponse);
+        Page<NfcCardRequestResponse> mapped = result.map(NfcCardRequestResponse::new);
         return ResponseEntity.ok(new ApiResponse<>(true, 200, "NFC requests fetched", PageResponse.from(mapped)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<NfcCardRequestResponse>> get(@PathVariable @NonNull Long id) {
+        NfcCardRequest request = nfcCardRequestRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found."));
+        return ResponseEntity.ok(new ApiResponse<>(true, 200, "OK", new NfcCardRequestResponse(request)));
     }
 
     @PutMapping("/{id}/status")
@@ -64,20 +70,6 @@ public class AdminNfcRequestController {
         if ("FULFILLED".equals(normalized)) {
             request.setFulfilledAt(Instant.now());
         }
-        return ResponseEntity.ok(new ApiResponse<>(true, 200, "Updated", toResponse(nfcCardRequestRepository.save(request))));
-    }
-
-    private NfcCardRequestResponse toResponse(NfcCardRequest req) {
-        ClientUser owner = req.getOwner();
-        String slug = null;
-        if (owner != null && owner.getCard() != null) {
-            slug = owner.getCard().getSlug();
-        }
-        return new NfcCardRequestResponse(
-            req,
-            owner == null ? null : owner.getFullName(),
-            owner == null ? null : owner.getEmail(),
-            slug
-        );
+        return ResponseEntity.ok(new ApiResponse<>(true, 200, "Updated", new NfcCardRequestResponse(nfcCardRequestRepository.save(request))));
     }
 }

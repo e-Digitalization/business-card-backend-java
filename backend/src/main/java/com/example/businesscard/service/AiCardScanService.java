@@ -3,7 +3,6 @@ package com.example.businesscard.service;
 import com.example.businesscard.dto.CardScanResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,43 +34,32 @@ public class AiCardScanService {
         """;
 
     private final ObjectMapper objectMapper;
+    private final AppSettingsService appSettingsService;
     private final HttpClient httpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(20))
         .build();
 
-    private final String openaiKey;
-    private final String openaiModel;
-    private final String geminiKey;
-    private final String geminiModel;
-
-    public AiCardScanService(
-        ObjectMapper objectMapper,
-        @Value("${app.ai.openai.api-key:}") String openaiKey,
-        @Value("${app.ai.openai.model:gpt-4o-mini}") String openaiModel,
-        @Value("${app.ai.gemini.api-key:}") String geminiKey,
-        @Value("${app.ai.gemini.model:gemini-2.0-flash}") String geminiModel
-    ) {
+    public AiCardScanService(ObjectMapper objectMapper, AppSettingsService appSettingsService) {
         this.objectMapper = objectMapper;
-        this.openaiKey = blankToNull(openaiKey);
-        this.openaiModel = openaiModel;
-        this.geminiKey = blankToNull(geminiKey);
-        this.geminiModel = geminiModel;
+        this.appSettingsService = appSettingsService;
     }
 
     public boolean isEnabled() {
-        return openaiKey != null || geminiKey != null;
+        return appSettingsService.openaiApiKey() != null || appSettingsService.geminiApiKey() != null;
     }
 
     public String activeProvider() {
-        if (openaiKey != null) return "openai";
-        if (geminiKey != null) return "gemini";
+        if (appSettingsService.openaiApiKey() != null) return "openai";
+        if (appSettingsService.geminiApiKey() != null) return "gemini";
         return "none";
     }
 
     public CardScanResult scan(MultipartFile file) {
-        if (!isEnabled()) {
+        String openaiKey = appSettingsService.openaiApiKey();
+        String geminiKey = appSettingsService.geminiApiKey();
+        if (openaiKey == null && geminiKey == null) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                "AI card scan is not configured. Set OPENAI_API_KEY or GEMINI_API_KEY.");
+                "AI card scan is not configured. Set OpenAI or Gemini in Admin → Setups.");
         }
         if (file == null || file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose a photo to scan.");
@@ -90,8 +78,8 @@ public class AiCardScanService {
             String mime = contentType.equals("image/jpg") ? "image/jpeg" : contentType;
 
             CardScanResult result = openaiKey != null
-                ? scanWithOpenAi(base64, mime)
-                : scanWithGemini(base64, mime);
+                ? scanWithOpenAi(openaiKey, appSettingsService.openaiModel(), base64, mime)
+                : scanWithGemini(geminiKey, appSettingsService.geminiModel(), base64, mime);
             result.setProvider(activeProvider());
             return result;
         } catch (ResponseStatusException ex) {
@@ -102,7 +90,7 @@ public class AiCardScanService {
         }
     }
 
-    private CardScanResult scanWithOpenAi(String base64, String mime) throws Exception {
+    private CardScanResult scanWithOpenAi(String openaiKey, String openaiModel, String base64, String mime) throws Exception {
         Map<String, Object> payload = Map.of(
             "model", openaiModel,
             "temperature", 0,
@@ -135,7 +123,7 @@ public class AiCardScanService {
         return parseJsonContent(content);
     }
 
-    private CardScanResult scanWithGemini(String base64, String mime) throws Exception {
+    private CardScanResult scanWithGemini(String geminiKey, String geminiModel, String base64, String mime) throws Exception {
         String url = "https://generativelanguage.googleapis.com/v1beta/models/"
             + geminiModel + ":generateContent?key=" + geminiKey;
 
@@ -192,12 +180,5 @@ public class AiCardScanService {
     private static String text(JsonNode node, String field) {
         JsonNode value = node.get(field);
         return value == null || value.isNull() ? "" : value.asText("");
-    }
-
-    private static String blankToNull(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        return value.trim();
     }
 }

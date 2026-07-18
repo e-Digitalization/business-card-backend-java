@@ -3,7 +3,6 @@ package com.example.businesscard.controller;
 import com.example.businesscard.dto.ApiResponse;
 import com.example.businesscard.dto.NfcCardRequestResponse;
 import com.example.businesscard.entity.ClientUser;
-import com.example.businesscard.entity.NfcCardRequest;
 import com.example.businesscard.repository.NfcCardRequestRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.ProductCatalogService;
@@ -44,6 +43,7 @@ public class ClientNfcOrderController {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("products", productCatalogService.listProducts());
         data.put("nfcCardPriceTzs", productCatalogService.nfcCardPriceTzs());
+        data.put("nfcBilling", "one_time");
         data.put("currency", productCatalogService.currency());
         data.put("paymentProvider", selcomCheckoutService.isLiveConfigured() ? "selcom" : "mock");
         return ApiResponse.ok(data);
@@ -53,7 +53,7 @@ public class ClientNfcOrderController {
     public ApiResponse<List<NfcCardRequestResponse>> myRequests(HttpServletRequest request) {
         ClientUser user = currentUser(request);
         List<NfcCardRequestResponse> items = nfcCardRequestRepository.findByOwnerOrderByCreatedAtDesc(user).stream()
-            .map(this::toResponse)
+            .map(NfcCardRequestResponse::new)
             .collect(Collectors.toList());
         return ApiResponse.ok(items);
     }
@@ -71,17 +71,6 @@ public class ClientNfcOrderController {
         String phone = body == null ? null : body.get("phone");
         String notes = body == null ? null : body.get("deliveryNotes");
         return ApiResponse.ok(selcomCheckoutService.startNfcCardCheckout(user, phone, notes));
-    }
-
-    private NfcCardRequestResponse toResponse(NfcCardRequest req) {
-        ClientUser owner = req.getOwner();
-        String slug = owner != null && owner.getCard() != null ? owner.getCard().getSlug() : null;
-        return new NfcCardRequestResponse(
-            req,
-            owner == null ? null : owner.getFullName(),
-            owner == null ? null : owner.getEmail(),
-            slug
-        );
     }
 
     private ClientUser currentUser(HttpServletRequest request) {

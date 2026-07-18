@@ -42,6 +42,8 @@ public class ClientUser {
 
     private Instant scanSubscribedAt;
 
+    private Instant scanSubscriptionExpiresAt;
+
     public Long getId() {
         return id;
     }
@@ -120,5 +122,13 @@ public class ClientUser {
 
     public void setScanSubscribedAt(Instant scanSubscribedAt) {
         this.scanSubscribedAt = scanSubscribedAt;
+    }
+
+    public Instant getScanSubscriptionExpiresAt() {
+        return scanSubscriptionExpiresAt;
+    }
+
+    public void setScanSubscriptionExpiresAt(Instant scanSubscriptionExpiresAt) {
+        this.scanSubscriptionExpiresAt = scanSubscriptionExpiresAt;
     }
 }

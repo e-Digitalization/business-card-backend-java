@@ -44,7 +44,12 @@ public class AuthController {
 
     @GetMapping("/google/status")
     public Map<String, Object> googleStatus() {
-        return Map.of("enabled", clientAuthService.isGoogleConfigured());
+        boolean enabled = clientAuthService.isGoogleConfigured();
+        String clientId = clientAuthService.googleClientId();
+        return Map.of(
+            "enabled", enabled,
+            "clientId", clientId == null ? "" : clientId
+        );
     }
 
     @PostMapping("/google")
@@ -66,5 +71,13 @@ public class AuthController {
     @PostMapping("/client-login")
     public ResponseEntity<ClientAuthResponse> clientLogin(@Valid @RequestBody ClientLoginRequest request) {
         return ResponseEntity.ok(clientAuthService.login(request));
+    }
+
+    @PostMapping("/claim")
+    public ResponseEntity<ClientAuthResponse> claim(@RequestBody Map<String, String> body) {
+        String email = body == null ? null : body.get("email");
+        String otp = body == null ? null : body.get("otp");
+        String password = body == null ? null : body.get("password");
+        return ResponseEntity.ok(clientAuthService.claimInvite(email, otp, password));
     }
 }

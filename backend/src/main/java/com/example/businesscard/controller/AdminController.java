@@ -9,17 +9,22 @@ import com.example.businesscard.entity.Card;
 import com.example.businesscard.entity.CardTag;
 import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.CardTagRepository;
+import com.example.businesscard.service.AiCardScanService;
+import com.example.businesscard.service.CardInviteService;
 import com.example.businesscard.service.PrivateSlugService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,13 +35,19 @@ public class AdminController {
     private final CardRepository cardRepository;
     private final CardTagRepository cardTagRepository;
     private final PrivateSlugService privateSlugService;
+    private final AiCardScanService aiCardScanService;
+    private final CardInviteService cardInviteService;
 
     public AdminController(CardRepository cardRepository,
                            CardTagRepository cardTagRepository,
-                           PrivateSlugService privateSlugService) {
+                           PrivateSlugService privateSlugService,
+                           AiCardScanService aiCardScanService,
+                           CardInviteService cardInviteService) {
         this.cardRepository = cardRepository;
         this.cardTagRepository = cardTagRepository;
         this.privateSlugService = privateSlugService;
+        this.aiCardScanService = aiCardScanService;
+        this.cardInviteService = cardInviteService;
     }
 
     @PostMapping("/cards")
@@ -44,6 +55,24 @@ public class AdminController {
         Card card = new Card();
         applyRequest(card, request, true);
         return ResponseEntity.ok(ok("Card created", cardRepository.save(card)));
+    }
+
+    @GetMapping("/cards/scan/status")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> scanStatus() {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("enabled", aiCardScanService.isEnabled());
+        data.put("provider", aiCardScanService.activeProvider());
+        return ResponseEntity.ok(ok("Scan status", data));
+    }
+
+    @PostMapping(value = "/cards/scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> scanCard(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(ok("Card scanned", aiCardScanService.scan(file).toMap()));
+    }
+
+    @PostMapping("/cards/{id}/invite")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> invite(@PathVariable @NonNull Long id) {
+        return ResponseEntity.ok(ok("Invite created", cardInviteService.createInvite(id)));
     }
 
     @PutMapping("/cards/{id}")
@@ -73,10 +102,12 @@ public class AdminController {
         long total = cardRepository.count();
         long active = cardRepository.countByActiveTrue();
         long tags = cardTagRepository.count();
+        long activeTags = cardTagRepository.countByActiveTrue();
         Map<String, Object> stats = Map.of(
             "totalCards", total,
             "activeCards", active,
-            "assignedTags", tags
+            "assignedTags", tags,
+            "activeTags", activeTags
         );
         return ResponseEntity.ok(ok("Card stats", stats));
     }
@@ -161,7 +192,7 @@ public class AdminController {
             .filter(tag -> tag.getCard() != null && card.getId().equals(tag.getCard().getId()))
             .map(tag -> new CardResponse.TagSummary(tag.getId(), tag.getTagCode(), tag.isActive()))
             .collect(Collectors.toList());
-        return new CardResponse(card, summaries);
+        return new CardResponse(card, summaries, cardInviteService.accountStatus(card));
     }
 
     private void applyRequest(Card card, CardRequest request, boolean creating) {

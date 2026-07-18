@@ -37,6 +37,8 @@ public class ClientSubscriptionController {
         data.put("priceTzs", selcomCheckoutService.amountTzs());
         data.put("currency", selcomCheckoutService.currency());
         data.put("provider", selcomCheckoutService.isLiveConfigured() ? "selcom" : "mock");
+        data.put("billingPeriod", "monthly");
+        data.put("productName", "AI Scan Monthly");
         return ApiResponse.ok(data);
     }
 

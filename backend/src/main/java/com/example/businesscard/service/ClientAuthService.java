@@ -24,23 +24,30 @@ public class ClientAuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final PrivateSlugService privateSlugService;
+    private final CardInviteService cardInviteService;
 
     public ClientAuthService(ClientUserRepository clientUserRepository,
                              CardRepository cardRepository,
                              GoogleTokenVerifier googleTokenVerifier,
                              PasswordEncoder passwordEncoder,
                              JwtTokenProvider tokenProvider,
-                             PrivateSlugService privateSlugService) {
+                             PrivateSlugService privateSlugService,
+                             CardInviteService cardInviteService) {
         this.clientUserRepository = clientUserRepository;
         this.cardRepository = cardRepository;
         this.googleTokenVerifier = googleTokenVerifier;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.privateSlugService = privateSlugService;
+        this.cardInviteService = cardInviteService;
     }
 
     public boolean isGoogleConfigured() {
         return googleTokenVerifier.isConfigured();
+    }
+
+    public String googleClientId() {
+        return googleTokenVerifier.clientId();
     }
 
     @Transactional
@@ -89,7 +96,13 @@ public class ClientAuthService {
         ClientUser user = clientUserRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password."));
 
-        if (user.getPasswordHash() == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+            throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Account invite pending. Open /claim with your email OTP to set a password."
+            );
+        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
         return toAuthResponse(user);
@@ -105,6 +118,22 @@ public class ClientAuthService {
     public Card ensureCard(ClientUser user, boolean applyGooglePhoto) {
         Card card = user.getCard();
         if (card == null) {
+            card = cardRepository.findFirstUnclaimedByEmailIgnoreCase(user.getEmail()).orElse(null);
+            if (card != null) {
+                user.setCard(card);
+                if ((user.getFullName() == null || user.getFullName().isBlank())
+                    && card.getFullName() != null && !card.getFullName().isBlank()) {
+                    user.setFullName(card.getFullName());
+                }
+                if (applyGooglePhoto && user.getPictureUrl() != null
+                    && (card.getPhotoUrl() == null || card.getPhotoUrl().isBlank())) {
+                    card.setPhotoUrl(user.getPictureUrl());
+                    cardRepository.save(card);
+                }
+                clientUserRepository.save(user);
+                return card;
+            }
+
             card = new Card();
             card.setSlug(privateSlugService.nextUnique());
             card.setFullName(user.getFullName());
@@ -124,6 +153,12 @@ public class ClientAuthService {
             cardRepository.save(card);
         }
         return card;
+    }
+
+    @Transactional
+    public ClientAuthResponse claimInvite(String email, String otp, String password) {
+        ClientUser user = cardInviteService.claim(email, otp, password);
+        return toAuthResponse(user);
     }
 
     @Transactional

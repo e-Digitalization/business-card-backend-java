@@ -4,35 +4,38 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
 @Service
 public class GoogleTokenVerifier {
-    private final String clientId;
-    private final GoogleIdTokenVerifier verifier;
+    private final AppSettingsService appSettingsService;
 
-    public GoogleTokenVerifier(@Value("${app.google.client-id:}") String clientId) {
-        this.clientId = clientId == null ? "" : clientId.trim();
-        if (this.clientId.isEmpty()) {
-            this.verifier = null;
-        } else {
-            this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(this.clientId))
-                .build();
-        }
+    public GoogleTokenVerifier(AppSettingsService appSettingsService) {
+        this.appSettingsService = appSettingsService;
     }
 
     public boolean isConfigured() {
-        return verifier != null;
+        String clientId = appSettingsService.googleClientId();
+        return clientId != null && !clientId.isBlank();
+    }
+
+    public String clientId() {
+        return appSettingsService.googleClientId();
     }
 
     public GoogleProfile verify(String idToken) {
-        if (verifier == null) {
-            throw new IllegalStateException("Google Sign-In is not configured. Set app.google.client-id.");
+        String clientId = appSettingsService.googleClientId();
+        if (clientId == null || clientId.isBlank()) {
+            throw new IllegalStateException("Google Sign-In is not configured. Set Google Client ID in Admin → Setups.");
         }
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+            new NetHttpTransport(),
+            GsonFactory.getDefaultInstance()
+        )
+            .setAudience(Collections.singletonList(clientId))
+            .build();
         try {
             GoogleIdToken token = verifier.verify(idToken);
             if (token == null) {

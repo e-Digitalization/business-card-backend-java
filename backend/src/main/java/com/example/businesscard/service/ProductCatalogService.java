@@ -54,8 +54,8 @@ public class ProductCatalogService {
         ));
         products.add(product(
             AI_SCAN,
-            "AI Scan Unlimited",
-            "Unlock unlimited AI business-card scans.",
+            "AI Scan Monthly",
+            "Unlimited AI business-card scans for 30 days. Renews monthly.",
             aiScanPriceTzs,
             true
         ));

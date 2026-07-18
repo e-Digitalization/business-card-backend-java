@@ -187,8 +187,7 @@ const ProfilePage = () => {
           <div className="km-card-hero-pattern" aria-hidden="true" />
           <div className="km-card-hero-content">
             <p className="km-card-brand">
-              <img src="/logos/kadi-moja-mark-light.png" alt="" className="km-card-brand-mark" />
-              Kadi Moja
+              <img src="/logos/kadi-moja-icon-light.png" alt="Kadi Moja" className="km-card-brand-logo" />
             </p>
             <div className="km-card-portrait">
               {showPhoto ? (

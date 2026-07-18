@@ -74,11 +74,7 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
       const data = res.data.data;
       setPendingOrder(data);
       if (data?.provider === 'nmb' || data?.controlNumber) {
-        setMessage(
-          data?.mock
-            ? 'Demo NMB control number ready — confirm below to unlock unlimited AI scans.'
-            : 'Pay with the NMB control number below, then tap “I have paid”.'
-        );
+        setMessage('Pay with the NMB control number below, then tap “I have paid”.');
         return;
       }
       if (data?.paymentGatewayUrl && !data.mock) {
@@ -216,25 +212,14 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
                       {pendingOrder.instructions || 'Pay this control number via NMB, then confirm below.'}
                     </p>
                   </div>
-                  {pendingOrder.mock ? (
-                    <button
-                      type="button"
-                      disabled={checkoutBusy}
-                      onClick={confirmMockPay}
-                      className="w-full rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-                    >
-                      {checkoutBusy ? 'Confirming…' : 'Confirm demo payment'}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={checkoutBusy}
-                      onClick={checkNmbPayment}
-                      className="w-full rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-                    >
-                      {checkoutBusy ? 'Checking…' : 'I have paid — check status'}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    disabled={checkoutBusy}
+                    onClick={checkNmbPayment}
+                    className="w-full rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+                  >
+                    {checkoutBusy ? 'Checking…' : 'I have paid — check status'}
+                  </button>
                 </div>
               ) : pendingOrder?.mock ? (
                 <div className="mt-4 space-y-3">

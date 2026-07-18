@@ -103,7 +103,7 @@ const AdminLayout = () => {
   const sidebar = (
     <aside className="snav flex h-full flex-col">
       <div className="snav-profile">
-        <img src="/logos/kadi-moja-mark.png" alt="" className="snav-avatar" />
+        <img src="/logos/kadi-moja-icon.png" alt="" className="snav-brand-mark" />
         <div className="min-w-0">
           <p className="truncate text-[15px] font-semibold text-[#243b45]">Kadi Moja Admin</p>
           <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-[#0d7377]">

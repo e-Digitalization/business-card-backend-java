@@ -91,9 +91,9 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null }) => {
     contact?.location && { label: 'Location', value: contact.location, icon: 'location' }
   ].filter(Boolean);
 
-  const brand =
+  const brandLabel =
     variant === 'lagoon'
-      ? 'Kadi Moja'
+      ? null
       : contact?.source === 'scan'
         ? 'Scanned card'
         : 'Saved contact';
@@ -103,7 +103,13 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null }) => {
       <header className="km-card-hero km-fade-in">
         <div className="km-card-hero-pattern" aria-hidden="true" />
         <div className="km-card-hero-content">
-          <p className="km-card-brand">{brand}</p>
+          <p className="km-card-brand">
+            {variant === 'lagoon' ? (
+              <img src="/logos/kadi-moja-icon-light.png" alt="Kadi Moja" className="km-card-brand-logo" />
+            ) : (
+              brandLabel
+            )}
+          </p>
           <div className="km-card-portrait">
             {showPhoto ? (
               <img src={photoSrc} alt="" onError={() => setPhotoFailed(true)} />

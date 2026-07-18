@@ -4,6 +4,33 @@ import { GoogleLogin } from '@react-oauth/google';
 import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
 
+const loginAdverts = [
+  {
+    image: '/kadi-moja-hero-card.png',
+    eyebrow: 'Kadi Moja NFC',
+    title: 'One card. Every introduction.',
+    text: 'Tap once in Dar, Arusha, or Zanzibar — your full profile opens on their phone.'
+  },
+  {
+    image: '/illustrations/how-tap.png',
+    eyebrow: 'No app needed',
+    title: 'Works on iPhone & Android.',
+    text: 'NFC opens your live digital card instantly. QR is ready when tap isn’t.'
+  },
+  {
+    image: '/illustrations/how-share.png?v=3',
+    eyebrow: 'Always current',
+    title: 'Update without reprinting.',
+    text: 'Change phone, title, or photo once. Every Kadi Moja tag stays up to date.'
+  },
+  {
+    image: '/illustrations/how-saved.png',
+    eyebrow: 'AI Scan',
+    title: 'Paper cards, digitised.',
+    text: 'Photograph a paper card — Kadi Moja reads the details and saves the contact.'
+  }
+];
+
 /**
  * One login area for clients and admins.
  */
@@ -16,6 +43,8 @@ const LoginPage = () => {
   const [role, setRole] = useState(initialRole);
   const [mode, setMode] = useState(location.state?.mode === 'signup' ? 'signup' : 'login');
   const [googleEnabled, setGoogleEnabled] = useState(Boolean(googleClientId));
+  const [slide, setSlide] = useState(0);
+  const [sliderPaused, setSliderPaused] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -102,27 +131,93 @@ const LoginPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (sliderPaused) return undefined;
+    const timer = window.setInterval(() => {
+      setSlide((i) => (i + 1) % loginAdverts.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [sliderPaused]);
+
+  const active = loginAdverts[slide];
+  const goSlide = (next) => {
+    setSliderPaused(true);
+    setSlide(next);
+  };
+
   return (
     <div className="admin-login min-h-screen grid lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden lg:flex lg:flex-col text-white">
         <div className="absolute inset-0 admin-login-hero" />
-        <div className="relative z-10 flex h-full flex-col justify-between p-10">
+        <div className="relative z-10 flex h-full flex-col px-10 py-9">
           <div>
             <BrandLogo to="/" tone="light" textClassName="text-3xl" markClassName="h-10 w-10" />
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/75">
               One login for your digital card, contacts, and admin tools across Tanzania.
             </p>
           </div>
-          <div className="space-y-3">
-            <div className="rounded-xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.16em] text-white/60">NFC · Digital · Contacts</p>
-              <p className="mt-2 font-display text-xl font-semibold">Tap. Scan. Stay connected.</p>
-              <p className="mt-2 text-sm text-white/70">
-                Save contacts after a tap, scan paper cards with OCR, and share your private link.
-              </p>
+
+          <div className="km-login-slider my-auto w-full max-w-md">
+            <div className="km-login-slider-media">
+              {loginAdverts.map((item, index) => (
+                <img
+                  key={item.image}
+                  src={item.image}
+                  alt=""
+                  className={`km-login-slider-img ${index === slide ? 'is-active' : ''}`}
+                />
+              ))}
+              <div className="km-login-slider-fade" aria-hidden="true" />
             </div>
-            <p className="text-xs text-white/50">Dar es Salaam · Arusha · Mwanza · Dodoma · Zanzibar</p>
+
+            <div className="km-login-slider-body">
+              <p className="km-login-slider-eyebrow">{active.eyebrow}</p>
+              <p className="km-login-slider-title">{active.title}</p>
+              <p className="km-login-slider-text">{active.text}</p>
+
+              <div className="km-login-slider-nav">
+                <div className="km-login-slider-dots" role="tablist" aria-label="Adverts">
+                  {loginAdverts.map((item, index) => (
+                    <button
+                      key={item.image}
+                      type="button"
+                      role="tab"
+                      aria-selected={index === slide}
+                      aria-label={`Advert ${index + 1}`}
+                      onClick={() => goSlide(index)}
+                      className={`km-login-slider-dot ${index === slide ? 'is-active' : ''}`}
+                    />
+                  ))}
+                </div>
+                <div className="km-login-slider-arrows">
+                  <button
+                    type="button"
+                    aria-label="Previous advert"
+                    className="km-login-slider-arrow"
+                    onClick={() => goSlide((slide - 1 + loginAdverts.length) % loginAdverts.length)}
+                  >
+                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 4 6 10l6 6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Next advert"
+                    className="km-login-slider-arrow"
+                    onClick={() => goSlide((slide + 1) % loginAdverts.length)}
+                  >
+                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="m8 4 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
+
+          <p className="text-xs tracking-wide text-white/45">
+            Dar es Salaam · Arusha · Mwanza · Dodoma · Zanzibar
+          </p>
         </div>
       </aside>
 

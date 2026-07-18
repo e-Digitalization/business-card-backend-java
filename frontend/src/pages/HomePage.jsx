@@ -346,9 +346,9 @@ const HomePage = () => {
             </p>
             <div className="animate-fade-up mt-4 flex items-center gap-4">
               <img
-                src="/logos/kadi-moja-mark.png"
+                src="/logos/kadi-moja-icon-light.png"
                 alt=""
-                className="h-14 w-14 shrink-0 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.25)] sm:h-16 sm:w-16"
+                className="h-14 w-14 shrink-0 rounded-2xl object-contain shadow-[0_8px_24px_rgba(0,0,0,0.25)] sm:h-16 sm:w-16"
               />
               <p className="font-display text-[clamp(3rem,9vw,5.75rem)] font-bold leading-[0.92] tracking-tight">
                 Kadi Moja
@@ -706,7 +706,7 @@ const HomePage = () => {
               <article key={step.title} className="km-how-card overflow-hidden bg-km-sand/40">
                 <div className="bg-white px-5 pt-6">
                   <img
-                    src={`${step.image}?v=2`}
+                    src={`${step.image}?v=3`}
                     alt=""
                     width={600}
                     height={900}
@@ -845,7 +845,7 @@ const HomePage = () => {
       <section id="contact" className="km-landing-cta relative overflow-hidden px-5 py-24 text-white lg:px-8">
         <div className="relative mx-auto max-w-3xl text-center">
           <div className="flex flex-col items-center gap-3">
-            <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-14 w-14 rounded-2xl" />
+            <img src="/logos/kadi-moja-icon-light.png" alt="" className="h-14 w-14 rounded-2xl object-contain" />
             <p className="font-display text-5xl font-bold tracking-tight sm:text-6xl">Kadi Moja</p>
           </div>
           <h2 className="mt-5 font-display text-3xl font-semibold sm:text-4xl">

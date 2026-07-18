@@ -18,9 +18,9 @@ const BrandLogo = ({
   const textTone =
     tone === 'light' ? 'text-white' : tone === 'ink' ? 'text-[#1a3d42]' : 'text-[#0d7377]';
 
-  // Prefer PNG (exact official artwork recolored to system palette)
+  // Square icon tiles — full OK mark without circular crop distortion
   const markSrc =
-    tone === 'light' ? '/logos/kadi-moja-mark-light.png' : '/logos/kadi-moja-mark.png';
+    tone === 'light' ? '/logos/kadi-moja-icon-light.png' : '/logos/kadi-moja-icon.png';
 
   const inner = (
     <>

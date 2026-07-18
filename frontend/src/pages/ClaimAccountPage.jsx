@@ -43,7 +43,7 @@ const ClaimAccountPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f7f4ef] px-4 py-10">
       <div className="w-full max-w-md rounded-xl border border-black/5 bg-white p-6 shadow-[0_16px_40px_rgba(26,61,66,0.08)] sm:p-8">
-        <img src="/logos/kadi-moja-mark.png" alt="Kadi Moja" className="h-10 w-10" />
+        <img src="/logos/kadi-moja-icon.png" alt="Kadi Moja" className="h-10 w-10 rounded-xl object-contain" />
         <h1 className="mt-3 font-display text-2xl font-semibold text-[#1a3d42]">Claim your card</h1>
         <p className="mt-2 text-sm text-[#1a3d42]/55">
           Enter the email on your digital card and the OTP from your admin, then choose a password.

@@ -8,7 +8,6 @@ const AdminSetupsNmbPage = () => {
   const [clientUsr, setClientUsr] = useState('');
   const [clientKey, setClientKey] = useState('');
   const [systemName, setSystemName] = useState('');
-  const [enabled, setEnabled] = useState(false);
   const [activeProvider, setActiveProvider] = useState('selcom');
 
   useEffect(() => {
@@ -16,7 +15,6 @@ const AdminSetupsNmbPage = () => {
     const n = setups.nmb || {};
     setBaseUrl(n.baseUrl || 'https://nmb.spg.co.tz');
     setSystemName(n.systemName || '');
-    setEnabled(Boolean(n.enabled));
     setActiveProvider(setups.payments?.activeProvider || 'selcom');
     setClientUsr('');
     setClientKey('');
@@ -27,12 +25,17 @@ const AdminSetupsNmbPage = () => {
     const body = {
       nmbBaseUrl: baseUrl.trim() || null,
       nmbSystemName: systemName.trim() || null,
-      nmbEnabled: enabled,
+      nmbEnabled: true,
       paymentsActiveProvider: activeProvider
     };
     if (clientUsr.trim()) body.nmbClientUsr = clientUsr.trim();
     if (clientKey.trim()) body.nmbClientKey = clientKey.trim();
-    await save(body, 'NMB setups saved. Checkout can generate control numbers when NMB is the active provider.');
+    await save(
+      body,
+      activeProvider === 'nmb'
+        ? 'NMB saved as the active payment provider. Card checkout will call the live NMB API.'
+        : 'NMB setups saved.'
+    );
   };
 
   if (loading) {
@@ -128,15 +131,6 @@ const AdminSetupsNmbPage = () => {
               placeholder={nmb.maskedClientKey || '••••'}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-[#1a3d42]/75">
-            <input
-              type="checkbox"
-              checked={enabled}
-              onChange={(e) => setEnabled(e.target.checked)}
-              className="rounded border-black/20"
-            />
-            Enable NMB live API (when credentials are set)
-          </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Active payment provider</span>
             <select
@@ -147,6 +141,9 @@ const AdminSetupsNmbPage = () => {
               <option value="selcom">Selcom</option>
               <option value="nmb">NMB</option>
             </select>
+            <p className="mt-1.5 text-xs text-[#1a3d42]/50">
+              Choose NMB to use live control numbers for NFC card and AI Scan payments (no demo / mock).
+            </p>
           </label>
           <div className="flex flex-wrap gap-4">
             {nmb.clientUsrSource === 'database' && (

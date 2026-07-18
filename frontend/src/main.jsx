@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import './styles/index.css';
 import MuiThemeProvider from './components/MuiThemeProvider.jsx';
@@ -41,6 +42,7 @@ const Bootstrap = () => {
     <MuiThemeProvider>
       <BrowserRouter>
         <App />
+        <Toaster position="top-right" reverseOrder={false} />
       </BrowserRouter>
     </MuiThemeProvider>
   );

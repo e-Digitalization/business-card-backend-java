@@ -341,9 +341,7 @@ const HomePage = () => {
 
         <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-6xl items-center gap-10 px-5 pb-16 pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6 lg:px-8 lg:pb-20 lg:pt-24">
           <div className="km-landing-hero-copy max-w-xl">
-            <p className="animate-fade-up text-[11px] font-semibold uppercase tracking-[0.28em] text-[#e8913a]/90">
-              Made for Tanzania · NFC digital card
-            </p>
+            
             <div className="animate-fade-up mt-4 flex items-center gap-4">
               <img
                 src="/logos/kadi-moja-icon-light.png"

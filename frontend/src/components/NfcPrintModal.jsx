@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import NfcCardVisual from './NfcCardVisual.jsx';
-import { buildNfcPrintDocument } from '../utils/nfcPrintDocument.js';
+import { buildNfcPrintDocument, buildNfcSvgDocument } from '../utils/nfcPrintDocument.js';
 
 /** Print / export dialog for a Kadi Moja NFC card face. `contact` — see cardToPrintContact / requestToPrintContact. */
 const NfcPrintModal = ({ contact, onClose, onError }) => {
+  const [svgBusy, setSvgBusy] = useState(false);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
@@ -18,7 +20,9 @@ const NfcPrintModal = ({ contact, onClose, onError }) => {
 
   const runPrint = () => {
     const doc = buildNfcPrintDocument(contact, { autoPrint: true });
-    const win = window.open('', '_blank', 'noopener,noreferrer,width=520,height=420');
+    // No noopener/noreferrer here — we need the window reference to write the
+    // print document into it, and this is same-origin, self-generated content.
+    const win = window.open('', '_blank', 'width=520,height=420');
     if (!win) {
       onError?.('Pop-up blocked — allow pop-ups to print, or use Export print file.');
       return;
@@ -37,6 +41,24 @@ const NfcPrintModal = ({ contact, onClose, onError }) => {
     a.download = `nfc-card-${contact.slug || contact.refValue || 'export'}.html`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportSvg = async () => {
+    setSvgBusy(true);
+    try {
+      const svg = await buildNfcSvgDocument(contact);
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nfc-card-${contact.slug || contact.refValue || 'export'}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      onError?.('Could not export SVG.');
+    } finally {
+      setSvgBusy(false);
+    }
   };
 
   return (
@@ -62,6 +84,14 @@ const NfcPrintModal = ({ contact, onClose, onError }) => {
               className="rounded-md border border-black/10 px-3.5 py-2 text-sm font-medium text-[#1a3d42]"
             >
               Export print file
+            </button>
+            <button
+              type="button"
+              onClick={exportSvg}
+              disabled={svgBusy}
+              className="rounded-md border border-black/10 px-3.5 py-2 text-sm font-medium text-[#1a3d42] disabled:opacity-50"
+            >
+              {svgBusy ? 'Preparing SVG…' : 'Save as SVG'}
             </button>
             <button type="button" onClick={onClose} className="rounded-md border border-black/10 px-3 py-2 text-sm">
               Close

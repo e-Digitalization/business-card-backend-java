@@ -35,6 +35,103 @@ export const cardToPrintContact = (card) => ({
   refValue: card.id
 });
 
+const toDataUri = async (url) => {
+  if (!url) return '';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return '';
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('read failed'));
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return '';
+  }
+};
+
+const resolveAbsoluteUrl = (url) => {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+  return `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
+/**
+ * Standalone CR80-sized SVG of the card face — images are embedded as data
+ * URIs so the file renders correctly on its own (e.g. opened by a print
+ * vendor) without depending on kadimoja.com being reachable.
+ */
+export const buildNfcSvgDocument = async (contact) => {
+  const name = contact.name || 'Card holder';
+  const title = contact.title || 'Professional';
+  const company = contact.company || 'Kadi Moja';
+  const location = contact.location || 'Tanzania';
+  const initials = initialsFromName(name);
+  const photoUrl = resolveAbsoluteUrl(resolveMediaUrl(contact.photoUrl || ''));
+  const logoUrl = `${window.location.origin}/logos/kadi-moja-mark-light.png`;
+
+  const [photoData, logoData] = await Promise.all([toDataUri(photoUrl), toDataUri(logoUrl)]);
+
+  const avatar = photoData
+    ? `<clipPath id="avatarClip"><circle cx="15.5" cy="41.5" r="5.5"/></clipPath>
+       <image href="${photoData}" x="10" y="36" width="11" height="11" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice" />
+       <circle cx="15.5" cy="41.5" r="5.5" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />`
+    : `<circle cx="15.5" cy="41.5" r="5.5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5" />
+       <text x="15.5" y="42.7" text-anchor="middle" font-family="system-ui, sans-serif" font-size="3.2" font-weight="700" fill="#fff">${escapeHtml(initials)}</text>`;
+
+  const brandX = logoData ? 13.5 : 5;
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="85.6mm" height="53.98mm" viewBox="0 0 85.6 53.98">
+  <title>NFC card — ${escapeHtml(name)}</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d7377"/>
+      <stop offset="52%" stop-color="#1a3d42"/>
+      <stop offset="100%" stop-color="#0a5f63"/>
+    </linearGradient>
+    <radialGradient id="shine1" cx="18%" cy="20%" r="45%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shine2" cx="88%" cy="78%" r="40%">
+      <stop offset="0%" stop-color="#e8913a" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#e8913a" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="cardClip"><rect width="85.6" height="53.98" rx="3"/></clipPath>
+  </defs>
+  <g clip-path="url(#cardClip)">
+    <rect width="85.6" height="53.98" fill="url(#bg)"/>
+    <rect width="85.6" height="53.98" fill="url(#shine1)"/>
+    <rect width="85.6" height="53.98" fill="url(#shine2)"/>
+
+    ${logoData ? `<image href="${logoData}" x="5" y="4.2" width="7" height="7" />` : ''}
+    <text x="${brandX}" y="8" font-family="Georgia, 'Times New Roman', serif" font-size="4.2" font-weight="700" fill="#ffffff">Kadi Moja</text>
+    <text x="${brandX}" y="11.3" font-family="system-ui, sans-serif" font-size="2.2" letter-spacing="0.3" fill="#ffffff" fill-opacity="0.55">DIGITAL NFC</text>
+
+    <rect x="68.6" y="4.2" width="12" height="4.4" rx="2.2" fill="#ffffff" fill-opacity="0.1" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.3"/>
+    <text x="74.6" y="7.1" text-anchor="middle" font-family="system-ui, sans-serif" font-size="2.2" font-weight="700" letter-spacing="0.15" fill="#ffffff" fill-opacity="0.9">NFC</text>
+
+    ${avatar}
+
+    <text x="23" y="40" font-family="Georgia, 'Times New Roman', serif" font-size="3.6" font-weight="700" fill="#ffffff">${escapeHtml(name)}</text>
+    <text x="23" y="43.3" font-family="system-ui, sans-serif" font-size="2.6" fill="#ffffff" fill-opacity="0.72">${escapeHtml(title)}</text>
+    <text x="23" y="46.1" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="2.4" fill="#ffffff" fill-opacity="0.5">${escapeHtml(company)}</text>
+
+    <text x="5" y="49.5" font-family="system-ui, sans-serif" font-size="2.4" fill="#ffffff" fill-opacity="0.55">Tap phone to connect</text>
+    <text x="5" y="52.3" font-family="system-ui, sans-serif" font-size="2.4" fill="#ffffff" fill-opacity="0.55">${escapeHtml(location)}</text>
+
+    <g stroke="#ffffff" stroke-opacity="0.75" fill="none" stroke-width="0.45">
+      <path d="M 72 52.5 A 2 2 0 0 1 74.2 50.3"/>
+      <path d="M 74.8 52.5 A 3.6 3.6 0 0 1 78.4 48.9"/>
+      <path d="M 79.5 52.5 A 5.2 5.2 0 0 1 84.7 47.3"/>
+    </g>
+  </g>
+</svg>`;
+};
+
 /** Self-contained CR80 print document — used by Print and Export actions across admin pages. */
 export const buildNfcPrintDocument = (contact, { autoPrint = false } = {}) => {
   const name = contact.name || 'Card holder';

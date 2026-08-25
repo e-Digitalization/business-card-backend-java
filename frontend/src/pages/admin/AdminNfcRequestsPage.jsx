@@ -65,10 +65,7 @@ const AdminNfcRequestsPage = () => {
 
   return (
     <div className="space-y-5">
-      <p className="max-w-2xl text-sm text-[#1a3d42]/55">
-        Users requesting physical NFC cards (one-time TZS 100,000). After payment, print the card face, assign an NFC
-        tag, then mark fulfilled.
-      </p>
+      
 
       {error && (
         <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
@@ -115,23 +112,26 @@ const AdminNfcRequestsPage = () => {
         )}
 
         <div className="divide-y divide-black/5">
-          {items.map((row) => (
+          {items.map((row, index) => (
             <div key={row.id} className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[#1a3d42]">{row.ownerName || 'User'}</p>
-                <p className="text-sm text-[#1a3d42]/55">{row.ownerEmail}</p>
-                <p className="mt-1 text-sm text-[#1a3d42]">
-                  {row.productName} · {formatMoney(row.amount, row.currency)}
-                  <span className="text-[#1a3d42]/45"> · one-time</span>
-                </p>
-                <p className="text-xs text-[#1a3d42]/45">
-                  Order {row.paymentOrderId || '—'}
-                  {row.ownerPhone || row.phone ? ` · ${row.ownerPhone || row.phone}` : ''}
-                  {row.cardSlug ? ` · /u/${row.cardSlug}` : ''}
-                </p>
-                {row.deliveryNotes && (
-                  <p className="mt-1 text-xs text-[#1a3d42]/55">Note: {row.deliveryNotes}</p>
-                )}
+              <div className="flex min-w-0 flex-1 gap-3">
+                <p className="w-6 shrink-0 pt-0.5 text-sm text-[#1a3d42]/40">{page * size + index + 1}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-[#1a3d42]">{row.ownerName || 'User'}</p>
+                  <p className="text-sm text-[#1a3d42]/55">{row.ownerEmail}</p>
+                  <p className="mt-1 text-sm text-[#1a3d42]">
+                    {row.productName} · {formatMoney(row.amount, row.currency)}
+                    <span className="text-[#1a3d42]/45"> · one-time</span>
+                  </p>
+                  <p className="text-xs text-[#1a3d42]/45">
+                    Order {row.paymentOrderId || '—'}
+                    {row.ownerPhone || row.phone ? ` · ${row.ownerPhone || row.phone}` : ''}
+                    {row.cardSlug ? ` · /u/${row.cardSlug}` : ''}
+                  </p>
+                  {row.deliveryNotes && (
+                    <p className="mt-1 text-xs text-[#1a3d42]/55">Note: {row.deliveryNotes}</p>
+                  )}
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-[#f7f4ef] px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#9a6b45]">

@@ -147,7 +147,8 @@ const AdminCardsPage = () => {
           </div>
         </form>
 
-        <div className="hidden border-b border-black/5 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#1a3d42]/40 lg:grid lg:grid-cols-[1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:gap-3">
+        <div className="hidden border-b border-black/5 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#1a3d42]/40 lg:grid lg:grid-cols-[0.3fr_1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:gap-3">
+          <span>No</span>
           <span>Profile</span>
           <span>Company</span>
           <span>Phone</span>
@@ -171,11 +172,12 @@ const AdminCardsPage = () => {
         )}
 
         <div className="divide-y divide-black/5">
-          {cards.map((row) => (
+          {cards.map((row, index) => (
             <div
               key={row.card.publicId}
-              className="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-[1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:items-center lg:gap-3"
+              className="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-[0.3fr_1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:items-center lg:gap-3"
             >
+              <p className="text-sm text-[#1a3d42]/45">{page * rowsPerPage + index + 1}</p>
               <div className="flex min-w-0 items-center gap-3">
                 <ProfileAvatar
                   name={row.card.fullName}

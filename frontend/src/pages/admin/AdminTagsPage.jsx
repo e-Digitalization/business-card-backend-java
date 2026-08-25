@@ -65,7 +65,8 @@ const AdminTagsPage = () => {
       </div>
 
       <div className="admin-panel overflow-hidden">
-        <div className="hidden border-b border-black/5 px-5 py-3 text-xs uppercase tracking-[0.12em] text-[#1a3d42]/45 sm:grid sm:grid-cols-[1.2fr_1fr_0.8fr_auto] sm:gap-3">
+        <div className="hidden border-b border-black/5 px-5 py-3 text-xs uppercase tracking-[0.12em] text-[#1a3d42]/45 sm:grid sm:grid-cols-[0.25fr_1.2fr_1fr_0.8fr_auto] sm:gap-3">
+          <span>No</span>
           <span>NFC Tag</span>
           <span>Digital Card</span>
           <span>Status</span>
@@ -80,11 +81,12 @@ const AdminTagsPage = () => {
         )}
 
         <div className="divide-y divide-black/5">
-          {rows.map(({ tag, card }) => (
+          {rows.map(({ tag, card }, index) => (
             <div
               key={tag.id}
-              className="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-[1.2fr_1fr_0.8fr_auto] sm:items-center sm:gap-3"
+              className="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-[0.25fr_1.2fr_1fr_0.8fr_auto] sm:items-center sm:gap-3"
             >
+              <p className="hidden text-sm text-[#1a3d42]/45 sm:block">{index + 1}</p>
               <div>
                 <p className="font-semibold text-[#1a3d42]">{tag.tagCode}</p>
                 <p className="text-xs text-[#1a3d42]/40">Tap URL: /c/{tag.tagCode}</p>

@@ -3,7 +3,7 @@ import api from '../../services/api.js';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { notify } from '../../utils/toast.js';
 
-const emptyCreate = { username: '', password: '' };
+const emptyCreate = { username: '', password: '', confirmPassword: '' };
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -12,6 +12,36 @@ const formatDate = (value) => {
   } catch {
     return '—';
   }
+};
+
+const PasswordField = ({ label, value, onChange, autoFocus = false, minLength = 6, hint }) => {
+  const [visible, setVisible] = useState(false);
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm text-[#1a3d42]/70">{label}</span>
+      <div className="relative">
+        <input
+          type={visible ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          className="admin-input pr-14"
+          minLength={minLength}
+          required
+          autoFocus={autoFocus}
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          tabIndex={-1}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#0d7377]"
+        >
+          {visible ? 'Hide' : 'Show'}
+        </button>
+      </div>
+      {hint && <span className="mt-1 block text-xs text-[#1a3d42]/45">{hint}</span>}
+    </label>
+  );
 };
 
 const AdminUsersPage = () => {
@@ -25,6 +55,7 @@ const AdminUsersPage = () => {
 
   const [resetTarget, setResetTarget] = useState(null);
   const [resetValue, setResetValue] = useState('');
+  const [resetConfirm, setResetConfirm] = useState('');
   const [resetBusy, setResetBusy] = useState(false);
   const [resetError, setResetError] = useState('');
 
@@ -50,9 +81,20 @@ const AdminUsersPage = () => {
   const onCreate = async (e) => {
     e.preventDefault();
     setCreateError('');
+    if (createForm.password.length < 6) {
+      setCreateError('Password must be at least 6 characters.');
+      return;
+    }
+    if (createForm.password !== createForm.confirmPassword) {
+      setCreateError('Passwords do not match.');
+      return;
+    }
     setCreateBusy(true);
     try {
-      await api.post('/api/admin/admin-users', createForm);
+      await api.post('/api/admin/admin-users', {
+        username: createForm.username,
+        password: createForm.password
+      });
       notify.success('Admin account created.');
       setCreateForm(emptyCreate);
       setShowCreate(false);
@@ -68,12 +110,21 @@ const AdminUsersPage = () => {
     e.preventDefault();
     if (!resetTarget) return;
     setResetError('');
+    if (resetValue.length < 6) {
+      setResetError('Password must be at least 6 characters.');
+      return;
+    }
+    if (resetValue !== resetConfirm) {
+      setResetError('Passwords do not match.');
+      return;
+    }
     setResetBusy(true);
     try {
       await api.post(`/api/admin/admin-users/${resetTarget.id}/reset-password`, { newPassword: resetValue });
       notify.success(`Password reset for ${resetTarget.username}.`);
       setResetTarget(null);
       setResetValue('');
+      setResetConfirm('');
     } catch (err) {
       setResetError(err.response?.data?.message || 'Could not reset password.');
     } finally {
@@ -121,7 +172,7 @@ const AdminUsersPage = () => {
       {showCreate && (
         <form onSubmit={onCreate} className="admin-panel space-y-3 p-5">
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block">
+            <label className="block sm:col-span-2">
               <span className="mb-1 block text-sm text-[#1a3d42]/70">Username</span>
               <input
                 value={createForm.username}
@@ -131,17 +182,17 @@ const AdminUsersPage = () => {
                 autoFocus
               />
             </label>
-            <label className="block">
-              <span className="mb-1 block text-sm text-[#1a3d42]/70">Password</span>
-              <input
-                type="password"
-                value={createForm.password}
-                onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))}
-                className="admin-input"
-                minLength={6}
-                required
-              />
-            </label>
+            <PasswordField
+              label="Password"
+              value={createForm.password}
+              onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))}
+              hint="At least 6 characters."
+            />
+            <PasswordField
+              label="Repeat password"
+              value={createForm.confirmPassword}
+              onChange={(e) => setCreateForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+            />
           </div>
           {createError && <p className="text-sm text-rose-600">{createError}</p>}
           <button
@@ -155,7 +206,8 @@ const AdminUsersPage = () => {
       )}
 
       <section className="admin-panel overflow-hidden">
-        <div className="hidden border-b border-black/5 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#1a3d42]/40 sm:grid sm:grid-cols-[1.4fr_1fr_1fr_auto] sm:gap-3">
+        <div className="hidden border-b border-black/5 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#1a3d42]/40 sm:grid sm:grid-cols-[0.3fr_1.4fr_1fr_1fr_auto] sm:gap-3">
+          <span>No</span>
           <span>Username</span>
           <span>Status</span>
           <span>Created</span>
@@ -168,11 +220,12 @@ const AdminUsersPage = () => {
         )}
 
         <div className="divide-y divide-black/5">
-          {admins.map((admin) => (
+          {admins.map((admin, index) => (
             <div
               key={admin.id}
-              className="grid gap-2 px-5 py-4 sm:grid-cols-[1.4fr_1fr_1fr_auto] sm:items-center sm:gap-3"
+              className="grid gap-2 px-5 py-4 sm:grid-cols-[0.3fr_1.4fr_1fr_1fr_auto] sm:items-center sm:gap-3"
             >
+              <p className="text-sm text-[#1a3d42]/45">{index + 1}</p>
               <p className="font-semibold text-[#1a3d42]">{admin.username}</p>
               <span
                 className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -188,6 +241,7 @@ const AdminUsersPage = () => {
                   onClick={() => {
                     setResetTarget(admin);
                     setResetValue('');
+                    setResetConfirm('');
                     setResetError('');
                   }}
                   className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
@@ -230,18 +284,18 @@ const AdminUsersPage = () => {
               Reset password for {resetTarget.username}
             </h2>
             <form onSubmit={onResetPassword} className="mt-4 space-y-3">
-              <label className="block">
-                <span className="mb-1 block text-sm text-[#1a3d42]/70">New password</span>
-                <input
-                  type="password"
-                  value={resetValue}
-                  onChange={(e) => setResetValue(e.target.value)}
-                  className="admin-input"
-                  minLength={6}
-                  required
-                  autoFocus
-                />
-              </label>
+              <PasswordField
+                label="New password"
+                value={resetValue}
+                onChange={(e) => setResetValue(e.target.value)}
+                hint="At least 6 characters."
+                autoFocus
+              />
+              <PasswordField
+                label="Repeat new password"
+                value={resetConfirm}
+                onChange={(e) => setResetConfirm(e.target.value)}
+              />
               {resetError && <p className="text-sm text-rose-600">{resetError}</p>}
               <div className="flex flex-wrap justify-end gap-2">
                 <button

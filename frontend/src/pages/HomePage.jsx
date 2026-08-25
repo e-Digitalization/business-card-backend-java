@@ -117,10 +117,6 @@ const reasons = [
     body: 'Photo, bio, WhatsApp, LinkedIn, portfolio—everything in a single tap.'
   },
   {
-    title: 'Built for Tanzania',
-    body: 'Delivered nationwide. Designed for Dar, Arusha, Zanzibar, and teams on the move.'
-  },
-  {
     title: 'NFC + QR',
     body: 'Works on virtually any phone. Tap when you can, scan when you need to.'
   }
@@ -367,13 +363,6 @@ const HomePage = () => {
               <Link to="/c/TAG12345" className="km-btn-ghost km-landing-cta-ghost">
                 See live demo
               </Link>
-            </div>
-            <div className="animate-fade-up-delay-2 mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/50 sm:text-sm">
-              <span>TZS 100,000 once</span>
-              <span className="text-white/25">·</span>
-              <span>No monthly fees</span>
-              <span className="text-white/25">·</span>
-              <span>Delivered nationwide</span>
             </div>
           </div>
 

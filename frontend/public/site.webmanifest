@@ -1,11 +1,14 @@
 {
+  "id": "/",
   "name": "Kadi Moja",
   "short_name": "Kadi Moja",
   "description": "NFC digital business cards for Tanzania",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f7f4ef",
   "theme_color": "#0d7377",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/favicon-32x32.png",
@@ -18,6 +21,18 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/logos/kadi-moja-favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logos/kadi-moja-favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",

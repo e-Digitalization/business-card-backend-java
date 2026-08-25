@@ -55,3 +55,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Bootstrap />
   </React.StrictMode>
 );
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      /* installability is a bonus, not a hard requirement */
+    });
+  });
+}

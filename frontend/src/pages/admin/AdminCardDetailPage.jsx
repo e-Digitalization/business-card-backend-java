@@ -116,11 +116,11 @@ const AdminCardDetailPage = () => {
             Print card
           </button>
           <Link
-            to={`/admin/cards?edit=${card.id}`}
+            to={`/admin/cards?edit=${card.publicId}`}
             className="rounded-md bg-[#9a6b45] px-3.5 py-2 text-sm font-semibold text-white"
             onClick={(e) => {
               e.preventDefault();
-              navigate('/admin/cards', { state: { editId: card.id } });
+              navigate('/admin/cards', { state: { editId: card.publicId } });
             }}
           >
             Edit details

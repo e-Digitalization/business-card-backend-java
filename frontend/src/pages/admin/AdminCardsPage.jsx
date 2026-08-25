@@ -173,7 +173,7 @@ const AdminCardsPage = () => {
         <div className="divide-y divide-black/5">
           {cards.map((row) => (
             <div
-              key={row.card.id}
+              key={row.card.publicId}
               className="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-[1.4fr_1fr_1fr_0.9fr_0.7fr_auto] lg:items-center lg:gap-3"
             >
               <div className="flex min-w-0 items-center gap-3">
@@ -235,14 +235,14 @@ const AdminCardsPage = () => {
                 <button
                   type="button"
                   className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
-                  onClick={() => setMenuId((id) => (id === row.card.id ? null : row.card.id))}
+                  onClick={() => setMenuId((id) => (id === row.card.publicId ? null : row.card.publicId))}
                 >
                   Actions
                 </button>
-                {menuId === row.card.id && (
+                {menuId === row.card.publicId && (
                   <div className="absolute right-0 top-11 z-20 w-48 overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_16px_40px_rgba(26,61,66,0.12)]">
                     <Link
-                      to={`/admin/cards/${row.card.id}`}
+                      to={`/admin/cards/${row.card.publicId}`}
                       className="block px-4 py-2.5 text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
                       onClick={() => setMenuId(null)}
                     >
@@ -250,13 +250,13 @@ const AdminCardsPage = () => {
                     </Link>
                     <button
                       type="button"
-                      onClick={() => openEdit(row.card.id)}
+                      onClick={() => openEdit(row.card.publicId)}
                       className="block w-full px-4 py-2.5 text-left text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
                     >
                       Edit card
                     </button>
                     <Link
-                      to={`/admin/cards/${row.card.id}`}
+                      to={`/admin/cards/${row.card.publicId}`}
                       className="block px-4 py-2.5 text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
                       onClick={() => setMenuId(null)}
                     >

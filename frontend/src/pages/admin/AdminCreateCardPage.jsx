@@ -137,7 +137,7 @@ const AdminCreateCardPage = () => {
     try {
       const res = await api.post('/api/admin/cards', form);
       const created = res.data.data;
-      navigate(created?.id ? `/admin/cards/${created.id}` : '/admin/cards');
+      navigate(created?.publicId ? `/admin/cards/${created.publicId}` : '/admin/cards');
     } catch {
       setError('Could not create card. Check required fields and try again.');
     } finally {

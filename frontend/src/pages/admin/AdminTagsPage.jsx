@@ -106,7 +106,7 @@ const AdminTagsPage = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setEditId(card.id)}
+                onClick={() => setEditId(card.publicId)}
                 className="justify-self-start rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef] sm:justify-self-end"
               >
                 Manage

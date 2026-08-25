@@ -117,7 +117,7 @@ const AdminDashboard = () => {
             <p className="px-5 py-8 text-sm text-[#1a3d42]/50">No cards yet. Create your first digital card.</p>
           )}
           {recent.map((row) => (
-            <div key={row.card.id} className="flex items-center gap-4 px-5 py-4">
+            <div key={row.card.publicId} className="flex items-center gap-4 px-5 py-4">
               <ProfileAvatar
                 name={row.card.fullName}
                 photoUrl={row.card.photoUrl}
@@ -134,14 +134,14 @@ const AdminDashboard = () => {
                 <p className="text-xs text-[#1a3d42]/40">{row.tags?.length || 0} NFC tag(s)</p>
               </div>
               <Link
-                to={`/admin/cards/${row.card.id}`}
+                to={`/admin/cards/${row.card.publicId}`}
                 className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
               >
                 View
               </Link>
               <button
                 type="button"
-                onClick={() => setEditId(row.card.id)}
+                onClick={() => setEditId(row.card.publicId)}
                 className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
               >
                 Edit

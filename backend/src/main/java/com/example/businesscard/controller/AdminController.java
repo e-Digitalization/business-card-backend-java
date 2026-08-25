@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -71,13 +72,18 @@ public class AdminController {
     }
 
     @PostMapping("/cards/{id}/invite")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> invite(@PathVariable @NonNull Long id) {
-        return ResponseEntity.ok(ok("Invite created", cardInviteService.createInvite(id)));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> invite(@PathVariable @NonNull UUID id) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
+        if (card == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
+        }
+        return ResponseEntity.ok(ok("Invite created", cardInviteService.createInvite(card.getId())));
     }
 
     @PutMapping("/cards/{id}")
-    public ResponseEntity<ApiResponse<Card>> updateCard(@PathVariable @NonNull Long id, @Valid @RequestBody CardRequest request) {
-        Card card = cardRepository.findById(id).orElse(null);
+    public ResponseEntity<ApiResponse<Card>> updateCard(@PathVariable @NonNull UUID id, @Valid @RequestBody CardRequest request) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
         if (card == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
@@ -87,8 +93,8 @@ public class AdminController {
     }
 
     @PostMapping("/cards/{id}/regenerate-slug")
-    public ResponseEntity<ApiResponse<Card>> regenerateSlug(@PathVariable @NonNull Long id) {
-        Card card = cardRepository.findById(id).orElse(null);
+    public ResponseEntity<ApiResponse<Card>> regenerateSlug(@PathVariable @NonNull UUID id) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
         if (card == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
@@ -133,8 +139,8 @@ public class AdminController {
     }
 
     @GetMapping("/cards/{id}")
-    public ResponseEntity<ApiResponse<CardResponse>> getCard(@PathVariable @NonNull Long id) {
-        Card card = cardRepository.findById(id).orElse(null);
+    public ResponseEntity<ApiResponse<CardResponse>> getCard(@PathVariable @NonNull UUID id) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
         if (card == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
@@ -144,20 +150,20 @@ public class AdminController {
     }
 
     @DeleteMapping("/cards/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCard(@PathVariable @NonNull Long id) {
-        Card card = cardRepository.findById(id).orElse(null);
+    public ResponseEntity<ApiResponse<Void>> deleteCard(@PathVariable @NonNull UUID id) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
         if (card == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
         }
-        cardTagRepository.deleteByCard_Id(id);
+        cardTagRepository.deleteByCard_Id(card.getId());
         cardRepository.delete(card);
         return ResponseEntity.ok(ok("Card deleted", null));
     }
 
     @PostMapping("/cards/{id}/tag")
-    public ResponseEntity<ApiResponse<CardTag>> assignTag(@PathVariable @NonNull Long id, @Valid @RequestBody TagRequest request) {
-        Card card = cardRepository.findById(id).orElse(null);
+    public ResponseEntity<ApiResponse<CardTag>> assignTag(@PathVariable @NonNull UUID id, @Valid @RequestBody TagRequest request) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
         if (card == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(fail(HttpStatus.NOT_FOUND, "Card not found"));

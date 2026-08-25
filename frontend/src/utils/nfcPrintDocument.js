@@ -32,7 +32,7 @@ export const cardToPrintContact = (card) => ({
   phone: card.phone,
   email: card.email,
   refLabel: 'Card ID',
-  refValue: card.id
+  refValue: card.publicId
 });
 
 const toDataUri = async (url) => {

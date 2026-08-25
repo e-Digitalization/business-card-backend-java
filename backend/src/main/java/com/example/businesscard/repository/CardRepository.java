@@ -8,8 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
+    Optional<Card> findByPublicId(UUID publicId);
+
     Optional<Card> findBySlug(String slug);
 
     Optional<Card> findBySlugAndActiveTrue(String slug);

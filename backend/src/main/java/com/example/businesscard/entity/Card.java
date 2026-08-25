@@ -1,15 +1,24 @@
 package com.example.businesscard.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "cards")
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
+
+    // Non-sequential identifier used everywhere outside the DB (URLs, API paths) so
+    // card records can't be enumerated by walking an integer id.
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    private UUID publicId = UUID.randomUUID();
 
     @Column(unique = true, nullable = false)
     @NotBlank
@@ -42,6 +51,14 @@ public class Card {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(UUID publicId) {
+        this.publicId = publicId;
     }
 
     public String getSlug() {

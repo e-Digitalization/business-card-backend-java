@@ -60,12 +60,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savedPulse, setSavedPulse] = useState(false);
-  const [contactSaved, setContactSaved] = useState(false);
-  const [saveMsg, setSaveMsg] = useState('');
   const [photoFailed, setPhotoFailed] = useState(false);
-
-  const isLoggedIn = Boolean(localStorage.getItem('clientToken'));
 
   useEffect(() => {
     let mounted = true;
@@ -90,44 +85,7 @@ const ProfilePage = () => {
     };
   }, [slug]);
 
-  const downloadVCard = async () => {
-    if (!profile) return;
-    const response = await api.get(`/api/public/profile/${slug}/vcard`, { responseType: 'blob' });
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${profile.fullName || 'contact'}.vcf`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-    setSavedPulse(true);
-    window.setTimeout(() => setSavedPulse(false), 1600);
-  };
-
-  const saveToContacts = async () => {
-    if (!profile || !isLoggedIn) return;
-    setSaveMsg('');
-    try {
-      await api.post('/api/client/contacts', {
-        fullName: profile.fullName,
-        title: profile.title,
-        company: profile.company,
-        phone: profile.phone,
-        email: profile.email,
-        website: profile.website,
-        location: profile.location,
-        whatsapp: profile.whatsapp,
-        photoUrl: profile.photoUrl,
-        sourceProfileSlug: slug,
-        source: 'tap'
-      });
-      setContactSaved(true);
-      setSaveMsg('Saved to your Contacts.');
-    } catch {
-      setSaveMsg('Could not save contact. Sign in and try again.');
-    }
-  };
+  const vcardUrl = `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/profile/${slug}/vcard`;
 
   const phoneList = useMemo(
     () =>
@@ -229,32 +187,9 @@ const ProfilePage = () => {
           </div>
 
           <div className="km-fade-up km-fade-up-delay mt-5 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={downloadVCard}
-              className={`km-card-cta ${savedPulse ? 'is-saved' : ''}`}
-            >
-              {savedPulse ? 'Contact saved' : 'Save contact details'}
-            </button>
-            {isLoggedIn ? (
-              <button
-                type="button"
-                onClick={saveToContacts}
-                disabled={contactSaved}
-                className="km-card-cta-ghost"
-              >
-                {contactSaved ? 'In your Contacts' : 'Save to my Contacts'}
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                state={{ from: { pathname: `/u/${slug}` } }}
-                className="km-card-cta-ghost text-center"
-              >
-                Sign in to save to Contacts
-              </Link>
-            )}
-            {saveMsg && <p className="text-center text-xs text-[#0d7377]">{saveMsg}</p>}
+            <a href={vcardUrl} className="km-card-cta text-center">
+              Save contact details
+            </a>
           </div>
 
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">

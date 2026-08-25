@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("/api/public")
 public class PublicController {
@@ -34,16 +36,21 @@ public class PublicController {
         vcard.append("BEGIN:VCARD\n");
         vcard.append("VERSION:3.0\n");
         vcard.append("FN:").append(value(card.getFullName())).append("\n");
+        vcard.append("N:").append(structuredName(card.getFullName())).append("\n");
         appendPhones(vcard, card.getPhone());
-        vcard.append("EMAIL:").append(value(card.getEmail())).append("\n");
-        vcard.append("ORG:").append(value(card.getCompany())).append("\n");
-        vcard.append("TITLE:").append(value(card.getTitle())).append("\n");
-        vcard.append("URL:").append(value(card.getWebsite())).append("\n");
+        appendIfPresent(vcard, "EMAIL", card.getEmail());
+        appendIfPresent(vcard, "ORG", card.getCompany());
+        appendIfPresent(vcard, "TITLE", card.getTitle());
+        appendIfPresent(vcard, "URL", card.getWebsite());
         vcard.append("END:VCARD\n");
 
+        String fileName = safeFileName(card.getFullName());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/vcard"));
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contact.vcf");
+        // "inline" (not "attachment") lets Safari/Chrome offer "Add to Contacts"
+        // directly when this URL is opened as a normal link, instead of routing
+        // through the browser's file-download flow.
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + fileName + ".vcf");
 
         return new ResponseEntity<>(vcard.toString(), headers, HttpStatus.OK);
     }
@@ -52,9 +59,37 @@ public class PublicController {
         return input == null ? "" : input.replace("\n", " ");
     }
 
+    private void appendIfPresent(StringBuilder vcard, String property, String rawValue) {
+        if (rawValue != null && !rawValue.isBlank()) {
+            vcard.append(property).append(':').append(value(rawValue)).append("\n");
+        }
+    }
+
+    // vCard's N (structured name) drives how address books split first/last —
+    // FN alone leaves that ambiguous and some clients import the whole name as one field.
+    private String structuredName(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return ";;;;";
+        }
+        String[] parts = fullName.trim().split("\\s+");
+        if (parts.length == 1) {
+            return value(parts[0]) + ";;;;";
+        }
+        String family = parts[parts.length - 1];
+        String given = String.join(" ", Arrays.copyOfRange(parts, 0, parts.length - 1));
+        return value(family) + ";" + value(given) + ";;;";
+    }
+
+    private String safeFileName(String name) {
+        if (name == null || name.isBlank()) {
+            return "contact";
+        }
+        String cleaned = name.trim().replaceAll("[^A-Za-z0-9._-]+", "-");
+        return cleaned.isBlank() ? "contact" : cleaned;
+    }
+
     private void appendPhones(StringBuilder vcard, String phones) {
         if (phones == null || phones.isBlank()) {
-            vcard.append("TEL:\n");
             return;
         }
         String[] values = phones.split("[,;]");

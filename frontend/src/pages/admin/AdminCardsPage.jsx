@@ -6,6 +6,8 @@ import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import EditCardDialog from './EditCardDialog.jsx';
 import NfcPrintModal from '../../components/NfcPrintModal.jsx';
 import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
+import { copyToClipboard } from '../../components/CopyButton.jsx';
+import { notify } from '../../utils/toast.js';
 
 const AdminCardsPage = () => {
   const location = useLocation();
@@ -79,9 +81,7 @@ const AdminCardsPage = () => {
   return (
     <div className="space-y-5" onClick={() => setMenuId(null)}>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-sm text-[#1a3d42]/55">
-          Profiles shared when someone taps an NFC card in Tanzania.
-        </p>
+       
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -271,6 +271,18 @@ const AdminCardsPage = () => {
                       className="block w-full px-4 py-2.5 text-left text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
                     >
                       Print card
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setMenuId(null);
+                        const ok = await copyToClipboard(`${window.location.origin}/u/${row.card.slug}`);
+                        if (ok) notify.success('Public URL copied.');
+                        else notify.error('Could not copy the URL.');
+                      }}
+                      className="block w-full px-4 py-2.5 text-left text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
+                    >
+                      Copy public URL
                     </button>
                     <a
                       href={`/u/${row.card.slug}`}

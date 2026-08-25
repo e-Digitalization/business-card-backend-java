@@ -1,9 +1,11 @@
 import React from 'react';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
+import { profileUrlFor, qrCodeImageUrl } from '../utils/nfcPrintDocument.js';
 
-const NfcCardVisual = ({ name, title, company, location = 'Tanzania', photoUrl, float = true, className = '' }) => {
+const NfcCardVisual = ({ name, title, company, location = 'Tanzania', photoUrl, slug, float = true, className = '' }) => {
   const photo = resolveMediaUrl(photoUrl || '');
   const initials = initialsFromName(name);
+  const profileUrl = profileUrlFor(slug);
 
   return (
     <div className={`km-nfc-card ${float ? 'km-nfc-float' : ''} ${className}`}>
@@ -47,11 +49,15 @@ const NfcCardVisual = ({ name, title, company, location = 'Tanzania', photoUrl, 
               <br />
               {location}
             </p>
-            <div className="km-nfc-waves" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
+            {profileUrl && (
+              <div className="flex-shrink-0 rounded-md bg-white p-1">
+                <img
+                  src={qrCodeImageUrl(profileUrl, 120)}
+                  alt="Scan to open profile"
+                  className="h-11 w-11"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

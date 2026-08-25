@@ -106,6 +106,7 @@ const NfcPrintModal = ({ contact, onClose, onError }) => {
             company={contact.company}
             location={contact.location}
             photoUrl={contact.photoUrl}
+            slug={contact.slug}
             float={false}
             className="km-nfc-print-face"
           />

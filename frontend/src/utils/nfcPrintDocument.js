@@ -35,6 +35,11 @@ export const cardToPrintContact = (card) => ({
   refValue: card.publicId
 });
 
+export const profileUrlFor = (slug) => (slug ? `${window.location.origin}/u/${slug}` : '');
+
+export const qrCodeImageUrl = (data, size = 300) =>
+  `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=0&data=${encodeURIComponent(data)}`;
+
 const toDataUri = async (url) => {
   if (!url) return '';
   try {
@@ -71,8 +76,13 @@ export const buildNfcSvgDocument = async (contact) => {
   const initials = initialsFromName(name);
   const photoUrl = resolveAbsoluteUrl(resolveMediaUrl(contact.photoUrl || ''));
   const logoUrl = `${window.location.origin}/logos/kadi-moja-mark-light.png`;
+  const profileUrl = profileUrlFor(contact.slug);
 
-  const [photoData, logoData] = await Promise.all([toDataUri(photoUrl), toDataUri(logoUrl)]);
+  const [photoData, logoData, qrData] = await Promise.all([
+    toDataUri(photoUrl),
+    toDataUri(logoUrl),
+    profileUrl ? toDataUri(qrCodeImageUrl(profileUrl, 300)) : Promise.resolve('')
+  ]);
 
   const avatar = photoData
     ? `<clipPath id="avatarClip"><circle cx="15.5" cy="41.5" r="5.5"/></clipPath>
@@ -123,11 +133,10 @@ export const buildNfcSvgDocument = async (contact) => {
     <text x="5" y="49.5" font-family="system-ui, sans-serif" font-size="2.4" fill="#ffffff" fill-opacity="0.55">Tap phone to connect</text>
     <text x="5" y="52.3" font-family="system-ui, sans-serif" font-size="2.4" fill="#ffffff" fill-opacity="0.55">${escapeHtml(location)}</text>
 
-    <g stroke="#ffffff" stroke-opacity="0.75" fill="none" stroke-width="0.45">
-      <path d="M 72 52.5 A 2 2 0 0 1 74.2 50.3"/>
-      <path d="M 74.8 52.5 A 3.6 3.6 0 0 1 78.4 48.9"/>
-      <path d="M 79.5 52.5 A 5.2 5.2 0 0 1 84.7 47.3"/>
-    </g>
+    ${qrData
+      ? `<rect x="70.6" y="39" width="12" height="12" rx="1" fill="#ffffff"/>
+         <image href="${qrData}" x="71.4" y="39.8" width="10.4" height="10.4" />`
+      : ''}
   </g>
 </svg>`;
 };
@@ -141,6 +150,10 @@ export const buildNfcPrintDocument = (contact, { autoPrint = false } = {}) => {
   const photo = resolveMediaUrl(contact.photoUrl || '');
   const initials = initialsFromName(name);
   const slug = contact.slug ? `/u/${contact.slug}` : '';
+  const profileUrl = profileUrlFor(contact.slug);
+  const qrHtml = profileUrl
+    ? `<div class="qr"><img src="${escapeHtml(qrCodeImageUrl(profileUrl, 200))}" alt="QR code to open profile" /></div>`
+    : '';
   const logoUrl = `${window.location.origin}/logos/kadi-moja-mark-light.png`;
   const photoUrl = photo
     ? /^https?:\/\//i.test(photo) || photo.startsWith('data:')
@@ -257,15 +270,14 @@ export const buildNfcPrintDocument = (contact, { autoPrint = false } = {}) => {
       font-size: 2.4mm; line-height: 1.35; color: rgba(255,255,255,0.55);
       font-family: system-ui, sans-serif;
     }
-    .waves { display: flex; align-items: center; gap: 1mm; opacity: 0.75; flex-shrink: 0; }
-    .waves span {
-      display: block; border: 0.45mm solid rgba(255,255,255,0.75);
-      border-radius: 999px; border-left-color: transparent; border-bottom-color: transparent;
-      transform: rotate(45deg);
+    .qr {
+      flex-shrink: 0;
+      width: 12mm; height: 12mm;
+      background: #fff;
+      border-radius: 1mm;
+      padding: 0.8mm;
     }
-    .waves span:nth-child(1) { width: 2mm; height: 2mm; }
-    .waves span:nth-child(2) { width: 3.2mm; height: 3.2mm; }
-    .waves span:nth-child(3) { width: 4.4mm; height: 4.4mm; }
+    .qr img { width: 100%; height: 100%; display: block; }
     .screen-meta {
       display: none;
     }
@@ -324,7 +336,7 @@ export const buildNfcPrintDocument = (contact, { autoPrint = false } = {}) => {
               Tap phone to connect<br />
               ${escapeHtml(location)}
             </p>
-            <div class="waves" aria-hidden="true"><span></span><span></span><span></span></div>
+            ${qrHtml}
           </div>
         </div>
       </div>

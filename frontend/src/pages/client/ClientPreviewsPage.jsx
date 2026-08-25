@@ -275,7 +275,14 @@ const ClientPreviewsPage = () => {
           <p className="mt-1 text-sm text-[#1a3d42]/50">Tap this card on a phone to open your profile.</p>
 
           <div className="mt-10 flex justify-center px-2">
-            <NfcCardVisual name={name} title={title} company={company} location={location} photoUrl={photo} />
+            <NfcCardVisual
+              name={name}
+              title={title}
+              company={company}
+              location={location}
+              photoUrl={photo}
+              slug={card?.slug}
+            />
           </div>
         </section>
       </div>

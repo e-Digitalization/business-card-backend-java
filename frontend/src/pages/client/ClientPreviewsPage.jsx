@@ -5,6 +5,7 @@ import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
 import { notify } from '../../utils/toast.js';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import ContactCardVisual from './ContactCardVisual.jsx';
+import NfcCardVisual from '../../components/NfcCardVisual.jsx';
 import { ClientWorkspaceContext } from './ClientLayout.jsx';
 
 const formatMoney = (amount, currency = 'TZS') => {
@@ -274,56 +275,7 @@ const ClientPreviewsPage = () => {
           <p className="mt-1 text-sm text-[#1a3d42]/50">Tap this card on a phone to open your profile.</p>
 
           <div className="mt-10 flex justify-center px-2">
-            <div className="km-nfc-card km-nfc-float">
-              <div className="km-nfc-card-shine" aria-hidden="true" />
-              <div className="km-nfc-card-inner">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-8 w-8" />
-                    <div>
-                      <p className="font-display text-lg font-bold tracking-tight text-white">Kadi Moja</p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-white/55">Digital NFC</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/85">
-                    NFC
-                  </span>
-                </div>
-
-                <div className="mt-auto">
-                  <div className="flex items-center gap-3">
-                    {photo ? (
-                      <img
-                        src={photo}
-                        alt=""
-                        className="h-14 w-14 rounded-full border-2 border-white/50 object-cover shadow-lg"
-                      />
-                    ) : (
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/40 bg-white/15 text-base font-bold tracking-wide text-white">
-                        {initials}
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-white">{name}</p>
-                      <p className="truncate text-xs text-white/70">{title}</p>
-                      <p className="truncate text-[11px] italic text-white/50">{company}</p>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex items-end justify-between gap-3">
-                    <p className="text-[11px] leading-snug text-white/55">
-                      Tap phone to connect
-                      <br />
-                      {location}
-                    </p>
-                    <div className="km-nfc-waves" aria-hidden="true">
-                      <span />
-                      <span />
-                      <span />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <NfcCardVisual name={name} title={title} company={company} location={location} photoUrl={photo} />
           </div>
         </section>
       </div>

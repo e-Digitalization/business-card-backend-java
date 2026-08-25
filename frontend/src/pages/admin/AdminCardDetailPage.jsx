@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../../services/api.js';
 import ProfileAvatar from '../../components/ProfileAvatar.jsx';
+import NfcPrintModal from '../../components/NfcPrintModal.jsx';
+import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
 
 const AdminCardDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [printOpen, setPrintOpen] = useState(false);
   const [payload, setPayload] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -105,6 +108,13 @@ const AdminCardDetailPage = () => {
           >
             Open public card
           </a>
+          <button
+            type="button"
+            onClick={() => setPrintOpen(true)}
+            className="rounded-md border border-black/10 px-3.5 py-2 text-sm font-medium text-[#1a3d42]"
+          >
+            Print card
+          </button>
           <Link
             to={`/admin/cards?edit=${card.id}`}
             className="rounded-md bg-[#9a6b45] px-3.5 py-2 text-sm font-semibold text-white"
@@ -311,6 +321,10 @@ const AdminCardDetailPage = () => {
           )}
         </section>
       </div>
+
+      {printOpen && (
+        <NfcPrintModal contact={cardToPrintContact(card)} onClose={() => setPrintOpen(false)} />
+      )}
     </div>
   );
 };

@@ -4,6 +4,8 @@ import api from '../../services/api.js';
 import PaginationBar from '../../components/PaginationBar.jsx';
 import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import EditCardDialog from './EditCardDialog.jsx';
+import NfcPrintModal from '../../components/NfcPrintModal.jsx';
+import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
 
 const AdminCardsPage = () => {
   const location = useLocation();
@@ -18,6 +20,8 @@ const AdminCardsPage = () => {
   const [stats, setStats] = useState({ totalCards: 0, activeCards: 0, assignedTags: 0 });
   const [menuId, setMenuId] = useState(null);
   const [editId, setEditId] = useState(null);
+  const [printCard, setPrintCard] = useState(null);
+  const [printError, setPrintError] = useState('');
 
   const fetchStats = async () => {
     try {
@@ -258,6 +262,16 @@ const AdminCardsPage = () => {
                     >
                       Link NFC
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuId(null);
+                        setPrintCard(row.card);
+                      }}
+                      className="block w-full px-4 py-2.5 text-left text-sm text-[#1a3d42] hover:bg-[#f7f4ef]"
+                    >
+                      Print card
+                    </button>
                     <a
                       href={`/u/${row.card.slug}`}
                       target="_blank"
@@ -299,6 +313,17 @@ const AdminCardsPage = () => {
           fetchStats();
         }}
       />
+
+      {printError && (
+        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{printError}</p>
+      )}
+      {printCard && (
+        <NfcPrintModal
+          contact={cardToPrintContact(printCard)}
+          onClose={() => setPrintCard(null)}
+          onError={setPrintError}
+        />
+      )}
     </div>
   );
 };

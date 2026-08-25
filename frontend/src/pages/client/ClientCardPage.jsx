@@ -16,7 +16,8 @@ const fields = [
   ['logoUrl', 'Logo URL'],
   ['linkedin', 'LinkedIn'],
   ['twitter', 'Twitter / X'],
-  ['github', 'GitHub']
+  ['github', 'GitHub'],
+  ['instagram', 'Instagram']
 ];
 
 const ClientCardPage = () => {

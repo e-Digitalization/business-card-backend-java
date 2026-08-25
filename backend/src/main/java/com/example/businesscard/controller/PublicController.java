@@ -42,6 +42,10 @@ public class PublicController {
         appendIfPresent(vcard, "ORG", card.getCompany());
         appendIfPresent(vcard, "TITLE", card.getTitle());
         appendIfPresent(vcard, "URL", card.getWebsite());
+        appendIfPresent(vcard, "URL;TYPE=LinkedIn", card.getLinkedin());
+        appendIfPresent(vcard, "URL;TYPE=Twitter", card.getTwitter());
+        appendIfPresent(vcard, "URL;TYPE=GitHub", card.getGithub());
+        appendIfPresent(vcard, "URL;TYPE=Instagram", card.getInstagram());
         vcard.append("END:VCARD\n");
 
         String fileName = safeFileName(card.getFullName());

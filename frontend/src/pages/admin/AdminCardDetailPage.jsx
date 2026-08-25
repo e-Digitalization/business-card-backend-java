@@ -189,6 +189,7 @@ const AdminCardDetailPage = () => {
               ['WhatsApp', card.whatsapp],
               ['Website', card.website],
               ['LinkedIn', card.linkedin],
+              ['Instagram', card.instagram],
               ['Company', card.company]
             ].map(([label, value]) => (
               <div key={label} className="rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3">

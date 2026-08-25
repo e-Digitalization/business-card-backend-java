@@ -168,6 +168,7 @@ public class DataInitializer implements CommandLineRunner {
         card.setLinkedin("https://www.linkedin.com");
         card.setTwitter("https://twitter.com");
         card.setGithub("https://github.com");
+        card.setInstagram("https://instagram.com");
         card.setActive(true);
         Card saved = cardRepository.save(card);
 

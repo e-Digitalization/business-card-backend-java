@@ -72,6 +72,7 @@ public class ClientCardController {
         card.setLinkedin(body.getLinkedin());
         card.setTwitter(body.getTwitter());
         card.setGithub(body.getGithub());
+        card.setInstagram(body.getInstagram());
         card.setActive(body.isActive());
 
         if (body.getFullName() != null && !body.getFullName().isBlank()) {

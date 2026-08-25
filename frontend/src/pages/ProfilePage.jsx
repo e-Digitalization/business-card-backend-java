@@ -221,7 +221,7 @@ const ProfilePage = () => {
             })}
           </ul>
 
-          {(profile.linkedin || profile.twitter || profile.github) && (
+          {(profile.linkedin || profile.twitter || profile.github || profile.instagram) && (
             <div className="mt-7 flex justify-center gap-3">
               {profile.linkedin && (
                 <a href={profile.linkedin} target="_blank" rel="noreferrer" className="km-card-social">
@@ -236,6 +236,11 @@ const ProfilePage = () => {
               {profile.github && (
                 <a href={profile.github} target="_blank" rel="noreferrer" className="km-card-social">
                   GH
+                </a>
+              )}
+              {profile.instagram && (
+                <a href={profile.instagram} target="_blank" rel="noreferrer" className="km-card-social">
+                  IG
                 </a>
               )}
             </div>

@@ -218,6 +218,7 @@ public class AdminController {
         card.setLinkedin(request.getLinkedin());
         card.setTwitter(request.getTwitter());
         card.setGithub(request.getGithub());
+        card.setInstagram(request.getInstagram());
         card.setActive(request.isActive());
     }
 

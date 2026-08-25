@@ -18,6 +18,7 @@ const empty = {
   linkedin: '',
   twitter: '',
   github: '',
+  instagram: '',
   active: true
 };
 
@@ -34,7 +35,8 @@ const fields = [
   ['logoUrl', 'Logo URL', '/logos/swahili-systems.svg'],
   ['linkedin', 'LinkedIn', 'https://linkedin.com/in/...'],
   ['twitter', 'Twitter / X', 'https://x.com/...'],
-  ['github', 'GitHub', 'https://github.com/...']
+  ['github', 'GitHub', 'https://github.com/...'],
+  ['instagram', 'Instagram', 'https://instagram.com/...']
 ];
 
 const AdminCreateCardPage = () => {

@@ -19,6 +19,7 @@ public class CardRequest {
     private String linkedin;
     private String twitter;
     private String github;
+    private String instagram;
     private boolean active = true;
 
     public String getSlug() {
@@ -131,6 +132,14 @@ public class CardRequest {
 
     public void setGithub(String github) {
         this.github = github;
+    }
+
+    public String getInstagram() {
+        return instagram;
+    }
+
+    public void setInstagram(String instagram) {
+        this.instagram = instagram;
     }
 
     public boolean isActive() {

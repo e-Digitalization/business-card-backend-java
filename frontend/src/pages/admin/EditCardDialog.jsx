@@ -14,7 +14,8 @@ const fieldDefs = [
   ['logoUrl', 'Logo URL'],
   ['linkedin', 'LinkedIn'],
   ['twitter', 'Twitter / X'],
-  ['github', 'GitHub']
+  ['github', 'GitHub'],
+  ['instagram', 'Instagram']
 ];
 
 const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {

@@ -48,19 +48,19 @@ const steps = [
     n: '01',
     title: 'Tap',
     body: 'Hold the card to any modern phone. No app required.',
-    image: '/illustrations/how-tap.png'
+    image: '/illustrations/how-tap.jpg'
   },
   {
     n: '02',
     title: 'Open',
     body: 'Your private profile appears with contacts, links, and socials.',
-    image: '/illustrations/how-share.png'
+    image: '/illustrations/how-share.jpg'
   },
   {
     n: '03',
     title: 'Saved',
     body: 'They save you instantly. QR is there when NFC isn’t.',
-    image: '/illustrations/how-saved.png'
+    image: '/illustrations/how-saved.jpg'
   }
 ];
 
@@ -339,14 +339,7 @@ const HomePage = () => {
           <div className="km-landing-hero-copy max-w-xl">
             
             <div className="animate-fade-up mt-4 flex items-center gap-4">
-              <img
-                src="/logos/kadi-moja-icon-light.png"
-                alt=""
-                className="h-14 w-14 shrink-0 rounded-2xl object-contain shadow-[0_8px_24px_rgba(0,0,0,0.25)] sm:h-16 sm:w-16"
-              />
-              <p className="font-display text-[clamp(3rem,9vw,5.75rem)] font-bold leading-[0.92] tracking-tight">
-                Kadi Moja
-              </p>
+            
             </div>
             <h1 className="animate-fade-up-delay mt-6 font-display text-[clamp(1.75rem,4.2vw,2.85rem)] font-semibold leading-[1.12]">
               The <span className="km-landing-accent-text">last card</span>
@@ -428,19 +421,14 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <p className="mt-5 text-center text-[11px] font-medium uppercase tracking-[0.16em] text-white/40 lg:text-left lg:pl-6">
-              Meeting tap · profile opens instantly
-            </p>
+           
           </div>
         </div>
       </section>
 
       <section className="border-y border-km-lagoon/10 bg-km-foam">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-5 text-sm text-km-ink/65 lg:px-8">
-          <span>Pay once · no monthly fees</span>
-          <span>iPhone + Android</span>
-          <span>Update forever from dashboard</span>
-          <span>Delivered across Tanzania</span>
+        
         </div>
       </section>
 
@@ -496,55 +484,6 @@ const HomePage = () => {
           </p>
         </div>
       </section>
-
-      <section id="products" className="bg-white px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">NFC cards</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">Share everything with a tap</h2>
-            <p className="mt-4 text-km-ink/65 leading-relaxed">
-              One physical card. One private profile. Perfect for founders, sales teams, and professionals who network
-              every week.
-            </p>
-          </div>
-
-          <div className="mt-14 grid gap-6 lg:grid-cols-3 lg:items-stretch">
-            {products.map((p) => (
-              <article
-                key={p.name}
-                className={`flex flex-col border p-7 ${
-                  p.featured
-                    ? 'border-km-copper/40 bg-white shadow-soft lg:-translate-y-1'
-                    : 'border-km-lagoon/12 bg-km-bone/80 opacity-85'
-                }`}
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-km-copper">{p.tag}</p>
-                <h3 className="mt-4 font-display text-2xl font-semibold">{p.name}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-km-ink/65">{p.blurb}</p>
-                <p className="mt-6 font-display text-3xl font-semibold">{p.price}</p>
-                <ul className="mt-6 space-y-2.5 text-sm text-km-ink/70">
-                  {p.points.map((point) => (
-                    <li key={point} className="flex gap-2">
-                      <span className="text-km-sea">—</span>
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-                {p.active ? (
-                  <Link to="/login" className={`mt-auto pt-8 ${p.featured ? 'km-btn-primary' : 'km-btn-dark'}`}>
-                    Request this card
-                  </Link>
-                ) : (
-                  <span className="mt-auto inline-flex cursor-not-allowed items-center justify-center border border-km-ink/10 px-4 py-2.5 pt-8 text-sm font-semibold text-km-ink/40">
-                    Not available yet
-                  </span>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="samples" className="km-section-foam px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
@@ -722,7 +661,7 @@ const HomePage = () => {
           <div className="mt-12 grid gap-6 md:grid-cols-2">
             <article className="overflow-hidden bg-[#eceff3]">
               <img
-                src="/illustrations/compare-paper.png?v=2"
+                src="/illustrations/compare-paper.jpg?v=3"
                 alt="Scattered paper business cards"
                 className="aspect-[4/3] w-full object-cover grayscale"
                 loading="lazy"
@@ -738,7 +677,7 @@ const HomePage = () => {
             </article>
             <article className="overflow-hidden bg-km-lagoon">
               <img
-                src="/illustrations/compare-nfc.png?v=2"
+                src="/illustrations/compare-nfc.jpg?v=3"
                 alt="NFC card saving a contact on a phone"
                 className="aspect-[4/3] w-full object-cover"
                 loading="lazy"

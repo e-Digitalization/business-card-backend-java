@@ -482,8 +482,11 @@ body {
 
 @media (max-width: 1023px) {
   .km-landing-hero-prop-stage:not(.km-landing-hero-prop-stage--phone) {
-    min-height: 340px;
-    margin-top: 0.5rem;
+    /* .km-landing-hero-device--profile is anchored bottom:0 with a fixed
+       540px-tall screen (not responsive) — this needs enough room or it
+       overflows upward into the CTA buttons above it. */
+    min-height: 600px;
+    margin-top: 1.5rem;
   }
 
   .km-hero-nfc:not(.km-hero-nfc--behind) {

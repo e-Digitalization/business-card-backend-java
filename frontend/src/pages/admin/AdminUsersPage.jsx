@@ -156,10 +156,6 @@ const AdminUsersPage = () => {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-sm text-[#1a3d42]/55">
-          Accounts that can sign in to this admin panel. Deactivating or removing one blocks that login
-          immediately.
-        </p>
         <button
           type="button"
           onClick={() => setShowCreate((v) => !v)}

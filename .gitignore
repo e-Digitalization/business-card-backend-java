@@ -20,6 +20,7 @@ frontend/.vite/
 .vscode/
 .DS_Store
 *.log
+.deploy-state
 
 # Legacy projects tracked separately (optional keep out of monorepo push noise)
 business-card-front/

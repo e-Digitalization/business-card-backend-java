@@ -1840,9 +1840,9 @@ body {
 
 .admin-login-hero {
   background-image:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(232, 145, 58, 0.35), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, rgba(255, 255, 255, 0.18), transparent 50%),
-    linear-gradient(160deg, #0d7377, #14919b 50%, #1aa6a0);
+    radial-gradient(circle at 17% 14%, rgba(232, 145, 58, 0.34), transparent 28%),
+    radial-gradient(circle at 92% 88%, rgba(61, 201, 190, 0.3), transparent 34%),
+    linear-gradient(145deg, #075e62 0%, #087b80 45%, #0e9997 100%);
 }
 
 .km-confirm-overlay {
@@ -1875,48 +1875,71 @@ body {
 
 .km-login-slider {
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 1rem;
-  background: rgba(10, 50, 54, 0.28);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1.35rem;
+  background: rgba(4, 48, 51, 0.32);
+  box-shadow: 0 32px 70px rgba(0, 35, 38, 0.28);
+  backdrop-filter: blur(16px);
 }
 
 .km-login-slider-media {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
+  background: #093f43;
+  isolation: isolate;
+}
+
+.km-login-slider-img-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: -1.5rem;
+  width: calc(100% + 3rem);
+  height: calc(100% + 3rem);
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(20px) brightness(0.62) saturate(0.8);
+  transform: scale(1.08);
+  transition: opacity 0.55s ease;
+}
+
+.km-login-slider-img-backdrop.is-active {
+  opacity: 0.72;
 }
 
 .km-login-slider-img {
   position: absolute;
+  z-index: 1;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   opacity: 0;
-  transition: opacity 0.55s ease;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.18));
+  transition: opacity 0.55s ease, transform 0.7s ease;
+  transform: scale(1.015);
 }
 
 .km-login-slider-img.is-active {
   opacity: 1;
+  transform: scale(1);
 }
 
 .km-login-slider-fade {
   pointer-events: none;
   position: absolute;
+  z-index: 2;
   inset: auto 0 0;
-  height: 42%;
-  background: linear-gradient(to top, rgba(10, 40, 44, 0.55), transparent);
+  height: 22%;
+  background: linear-gradient(to top, rgba(4, 40, 43, 0.34), transparent);
 }
 
 .km-login-slider-body {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 1.15rem 1.2rem 1.1rem;
+  padding: 1.4rem 1.5rem 1.3rem;
 }
 
 .km-login-slider-eyebrow {
@@ -1929,7 +1952,7 @@ body {
 
 .km-login-slider-title {
   font-family: var(--font-display, inherit);
-  font-size: 1.25rem;
+  font-size: 1.55rem;
   font-weight: 650;
   line-height: 1.25;
   letter-spacing: -0.02em;
@@ -1938,8 +1961,9 @@ body {
 
 .km-login-slider-text {
   min-height: 2.6rem;
-  font-size: 0.875rem;
-  line-height: 1.45;
+  max-width: 31rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
 }
 
@@ -2015,6 +2039,140 @@ body {
 .km-login-slider-arrow:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.65);
   outline-offset: 2px;
+}
+
+.km-login-showcase {
+  min-height: 100dvh;
+}
+
+.km-login-orbit {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.km-login-orbit-one {
+  top: -18rem;
+  right: -15rem;
+  width: 42rem;
+  height: 42rem;
+}
+
+.km-login-orbit-two {
+  bottom: -22rem;
+  left: -17rem;
+  width: 48rem;
+  height: 48rem;
+}
+
+.km-login-main {
+  background:
+    linear-gradient(rgba(249, 247, 242, 0.88), rgba(249, 247, 242, 0.96)),
+    radial-gradient(circle at 72% 12%, rgba(13, 115, 119, 0.12), transparent 28%);
+}
+
+.km-login-main::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10rem;
+  height: 10rem;
+  border-bottom: 1px solid rgba(13, 115, 119, 0.08);
+  border-left: 1px solid rgba(13, 115, 119, 0.08);
+  border-bottom-left-radius: 100%;
+  content: '';
+}
+
+.km-login-main-glow {
+  position: absolute;
+  right: -8rem;
+  bottom: -10rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 999px;
+  background: rgba(154, 107, 69, 0.08);
+  filter: blur(2px);
+}
+
+.km-login-card {
+  border: 1px solid rgba(26, 61, 66, 0.075);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.94);
+  padding: 2.35rem;
+  box-shadow:
+    0 30px 80px rgba(26, 61, 66, 0.1),
+    0 2px 10px rgba(26, 61, 66, 0.03);
+}
+
+.admin-login .admin-input,
+.admin-login .admin-input-wrap {
+  min-height: 3.15rem;
+  border-color: rgba(26, 61, 66, 0.13);
+  border-radius: 0.7rem;
+  background: #faf9f6;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.admin-login .admin-input {
+  padding: 0.8rem 0.95rem;
+}
+
+.admin-login .admin-input-wrap {
+  padding: 0.75rem 0.95rem;
+}
+
+.admin-login .admin-input:hover,
+.admin-login .admin-input-wrap:hover {
+  border-color: rgba(26, 61, 66, 0.23);
+}
+
+.admin-login .admin-input:focus,
+.admin-login .admin-input-wrap:focus-within {
+  border-color: #0d7377;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.11);
+}
+
+.admin-login .admin-input::placeholder {
+  color: rgba(26, 61, 66, 0.34);
+}
+
+.km-login-submit {
+  background: linear-gradient(135deg, #a8734a, #8e5e3b);
+  box-shadow: 0 10px 24px rgba(142, 94, 59, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.km-login-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(142, 94, 59, 0.27);
+  filter: saturate(1.08);
+}
+
+.km-login-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.km-login-submit:focus-visible {
+  outline: 3px solid rgba(154, 107, 69, 0.25);
+  outline-offset: 3px;
+}
+
+@media (max-width: 639px) {
+  .km-login-card {
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 20px 50px rgba(26, 61, 66, 0.09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-login-slider-img-backdrop,
+  .km-login-slider-img,
+  .km-login-submit {
+    transition: none;
+  }
 }
 
 /* Client workspace */

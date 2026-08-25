@@ -6,25 +6,25 @@ import api from '../services/api.js';
 
 const loginAdverts = [
   {
-    image: '/kadi-moja-hero-card.png',
+    image: '/illustrations/compare-nfc.jpg',
     eyebrow: 'Kadi Moja NFC',
     title: 'One card. Every introduction.',
     text: 'Tap once in Dar, Arusha, or Zanzibar — your full profile opens on their phone.'
   },
   {
-    image: '/illustrations/how-tap.png',
+    image: '/illustrations/how-tap.jpg',
     eyebrow: 'No app needed',
     title: 'Works on iPhone & Android.',
     text: 'NFC opens your live digital card instantly. QR is ready when tap isn’t.'
   },
   {
-    image: '/illustrations/how-share.png?v=3',
+    image: '/illustrations/how-share.jpg?v=3',
     eyebrow: 'Always current',
     title: 'Update without reprinting.',
     text: 'Change phone, title, or photo once. Every Kadi Moja tag stays up to date.'
   },
   {
-    image: '/illustrations/how-saved.png',
+    image: '/illustrations/how-saved.jpg',
     eyebrow: 'AI Scan',
     title: 'Paper cards, digitised.',
     text: 'Photograph a paper card — Kadi Moja reads the details and saves the contact.'
@@ -146,26 +146,35 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="admin-login min-h-screen grid lg:grid-cols-2">
-      <aside className="relative hidden overflow-hidden lg:flex lg:flex-col text-white">
+    <div className="admin-login min-h-screen lg:grid lg:grid-cols-[1.08fr_0.92fr]">
+      <aside className="km-login-showcase relative hidden overflow-hidden text-white lg:flex lg:flex-col">
         <div className="absolute inset-0 admin-login-hero" />
-        <div className="relative z-10 flex h-full flex-col px-10 py-9">
+        <div className="km-login-orbit km-login-orbit-one" aria-hidden="true" />
+        <div className="km-login-orbit km-login-orbit-two" aria-hidden="true" />
+        <div className="relative z-10 flex h-full flex-col px-10 py-9 xl:px-16 xl:py-12">
           <div>
             <BrandLogo to="/" tone="light" textClassName="text-3xl" markClassName="h-10 w-10" />
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/75">
-              One login for your digital card, contacts, and admin tools across Tanzania.
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70">
+              Your professional identity, ready to share anywhere.
             </p>
           </div>
 
-          <div className="km-login-slider my-auto w-full max-w-md">
+          <div className="km-login-slider my-auto w-full max-w-xl">
             <div className="km-login-slider-media">
               {loginAdverts.map((item, index) => (
-                <img
-                  key={item.image}
-                  src={item.image}
-                  alt=""
-                  className={`km-login-slider-img ${index === slide ? 'is-active' : ''}`}
-                />
+                <React.Fragment key={item.image}>
+                  <img
+                    src={item.image}
+                    alt=""
+                    aria-hidden="true"
+                    className={`km-login-slider-img-backdrop ${index === slide ? 'is-active' : ''}`}
+                  />
+                  <img
+                    src={item.image}
+                    alt=""
+                    className={`km-login-slider-img ${index === slide ? 'is-active' : ''}`}
+                  />
+                </React.Fragment>
               ))}
               <div className="km-login-slider-fade" aria-hidden="true" />
             </div>
@@ -215,81 +224,93 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <p className="text-xs tracking-wide text-white/45">
-            Dar es Salaam · Arusha · Mwanza · Dodoma · Zanzibar
-          </p>
+          <div className="flex items-center justify-between gap-6 text-xs text-white/50">
+            <p className="tracking-wide">Made for modern connections</p>
+            <p className="hidden xl:block">Dar es Salaam · Arusha · Mwanza · Dodoma · Zanzibar</p>
+          </div>
         </div>
       </aside>
 
-      <main className="flex items-center justify-center bg-[#f7f4ef] px-5 py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-6 lg:hidden">
+      <main className="km-login-main relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8">
+        <div className="km-login-main-glow" aria-hidden="true" />
+        <div className="relative z-10 w-full max-w-[29rem]">
+          <div className="mb-8 flex items-center justify-between lg:hidden">
             <BrandLogo to="/" tone="color" textClassName="text-2xl" markClassName="h-9 w-9" />
+            <Link to="/" className="text-sm font-medium text-[#0d7377]">
+              Visit website
+            </Link>
           </div>
 
-          <div className="rounded-xl border border-black/5 bg-white p-7 shadow-[0_24px_60px_rgba(26,61,66,0.08)] sm:p-9">
-            <div className="mb-6 flex rounded-lg bg-[#f7f4ef] p-1">
+          <div className="km-login-card">
+            <div className="mb-8 flex rounded-xl bg-[#f3f1ec] p-1.5" role="tablist" aria-label="Sign in type">
               <button
                 type="button"
+                role="tab"
+                aria-selected={role === 'account'}
                 onClick={() => {
                   setRole('account');
                   setError('');
                 }}
-                className={`flex-1 rounded-md py-2.5 text-sm font-semibold transition ${
-                  role === 'account' ? 'bg-white text-[#0d7377] shadow-sm' : 'text-[#1a3d42]/55'
+                className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+                  role === 'account' ? 'bg-white text-[#0d7377] shadow-[0_3px_12px_rgba(26,61,66,0.08)]' : 'text-[#1a3d42]/50 hover:text-[#1a3d42]/75'
                 }`}
               >
                 My account
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={role === 'admin'}
                 onClick={() => {
                   setRole('admin');
                   setMode('login');
                   setError('');
                 }}
-                className={`flex-1 rounded-md py-2.5 text-sm font-semibold transition ${
-                  role === 'admin' ? 'bg-white text-[#0d7377] shadow-sm' : 'text-[#1a3d42]/55'
+                className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+                  role === 'admin' ? 'bg-white text-[#0d7377] shadow-[0_3px_12px_rgba(26,61,66,0.08)]' : 'text-[#1a3d42]/50 hover:text-[#1a3d42]/75'
                 }`}
               >
                 Admin
               </button>
             </div>
 
-            <h1 className="font-display text-2xl font-semibold text-[#1a3d42]">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#b1784c]">
+              {role === 'admin' ? 'Administration' : mode === 'signup' ? 'Join Kadi Moja' : 'Welcome back'}
+            </p>
+            <h1 className="font-display text-[2rem] font-semibold leading-tight tracking-[-0.03em] text-[#1a3d42]">
               {role === 'admin' ? 'Admin sign in' : mode === 'signup' ? 'Create account' : 'Karibu tena'}
             </h1>
-            <p className="mt-1 text-sm text-[#1a3d42]/55">
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#1a3d42]/55">
               {role === 'admin'
                 ? 'Manage digital cards and NFC tags.'
                 : 'Sign in to edit your card, scan cards, and manage contacts.'}
             </p>
 
             {role === 'account' && googleEnabled && mode === 'login' && (
-              <div className="mt-5 flex justify-center">
+              <div className="km-google-login mt-6 flex justify-center">
                 <GoogleLogin
                   onSuccess={onGoogleSuccess}
                   onError={() => setError('Google sign-in was cancelled.')}
                   useOneTap={false}
                   text="signin_with"
                   shape="rectangular"
-                  width="320"
+                  width="360"
                 />
               </div>
             )}
 
             {role === 'account' && googleEnabled && (
-              <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.14em] text-[#1a3d42]/35">
+              <div className="my-6 flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/35">
                 <span className="h-px flex-1 bg-black/10" />
-                or email
+                or continue with email
                 <span className="h-px flex-1 bg-black/10" />
               </div>
             )}
 
-            <form onSubmit={onSubmit} className={`space-y-4 ${role === 'account' && googleEnabled ? '' : 'mt-5'}`}>
+            <form onSubmit={onSubmit} className={`space-y-5 ${role === 'account' && googleEnabled ? '' : 'mt-7'}`}>
               {role === 'account' && mode === 'signup' && (
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">Full name</span>
+                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Full name</span>
                   <input
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -302,7 +323,7 @@ const LoginPage = () => {
 
               {role === 'account' ? (
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">Email</span>
+                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Email address</span>
                   <input
                     type="email"
                     value={email}
@@ -314,7 +335,7 @@ const LoginPage = () => {
                 </label>
               ) : (
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">Username</span>
+                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Username</span>
                   <input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -326,7 +347,7 @@ const LoginPage = () => {
               )}
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">Password</span>
+                <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Password</span>
                 <div className="admin-input-wrap">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -340,7 +361,7 @@ const LoginPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="text-xs font-semibold text-[#9a6b45]"
+                    className="rounded px-1 text-xs font-bold text-[#9a6b45] hover:text-[#74492c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9a6b45]/30"
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
@@ -348,13 +369,13 @@ const LoginPage = () => {
               </label>
 
               {error && (
-                <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
+                <p role="alert" className="rounded-lg border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-600">{error}</p>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-md bg-[#9a6b45] py-3.5 text-sm font-semibold text-white hover:bg-[#865c3b] disabled:opacity-60"
+                className="km-login-submit w-full rounded-lg py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading
                   ? 'Please wait…'
@@ -367,7 +388,7 @@ const LoginPage = () => {
             </form>
 
             {role === 'account' && (
-              <p className="mt-5 text-center text-sm text-[#1a3d42]/55">
+              <p className="mt-6 text-center text-sm text-[#1a3d42]/55">
                 {mode === 'signup' ? 'Already have an account?' : 'New to Kadi Moja?'}{' '}
                 <button
                   type="button"
@@ -381,18 +402,12 @@ const LoginPage = () => {
                 </button>
               </p>
             )}
-
-            {role === 'admin' && (
-              <p className="mt-5 text-center text-xs text-[#1a3d42]/45">
-                Default: <span className="font-medium text-[#1a3d42]/70">admin</span> /{' '}
-                <span className="font-medium text-[#1a3d42]/70">admin123</span>
-              </p>
-            )}
           </div>
 
-          <p className="mt-6 text-center">
-            <Link to="/" className="text-sm text-[#0d7377] hover:underline">
-              ← Back to website
+          <p className="mt-7 hidden text-center lg:block">
+            <Link to="/" className="group inline-flex items-center gap-2 text-sm font-medium text-[#1a3d42]/55 transition hover:text-[#0d7377]">
+              <span className="transition-transform group-hover:-translate-x-1">←</span>
+              Back to website
             </Link>
           </p>
         </div>

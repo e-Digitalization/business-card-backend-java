@@ -27,12 +27,11 @@ public class AppSettingsService {
     public static final String SELCOM_CURRENCY = "selcom.currency";
     public static final String SELCOM_MOCK = "selcom.mock";
 
-    public static final String AZAMPAY_APP_NAME = "azampay.app_name";
-    public static final String AZAMPAY_CLIENT_ID = "azampay.client_id";
-    public static final String AZAMPAY_CLIENT_SECRET = "azampay.client_secret";
-    public static final String AZAMPAY_API_KEY = "azampay.api_key";
-    public static final String AZAMPAY_ENV = "azampay.env";
-    public static final String AZAMPAY_ENABLED = "azampay.enabled";
+    public static final String NMB_BASE_URL = "nmb.base_url";
+    public static final String NMB_CLIENT_USR = "nmb.client_usr";
+    public static final String NMB_CLIENT_KEY = "nmb.client_key";
+    public static final String NMB_SYSTEM_NAME = "nmb.system_name";
+    public static final String NMB_ENABLED = "nmb.enabled";
 
     public static final String PAYMENTS_ACTIVE_PROVIDER = "payments.active_provider";
 
@@ -52,11 +51,10 @@ public class AppSettingsService {
     private final String envSelcomCurrency;
     private final String envSelcomMock;
 
-    private final String envAzampayAppName;
-    private final String envAzampayClientId;
-    private final String envAzampayClientSecret;
-    private final String envAzampayApiKey;
-    private final String envAzampayEnv;
+    private final String envNmbBaseUrl;
+    private final String envNmbClientUsr;
+    private final String envNmbClientKey;
+    private final String envNmbSystemName;
 
     public AppSettingsService(
         AppSettingRepository appSettingRepository,
@@ -72,11 +70,10 @@ public class AppSettingsService {
         @Value("${app.selcom.amount-tzs:10000}") String envSelcomAmountTzs,
         @Value("${app.selcom.currency:TZS}") String envSelcomCurrency,
         @Value("${app.selcom.mock:false}") String envSelcomMock,
-        @Value("${app.azampay.app-name:}") String envAzampayAppName,
-        @Value("${app.azampay.client-id:}") String envAzampayClientId,
-        @Value("${app.azampay.client-secret:}") String envAzampayClientSecret,
-        @Value("${app.azampay.api-key:}") String envAzampayApiKey,
-        @Value("${app.azampay.env:sandbox}") String envAzampayEnv
+        @Value("${app.nmb.base-url:https://nmb.spg.co.tz}") String envNmbBaseUrl,
+        @Value("${app.nmb.client-usr:}") String envNmbClientUsr,
+        @Value("${app.nmb.client-key:}") String envNmbClientKey,
+        @Value("${app.nmb.system-name:}") String envNmbSystemName
     ) {
         this.appSettingRepository = appSettingRepository;
         this.envOpenaiKey = blankToNull(envOpenaiKey);
@@ -91,11 +88,10 @@ public class AppSettingsService {
         this.envSelcomAmountTzs = blankToNull(envSelcomAmountTzs);
         this.envSelcomCurrency = blankToNull(envSelcomCurrency);
         this.envSelcomMock = blankToNull(envSelcomMock);
-        this.envAzampayAppName = blankToNull(envAzampayAppName);
-        this.envAzampayClientId = blankToNull(envAzampayClientId);
-        this.envAzampayClientSecret = blankToNull(envAzampayClientSecret);
-        this.envAzampayApiKey = blankToNull(envAzampayApiKey);
-        this.envAzampayEnv = blankToNull(envAzampayEnv);
+        this.envNmbBaseUrl = blankToNull(envNmbBaseUrl);
+        this.envNmbClientUsr = blankToNull(envNmbClientUsr);
+        this.envNmbClientKey = blankToNull(envNmbClientKey);
+        this.envNmbSystemName = blankToNull(envNmbSystemName);
     }
 
     public String openaiApiKey() {
@@ -163,38 +159,33 @@ public class AppSettingsService {
             && selcomVendor() != null;
     }
 
-    public String azampayAppName() {
-        return resolve(AZAMPAY_APP_NAME, envAzampayAppName);
+    public String nmbBaseUrl() {
+        String url = resolve(NMB_BASE_URL, envNmbBaseUrl);
+        return url == null ? "https://nmb.spg.co.tz" : trimSlash(url);
     }
 
-    public String azampayClientId() {
-        return resolve(AZAMPAY_CLIENT_ID, envAzampayClientId);
+    public String nmbClientUsr() {
+        return resolve(NMB_CLIENT_USR, envNmbClientUsr);
     }
 
-    public String azampayClientSecret() {
-        return resolve(AZAMPAY_CLIENT_SECRET, envAzampayClientSecret);
+    public String nmbClientKey() {
+        return resolve(NMB_CLIENT_KEY, envNmbClientKey);
     }
 
-    public String azampayApiKey() {
-        return resolve(AZAMPAY_API_KEY, envAzampayApiKey);
+    public String nmbSystemName() {
+        return resolve(NMB_SYSTEM_NAME, envNmbSystemName);
     }
 
-    public String azampayEnv() {
-        String env = resolve(AZAMPAY_ENV, envAzampayEnv);
-        return env == null ? "sandbox" : env;
-    }
-
-    public boolean azampayEnabled() {
-        String raw = resolve(AZAMPAY_ENABLED, null);
+    public boolean nmbEnabled() {
+        // Credentials mean live; ignore a stale "disabled" flag once keys exist.
+        if (nmbConfigured()) return true;
+        String raw = resolve(NMB_ENABLED, null);
         if (raw != null) return Boolean.parseBoolean(raw.trim());
-        return azampayConfigured();
+        return false;
     }
 
-    public boolean azampayConfigured() {
-        return azampayAppName() != null
-            && azampayClientId() != null
-            && azampayClientSecret() != null
-            && azampayApiKey() != null;
+    public boolean nmbConfigured() {
+        return nmbClientUsr() != null && nmbClientKey() != null && nmbSystemName() != null;
     }
 
     public String paymentsActiveProvider() {
@@ -244,22 +235,20 @@ public class AppSettingsService {
         selcom.put("forceMock", selcomForceMock());
         selcom.put("mode", selcomLiveConfigured() ? "live" : "demo");
 
-        Map<String, Object> azampay = new LinkedHashMap<>();
-        azampay.put("configured", azampayConfigured());
-        azampay.put("enabled", azampayEnabled());
-        azampay.put("appName", azampayAppName());
-        azampay.put("clientIdSource", sourceOf(AZAMPAY_CLIENT_ID, envAzampayClientId));
-        azampay.put("clientSecretSource", sourceOf(AZAMPAY_CLIENT_SECRET, envAzampayClientSecret));
-        azampay.put("apiKeySource", sourceOf(AZAMPAY_API_KEY, envAzampayApiKey));
-        azampay.put("maskedClientId", maskSecret(azampayClientId()));
-        azampay.put("maskedClientSecret", maskSecret(azampayClientSecret()));
-        azampay.put("maskedApiKey", maskSecret(azampayApiKey()));
-        azampay.put("env", azampayEnv());
-        azampay.put("status", azampayConfigured() ? "ready" : "not_configured");
+        Map<String, Object> nmb = new LinkedHashMap<>();
+        nmb.put("configured", nmbConfigured());
+        nmb.put("enabled", nmbEnabled());
+        nmb.put("baseUrl", nmbBaseUrl());
+        nmb.put("systemName", nmbSystemName());
+        nmb.put("clientUsrSource", sourceOf(NMB_CLIENT_USR, envNmbClientUsr));
+        nmb.put("clientKeySource", sourceOf(NMB_CLIENT_KEY, envNmbClientKey));
+        nmb.put("maskedClientUsr", maskSecret(nmbClientUsr()));
+        nmb.put("maskedClientKey", maskSecret(nmbClientKey()));
+        nmb.put("status", nmbConfigured() ? "ready" : "not_configured");
 
         Map<String, Object> payments = new LinkedHashMap<>();
         payments.put("activeProvider", paymentsActiveProvider());
-        payments.put("providers", new String[]{"selcom", "azampay"});
+        payments.put("providers", new String[]{"selcom", "nmb"});
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("openai", openai);
@@ -267,7 +256,7 @@ public class AppSettingsService {
         data.put("google", google);
         data.put("scan", scan);
         data.put("selcom", selcom);
-        data.put("azampay", azampay);
+        data.put("nmb", nmb);
         data.put("payments", payments);
         data.put("hint", "Values saved here override .env until cleared. Secrets are never shown in full.");
         return data;
@@ -294,14 +283,13 @@ public class AppSettingsService {
                 || "true".equalsIgnoreCase(String.valueOf(body.get("selcomForceMock")))));
         }
 
-        applyPlain(AZAMPAY_APP_NAME, body.get("azampayAppName"));
-        applySecret(AZAMPAY_CLIENT_ID, body.get("azampayClientId"));
-        applySecret(AZAMPAY_CLIENT_SECRET, body.get("azampayClientSecret"));
-        applySecret(AZAMPAY_API_KEY, body.get("azampayApiKey"));
-        applyPlain(AZAMPAY_ENV, body.get("azampayEnv"));
-        if (body.containsKey("azampayEnabled")) {
-            applyPlain(AZAMPAY_ENABLED, String.valueOf(Boolean.TRUE.equals(body.get("azampayEnabled"))
-                || "true".equalsIgnoreCase(String.valueOf(body.get("azampayEnabled")))));
+        applyPlain(NMB_BASE_URL, body.get("nmbBaseUrl"));
+        applySecret(NMB_CLIENT_USR, body.get("nmbClientUsr"));
+        applySecret(NMB_CLIENT_KEY, body.get("nmbClientKey"));
+        applyPlain(NMB_SYSTEM_NAME, body.get("nmbSystemName"));
+        if (body.containsKey("nmbEnabled")) {
+            applyPlain(NMB_ENABLED, String.valueOf(Boolean.TRUE.equals(body.get("nmbEnabled"))
+                || "true".equalsIgnoreCase(String.valueOf(body.get("nmbEnabled")))));
         }
 
         applyPlain(PAYMENTS_ACTIVE_PROVIDER, body.get("paymentsActiveProvider"));
@@ -312,9 +300,8 @@ public class AppSettingsService {
         clearIf(body, "clearSelcomApiKey", SELCOM_API_KEY);
         clearIf(body, "clearSelcomApiSecret", SELCOM_API_SECRET);
         clearIf(body, "clearSelcomVendor", SELCOM_VENDOR);
-        clearIf(body, "clearAzampayClientId", AZAMPAY_CLIENT_ID);
-        clearIf(body, "clearAzampayClientSecret", AZAMPAY_CLIENT_SECRET);
-        clearIf(body, "clearAzampayApiKey", AZAMPAY_API_KEY);
+        clearIf(body, "clearNmbClientUsr", NMB_CLIENT_USR);
+        clearIf(body, "clearNmbClientKey", NMB_CLIENT_KEY);
 
         return adminSnapshot();
     }

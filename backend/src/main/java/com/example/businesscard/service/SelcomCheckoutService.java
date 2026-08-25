@@ -266,7 +266,8 @@ public class SelcomCheckoutService {
         }
     }
 
-    private void markPaid(PaymentOrder order, String reference, String channel, String phone) {
+    @Transactional
+    public void markPaid(PaymentOrder order, String reference, String channel, String phone) {
         if ("PAID".equalsIgnoreCase(order.getStatus())) {
             applyFulfillment(order);
             return;

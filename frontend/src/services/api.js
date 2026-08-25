@@ -17,4 +17,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const url = String(error?.config?.url || '');
+    // Only force re-login on true auth failures (401). Do not treat 403 business/forbidden as logout.
+    if (status === 401 && url.includes('/api/client')) {
+      localStorage.removeItem('clientToken');
+      localStorage.removeItem('clientUser');
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+        window.location.assign('/login');
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

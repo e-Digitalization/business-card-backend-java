@@ -3,8 +3,8 @@ package com.example.businesscard.controller;
 import com.example.businesscard.dto.ApiResponse;
 import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.service.ClientAuthService;
+import com.example.businesscard.service.PaymentCheckoutService;
 import com.example.businesscard.service.ScanQuotaService;
-import com.example.businesscard.service.SelcomCheckoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +18,25 @@ import java.util.Map;
 public class ClientSubscriptionController {
     private final ClientAuthService clientAuthService;
     private final ScanQuotaService scanQuotaService;
-    private final SelcomCheckoutService selcomCheckoutService;
+    private final PaymentCheckoutService paymentCheckoutService;
 
     public ClientSubscriptionController(
         ClientAuthService clientAuthService,
         ScanQuotaService scanQuotaService,
-        SelcomCheckoutService selcomCheckoutService
+        PaymentCheckoutService paymentCheckoutService
     ) {
         this.clientAuthService = clientAuthService;
         this.scanQuotaService = scanQuotaService;
-        this.selcomCheckoutService = selcomCheckoutService;
+        this.paymentCheckoutService = paymentCheckoutService;
     }
 
     @GetMapping
     public ApiResponse<Map<String, Object>> status(HttpServletRequest request) {
         ClientUser user = currentUser(request);
         Map<String, Object> data = new LinkedHashMap<>(scanQuotaService.quotaSnapshot(user));
-        data.put("priceTzs", selcomCheckoutService.amountTzs());
-        data.put("currency", selcomCheckoutService.currency());
-        data.put("provider", selcomCheckoutService.isLiveConfigured() ? "selcom" : "mock");
+        data.put("priceTzs", paymentCheckoutService.aiScanPriceTzs());
+        data.put("currency", paymentCheckoutService.currency());
+        data.put("provider", paymentCheckoutService.statusProviderLabel());
         data.put("billingPeriod", "monthly");
         data.put("productName", "AI Scan Monthly");
         return ApiResponse.ok(data);
@@ -47,7 +47,7 @@ public class ClientSubscriptionController {
                                                      @RequestBody(required = false) Map<String, String> body) {
         ClientUser user = currentUser(request);
         String phone = body == null ? null : body.get("phone");
-        return ApiResponse.ok(selcomCheckoutService.startCheckout(user, phone));
+        return ApiResponse.ok(paymentCheckoutService.startAiCheckout(user, phone));
     }
 
     @PostMapping("/mock-pay")
@@ -58,13 +58,13 @@ public class ClientSubscriptionController {
         if (orderId == null || orderId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required.");
         }
-        return ApiResponse.ok(selcomCheckoutService.completeMockPayment(user, orderId));
+        return ApiResponse.ok(paymentCheckoutService.completeMockPayment(user, orderId));
     }
 
     @GetMapping("/orders/{orderId}")
     public ApiResponse<Map<String, Object>> orderStatus(HttpServletRequest request, @PathVariable String orderId) {
         ClientUser user = currentUser(request);
-        return ApiResponse.ok(selcomCheckoutService.refreshOrderStatus(user, orderId));
+        return ApiResponse.ok(paymentCheckoutService.refreshOrder(user, orderId));
     }
 
     private ClientUser currentUser(HttpServletRequest request) {

@@ -6,7 +6,7 @@ import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.repository.NfcCardRequestRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.ProductCatalogService;
-import com.example.businesscard.service.SelcomCheckoutService;
+import com.example.businesscard.service.PaymentCheckoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +21,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/client/nfc")
 public class ClientNfcOrderController {
     private final ClientAuthService clientAuthService;
-    private final SelcomCheckoutService selcomCheckoutService;
+    private final PaymentCheckoutService paymentCheckoutService;
     private final ProductCatalogService productCatalogService;
     private final NfcCardRequestRepository nfcCardRequestRepository;
 
     public ClientNfcOrderController(
         ClientAuthService clientAuthService,
-        SelcomCheckoutService selcomCheckoutService,
+        PaymentCheckoutService paymentCheckoutService,
         ProductCatalogService productCatalogService,
         NfcCardRequestRepository nfcCardRequestRepository
     ) {
         this.clientAuthService = clientAuthService;
-        this.selcomCheckoutService = selcomCheckoutService;
+        this.paymentCheckoutService = paymentCheckoutService;
         this.productCatalogService = productCatalogService;
         this.nfcCardRequestRepository = nfcCardRequestRepository;
     }
@@ -45,7 +45,7 @@ public class ClientNfcOrderController {
         data.put("nfcCardPriceTzs", productCatalogService.nfcCardPriceTzs());
         data.put("nfcBilling", "one_time");
         data.put("currency", productCatalogService.currency());
-        data.put("paymentProvider", selcomCheckoutService.isLiveConfigured() ? "selcom" : "mock");
+        data.put("paymentProvider", paymentCheckoutService.statusProviderLabel());
         return ApiResponse.ok(data);
     }
 
@@ -70,7 +70,7 @@ public class ClientNfcOrderController {
         }
         String phone = body == null ? null : body.get("phone");
         String notes = body == null ? null : body.get("deliveryNotes");
-        return ApiResponse.ok(selcomCheckoutService.startNfcCardCheckout(user, phone, notes));
+        return ApiResponse.ok(paymentCheckoutService.startNfcCheckout(user, phone, notes));
     }
 
     private ClientUser currentUser(HttpServletRequest request) {

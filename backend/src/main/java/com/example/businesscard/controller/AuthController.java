@@ -35,10 +35,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         AdminUser user = adminUserRepository.findByUsername(request.getUsername()).orElse(null);
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (user == null || !user.isActive() || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String token = tokenProvider.generateToken(user.getUsername(), "ADMIN", null);
+        String token = tokenProvider.generateToken(user.getUsername(), "ADMIN", user.getId());
         return ResponseEntity.ok(new LoginResponse(token));
     }
 

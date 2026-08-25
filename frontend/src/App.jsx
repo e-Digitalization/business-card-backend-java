@@ -26,6 +26,7 @@ import AdminSetupsOverviewPage from './pages/admin/setups/AdminSetupsOverviewPag
 import AdminSetupsAiPage from './pages/admin/setups/AdminSetupsAiPage.jsx';
 import AdminSetupsSelcomPage from './pages/admin/setups/AdminSetupsSelcomPage.jsx';
 import AdminSetupsNmbPage from './pages/admin/setups/AdminSetupsNmbPage.jsx';
+import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
 import ClaimAccountPage from './pages/ClaimAccountPage.jsx';
 
 const AppShell = () => {
@@ -84,6 +85,7 @@ const AppShell = () => {
           <Route path="setups/ai" element={<AdminSetupsAiPage />} />
           <Route path="setups/selcom" element={<AdminSetupsSelcomPage />} />
           <Route path="setups/nmb" element={<AdminSetupsNmbPage />} />
+          <Route path="admins" element={<AdminUsersPage />} />
         </Route>
         <Route path="/not-found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />

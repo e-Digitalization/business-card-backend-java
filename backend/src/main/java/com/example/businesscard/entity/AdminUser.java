@@ -2,6 +2,8 @@ package com.example.businesscard.entity;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "admin_users")
 public class AdminUser {
@@ -14,6 +16,12 @@ public class AdminUser {
 
     @Column(nullable = false)
     private String passwordHash;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
 
     public Long getId() {
         return id;
@@ -37,5 +45,21 @@ public class AdminUser {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

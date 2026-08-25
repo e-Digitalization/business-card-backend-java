@@ -40,6 +40,14 @@ const icons = {
       <path d="M4 12h10M11 9l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
+  team: (
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.7">
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19c0-3 2.5-5.5 5.5-5.5S14.5 16 14.5 19" strokeLinecap="round" />
+      <path d="M16 8.5a2.5 2.5 0 1 0 0-5" strokeLinecap="round" />
+      <path d="M15.5 13.6c2.4.4 4 2.5 4 5.4" strokeLinecap="round" />
+    </svg>
+  ),
   setups: (
     <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.7">
       <circle cx="12" cy="12" r="3" />
@@ -86,6 +94,7 @@ const AdminLayout = () => {
     if (location.pathname.startsWith('/admin/setups/selcom')) return 'Setups · Selcom';
     if (location.pathname.startsWith('/admin/setups/nmb')) return 'Setups · NMB';
     if (location.pathname.startsWith('/admin/setups')) return 'Setups';
+    if (location.pathname.startsWith('/admin/admins')) return 'Admin Accounts';
     return 'Dashibodi';
   }, [location.pathname]);
 
@@ -259,6 +268,14 @@ const AdminLayout = () => {
             </div>
           </div>
         </div>
+        <NavLink
+          to="/admin/admins"
+          onClick={closeMobile}
+          className={({ isActive }) => `snav-item ${isActive ? 'is-active' : ''}`}
+        >
+          <span className="snav-item-icon">{icons.team}</span>
+          <span className="flex-1">Admin Accounts</span>
+        </NavLink>
       </nav>
 
       <div className="border-t border-black/5 p-3">

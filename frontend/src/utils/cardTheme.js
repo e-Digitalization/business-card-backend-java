@@ -4,13 +4,15 @@
 export const CARD_THEME_PRESETS = {
   lagoon: { c1: '#0a5f63', c2: '#0d7377', c3: '#1a3d42', accent: '#e8913a' },
   midnight: { c1: '#1e1b4b', c2: '#312e81', c3: '#4c1d95', accent: '#f59e0b' },
-  sunset: { c1: '#7c2d12', c2: '#c2410c', c3: '#9a3412', accent: '#fbbf24' }
+  sunset: { c1: '#7c2d12', c2: '#c2410c', c3: '#9a3412', accent: '#fbbf24' },
+  executive: { c1: '#0f172a', c2: '#1f2937', c3: '#111827', accent: '#d4a853' }
 };
 
 export const CARD_THEME_OPTIONS = [
   { value: 'lagoon', label: 'Lagoon' },
   { value: 'midnight', label: 'Midnight' },
   { value: 'sunset', label: 'Sunset' },
+  { value: 'executive', label: 'Executive' },
   { value: 'custom', label: 'Custom' }
 ];
 

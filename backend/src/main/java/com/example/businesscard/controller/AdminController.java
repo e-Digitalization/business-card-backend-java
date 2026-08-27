@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "custom");
+    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "executive", "custom");
     private final CardRepository cardRepository;
     private final CardTagRepository cardTagRepository;
     private final PrivateSlugService privateSlugService;

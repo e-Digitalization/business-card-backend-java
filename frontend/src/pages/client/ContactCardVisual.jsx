@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
+import SocialLinks from '../../components/SocialLinks.jsx';
 
 const ContactIcon = ({ type }) => {
   const common = {
@@ -175,6 +176,8 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null, themeVars 
             })}
           </ul>
         )}
+
+        <SocialLinks profile={contact} className="mt-6 justify-center" />
 
         {contact?.notes && (
           <p className="km-fade-up mt-5 rounded-xl bg-[#f7f4ef] px-3.5 py-3 text-sm leading-relaxed text-[#1a3d42]/65">

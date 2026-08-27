@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
 import { getCardThemeVars } from '../utils/cardTheme.js';
+import SocialLinks from '../components/SocialLinks.jsx';
 
 const ContactIcon = ({ type }) => {
   const common = {
@@ -225,30 +226,7 @@ const ProfilePage = () => {
             })}
           </ul>
 
-          {(profile.linkedin || profile.twitter || profile.github || profile.instagram) && (
-            <div className="mt-7 flex justify-center gap-3">
-              {profile.linkedin && (
-                <a href={profile.linkedin} target="_blank" rel="noreferrer" className="km-card-social">
-                  in
-                </a>
-              )}
-              {profile.twitter && (
-                <a href={profile.twitter} target="_blank" rel="noreferrer" className="km-card-social">
-                  𝕏
-                </a>
-              )}
-              {profile.github && (
-                <a href={profile.github} target="_blank" rel="noreferrer" className="km-card-social">
-                  GH
-                </a>
-              )}
-              {profile.instagram && (
-                <a href={profile.instagram} target="_blank" rel="noreferrer" className="km-card-social">
-                  IG
-                </a>
-              )}
-            </div>
-          )}
+          <SocialLinks profile={profile} className="mt-7 justify-center" />
         </div>
       </article>
     </div>

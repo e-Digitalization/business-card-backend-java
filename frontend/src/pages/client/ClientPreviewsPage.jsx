@@ -56,6 +56,10 @@ const ClientPreviewsPage = () => {
     logoUrl: card?.logoUrl,
     website: card?.website,
     whatsapp: card?.whatsapp,
+    linkedin: card?.linkedin,
+    twitter: card?.twitter,
+    github: card?.github,
+    instagram: card?.instagram,
     source: 'tap'
   };
   const themeVars = getCardThemeVars(card);

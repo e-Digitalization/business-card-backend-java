@@ -23,7 +23,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/client")
 public class ClientCardController {
-    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "custom");
+    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "executive", "custom");
     private final ClientAuthService clientAuthService;
     private final CardRepository cardRepository;
     private final PhotoUploadService photoUploadService;

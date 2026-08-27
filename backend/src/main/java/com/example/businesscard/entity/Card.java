@@ -44,7 +44,7 @@ public class Card {
     private String github;
     private String instagram;
 
-    // One of "lagoon" (default), "midnight", "sunset", "custom" — see frontend/src/utils/cardTheme.js
+    // One of "lagoon" (default), "midnight", "sunset", "executive", "custom" — see frontend/src/utils/cardTheme.js
     private String theme = "lagoon";
     @Column(name = "primary_color")
     private String primaryColor;

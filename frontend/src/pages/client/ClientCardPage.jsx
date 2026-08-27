@@ -288,7 +288,11 @@ const ClientCardPage = () => {
                 photoUrl: form.photoUrl,
                 logoUrl: form.logoUrl,
                 website: form.website,
-                whatsapp: form.whatsapp
+                whatsapp: form.whatsapp,
+                linkedin: form.linkedin,
+                twitter: form.twitter,
+                github: form.github,
+                instagram: form.instagram
               }}
               variant="lagoon"
               themeVars={getCardThemeVars(form)}

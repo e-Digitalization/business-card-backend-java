@@ -54,11 +54,7 @@ const ProfilePage = () => {
   const showPhoto = Boolean(photoSrc) && !photoFailed;
 
   if (loading) {
-    return (
-      <div className="km-card-page flex min-h-screen items-center justify-center">
-        <p className="km-fade-in text-sm text-[#1a3d42]/50">Opening card…</p>
-      </div>
-    );
+    return <div className="km-card-page min-h-screen" aria-busy="true" />;
   }
 
   if (error) {

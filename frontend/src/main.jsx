@@ -9,12 +9,15 @@ import MuiThemeProvider from './components/MuiThemeProvider.jsx';
 
 const envGoogleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const isPublicCardRoute = /^\/(?:u|c)\//.test(window.location.pathname);
 
 const Bootstrap = () => {
   const [clientId, setClientId] = useState(envGoogleClientId);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(isPublicCardRoute);
 
   useEffect(() => {
+    if (isPublicCardRoute) return undefined;
+
     let cancelled = false;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 5000);
@@ -52,7 +55,11 @@ const Bootstrap = () => {
     </MuiThemeProvider>
   );
 
-  return clientId ? <GoogleOAuthProvider clientId={clientId}>{tree}</GoogleOAuthProvider> : tree;
+  return clientId && !isPublicCardRoute ? (
+    <GoogleOAuthProvider clientId={clientId}>{tree}</GoogleOAuthProvider>
+  ) : (
+    tree
+  );
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(

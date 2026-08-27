@@ -1,0 +1,3 @@
+ALTER TABLE cards ADD COLUMN theme VARCHAR(20) NOT NULL DEFAULT 'lagoon';
+ALTER TABLE cards ADD COLUMN primary_color VARCHAR(9);
+ALTER TABLE cards ADD COLUMN accent_color VARCHAR(9);

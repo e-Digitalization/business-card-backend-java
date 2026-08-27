@@ -44,6 +44,13 @@ public class Card {
     private String github;
     private String instagram;
 
+    // One of "lagoon" (default), "midnight", "sunset", "custom" — see frontend/src/utils/cardTheme.js
+    private String theme = "lagoon";
+    @Column(name = "primary_color")
+    private String primaryColor;
+    @Column(name = "accent_color")
+    private String accentColor;
+
     private boolean active = true;
 
     public Long getId() {
@@ -188,5 +195,29 @@ public class Card {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getPrimaryColor() {
+        return primaryColor;
+    }
+
+    public void setPrimaryColor(String primaryColor) {
+        this.primaryColor = primaryColor;
+    }
+
+    public String getAccentColor() {
+        return accentColor;
+    }
+
+    public void setAccentColor(String accentColor) {
+        this.accentColor = accentColor;
     }
 }

@@ -23,16 +23,20 @@ public class PhotoUploadService {
     private final Path uploadRoot;
 
     public PhotoUploadService(@Value("${app.upload-dir:uploads}") String uploadDir) throws IOException {
-        this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize().resolve("photos");
+        this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(this.uploadRoot);
     }
 
     public String store(MultipartFile file) {
+        return store(file, "photos");
+    }
+
+    public String store(MultipartFile file, String subfolder) {
         if (file == null || file.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose a photo to upload.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose an image to upload.");
         }
         if (file.getSize() > MAX_BYTES) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Photo must be under 5 MB.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image must be under 5 MB.");
         }
         String contentType = file.getContentType() == null ? "" : file.getContentType().toLowerCase();
         if (!ALLOWED.contains(contentType)) {
@@ -46,14 +50,14 @@ public class PhotoUploadService {
             default -> "jpg";
         };
         String filename = UUID.randomUUID().toString().replace("-", "") + "." + ext;
-        Path target = uploadRoot.resolve(filename);
-
         try {
-            Files.copy(file.getInputStream(), target);
+            Path targetDir = uploadRoot.resolve(subfolder);
+            Files.createDirectories(targetDir);
+            Files.copy(file.getInputStream(), targetDir.resolve(filename));
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not save photo.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not save image.");
         }
 
-        return "/uploads/photos/" + filename;
+        return "/uploads/" + subfolder + "/" + filename;
     }
 }

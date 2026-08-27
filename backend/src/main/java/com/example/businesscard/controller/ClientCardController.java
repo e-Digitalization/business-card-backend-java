@@ -17,10 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/client")
 public class ClientCardController {
+    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "custom");
     private final ClientAuthService clientAuthService;
     private final CardRepository cardRepository;
     private final PhotoUploadService photoUploadService;
@@ -75,6 +77,15 @@ public class ClientCardController {
         card.setInstagram(body.getInstagram());
         card.setActive(body.isActive());
 
+        if (body.getTheme() != null) {
+            if (!ALLOWED_THEMES.contains(body.getTheme())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown card theme.");
+            }
+            card.setTheme(body.getTheme());
+        }
+        card.setPrimaryColor(body.getPrimaryColor());
+        card.setAccentColor(body.getAccentColor());
+
         if (body.getFullName() != null && !body.getFullName().isBlank()) {
             user.setFullName(body.getFullName());
         }
@@ -113,6 +124,23 @@ public class ClientCardController {
         ClientUser user = currentUser(request);
         Card card = clientAuthService.ensureCard(user, false);
         card.setPhotoUrl(null);
+        return ApiResponse.ok(cardRepository.save(card));
+    }
+
+    @PostMapping(value = "/me/card/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<Card> uploadLogo(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+        ClientUser user = currentUser(request);
+        String path = photoUploadService.store(file, "logos");
+        Card card = clientAuthService.ensureCard(user, false);
+        card.setLogoUrl(path);
+        return ApiResponse.ok(cardRepository.save(card));
+    }
+
+    @DeleteMapping("/me/card/logo")
+    public ApiResponse<Card> clearLogo(HttpServletRequest request) {
+        ClientUser user = currentUser(request);
+        Card card = clientAuthService.ensureCard(user, false);
+        card.setLogoUrl(null);
         return ApiResponse.ok(cardRepository.save(card));
     }
 

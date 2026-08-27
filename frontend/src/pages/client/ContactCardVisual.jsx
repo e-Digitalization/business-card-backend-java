@@ -57,10 +57,11 @@ const ContactIcon = ({ type }) => {
  * Beautiful card visual for saved/scanned contacts.
  * variant: "ink" (scanned) | "lagoon" (tap/Kadi Moja style)
  */
-const ContactCardVisual = ({ contact, variant = 'ink', footer = null }) => {
+const ContactCardVisual = ({ contact, variant = 'ink', footer = null, themeVars = null }) => {
   const [photoFailed, setPhotoFailed] = useState(false);
   const initials = initialsFromName(contact?.fullName);
   const photoSrc = resolveMediaUrl(contact?.photoUrl);
+  const logoSrc = resolveMediaUrl(contact?.logoUrl);
   const showPhoto = Boolean(photoSrc) && !photoFailed;
 
   const phoneList = useMemo(
@@ -99,7 +100,10 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null }) => {
         : 'Saved contact';
 
   return (
-    <article className={`km-card km-saved-card km-saved-card--${variant} overflow-hidden bg-white sm:rounded-[1.75rem]`}>
+    <article
+      className={`km-card km-saved-card km-saved-card--${variant} overflow-hidden bg-white sm:rounded-[1.75rem]`}
+      style={themeVars || undefined}
+    >
       <header className="km-card-hero km-fade-in">
         <div className="km-card-hero-pattern" aria-hidden="true" />
         <div className="km-card-hero-content">
@@ -125,7 +129,9 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null }) => {
       </header>
 
       <div className="km-card-body relative px-6 pb-7 pt-1">
-        <div className="km-fade-up">
+        {logoSrc && <img src={logoSrc} alt="" className="km-card-logo" />}
+
+        <div className={`km-fade-up ${logoSrc ? 'pr-16' : ''}`}>
           <h1 className="font-display text-[1.7rem] font-bold leading-tight tracking-tight text-[#1a3d42]">
             {contact?.fullName || 'Unnamed contact'}
           </h1>

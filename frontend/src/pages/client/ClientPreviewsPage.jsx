@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
+import { getCardThemeVars } from '../../utils/cardTheme.js';
 import { notify } from '../../utils/toast.js';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import ContactCardVisual from './ContactCardVisual.jsx';
@@ -52,10 +53,12 @@ const ClientPreviewsPage = () => {
     email,
     location,
     photoUrl: photo,
+    logoUrl: card?.logoUrl,
     website: card?.website,
     whatsapp: card?.whatsapp,
     source: 'tap'
   };
+  const themeVars = getCardThemeVars(card);
 
   const loadCatalog = async () => {
     const fallbackProducts = [
@@ -257,6 +260,7 @@ const ClientPreviewsPage = () => {
                   <ContactCardVisual
                     contact={previewContact}
                     variant="lagoon"
+                    themeVars={themeVars}
                     footer={
                       <div className="rounded-xl bg-[#0d7377] py-2.5 text-center text-[11px] font-semibold text-white">
                         Save contact details

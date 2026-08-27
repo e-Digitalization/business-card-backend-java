@@ -2340,13 +2340,8 @@ body {
     0 0 0 6px rgba(245, 158, 11, 0.3);
 }
 
-.km-saved-card--lagoon .km-card-hero {
-  background: linear-gradient(155deg, #0a5f63 0%, #0d7377 42%, #1a3d42 100%);
-}
-
-.km-saved-card--lagoon .km-card-wave-stroke {
-  stroke: #e8913a;
-}
+/* "lagoon" variant now equals the themeable base .km-card-hero/.km-card-wave-stroke
+   defaults (see --km-card-* vars), so it needs no color override here. */
 
 .km-contact-viewer {
   position: fixed;
@@ -2382,7 +2377,12 @@ body {
 .km-card-hero {
   position: relative;
   min-height: 248px;
-  background: linear-gradient(155deg, #0a5f63 0%, #0d7377 42%, #1a3d42 100%);
+  background: linear-gradient(
+    155deg,
+    var(--km-card-c1, #0a5f63) 0%,
+    var(--km-card-c2, #0d7377) 42%,
+    var(--km-card-c3, #1a3d42) 100%
+  );
   overflow: hidden;
 }
 
@@ -2490,7 +2490,7 @@ body {
 }
 
 .km-card-wave-stroke {
-  stroke: #e8913a;
+  stroke: var(--km-card-accent, #e8913a);
   stroke-width: 4;
   stroke-linecap: round;
 }
@@ -2510,7 +2510,7 @@ body {
   display: block;
   width: 100%;
   border-radius: 0.85rem;
-  background: #0d7377;
+  background: var(--km-card-c2, #0d7377);
   padding: 0.85rem 1rem;
   font-size: 0.9rem;
   font-weight: 600;
@@ -2519,7 +2519,7 @@ body {
 }
 
 .km-card-cta:hover {
-  background: #0a5f63;
+  background: var(--km-card-c1, #0a5f63);
   transform: translateY(-1px);
 }
 
@@ -2568,7 +2568,7 @@ a.km-card-row:hover {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #e8913a;
+  background: var(--km-card-accent, #e8913a);
   color: #fff;
   box-shadow: 0 6px 14px rgba(232, 145, 58, 0.28);
 }
@@ -2588,8 +2588,8 @@ a.km-card-row:hover {
 }
 
 .km-card-social:hover {
-  border-color: #0d7377;
-  color: #0d7377;
+  border-color: var(--km-card-c2, #0d7377);
+  color: var(--km-card-c2, #0d7377);
   transform: translateY(-1px);
 }
 

@@ -20,6 +20,9 @@ public class CardRequest {
     private String twitter;
     private String github;
     private String instagram;
+    private String theme;
+    private String primaryColor;
+    private String accentColor;
     private boolean active = true;
 
     public String getSlug() {
@@ -148,5 +151,29 @@ public class CardRequest {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getPrimaryColor() {
+        return primaryColor;
+    }
+
+    public void setPrimaryColor(String primaryColor) {
+        this.primaryColor = primaryColor;
+    }
+
+    public String getAccentColor() {
+        return accentColor;
+    }
+
+    public void setAccentColor(String accentColor) {
+        this.accentColor = accentColor;
     }
 }

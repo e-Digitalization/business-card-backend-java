@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
+import { getCardThemeVars } from '../utils/cardTheme.js';
 
 const ContactIcon = ({ type }) => {
   const common = {
@@ -140,7 +141,10 @@ const ProfilePage = () => {
 
   return (
     <div className="km-card-page min-h-screen px-0 pb-12 sm:px-4 sm:py-10">
-      <article className="km-card mx-auto w-full max-w-[400px] overflow-hidden bg-white sm:rounded-[1.75rem]">
+      <article
+        className="km-card mx-auto w-full max-w-[400px] overflow-hidden bg-white sm:rounded-[1.75rem]"
+        style={getCardThemeVars(profile)}
+      >
         <header className="km-card-hero km-fade-in">
           <div className="km-card-hero-pattern" aria-hidden="true" />
           <div className="km-card-hero-content">

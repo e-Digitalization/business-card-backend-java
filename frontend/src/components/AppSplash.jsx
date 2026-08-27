@@ -1,16 +1,9 @@
 import React from 'react';
 
-const AppSplash = ({ message = 'Opening your digital card' }) => (
-  <div className="km-app-splash" role="status" aria-live="polite">
+const AppSplash = () => (
+  <div className="km-app-splash" role="status" aria-label="Opening Kadi Moja">
     <div className="km-app-splash-mark">
-      <img src="/logos/kadi-moja-mark.svg" alt="" />
-    </div>
-    <p className="km-app-splash-name">Kadi Moja</p>
-    <p className="km-app-splash-copy">{message}</p>
-    <div className="km-app-splash-dots" aria-hidden="true">
-      <span />
-      <span />
-      <span />
+      <img src="/logos/kadi-moja-mark-light.svg" alt="" />
     </div>
   </div>
 );

@@ -41,7 +41,7 @@ const Bootstrap = () => {
   }, []);
 
   if (!ready) {
-    return <AppSplash message="Preparing your experience" />;
+    return <AppSplash />;
   }
 
   const tree = (

@@ -4,58 +4,7 @@ import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
 import { getCardThemeVars } from '../utils/cardTheme.js';
 import SocialLinks from '../components/SocialLinks.jsx';
-
-const ContactIcon = ({ type }) => {
-  const common = {
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: '1.8',
-    className: 'h-[18px] w-[18px]'
-  };
-  if (type === 'call') {
-    return (
-      <svg {...common}>
-        <path
-          d="M6.6 3.8c.5-.5 1.3-.6 1.9-.2l2 1.4c.5.4.7 1.1.4 1.7l-.8 1.6c-.2.3-.1.7.1 1 1.2 1.6 2.7 3 4.4 4.2.3.2.7.3 1 .1l1.6-.8c.6-.3 1.3-.1 1.7.4l1.4 2c.4.6.3 1.4-.2 1.9l-1.1 1.1c-.5.5-1.2.7-1.9.6-2-.3-5-1.7-7.9-4.6S3.9 9.6 3.6 7.6c-.1-.7.1-1.4.6-1.9l1.1-1.1z"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (type === 'mail') {
-    return (
-      <svg {...common}>
-        <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
-        <path d="M4 7l8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (type === 'chat') {
-    return (
-      <svg {...common}>
-        <path
-          d="M5 18.5l-1.2 2.4c-.3.6.3 1.2.9.9L8 20.5A8.5 8.5 0 1 0 5 18.5z"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (type === 'language') {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5s1.2-5.9 3.6-8.5z" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...common}>
-      <path d="M12 21s6.5-5.2 6.5-10.2A6.5 6.5 0 0 0 12 4.3a6.5 6.5 0 0 0-6.5 6.5C5.5 15.8 12 21 12 21z" />
-      <circle cx="12" cy="11" r="2.2" />
-    </svg>
-  );
-};
+import ContactMethodIcon from '../components/ContactMethodIcon.jsx';
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -201,8 +150,8 @@ const ProfilePage = () => {
             {rows.map((row) => {
               const inner = (
                 <>
-                  <span className="km-card-icon">
-                    <ContactIcon type={row.icon} />
+                  <span className={`km-card-icon km-card-icon--${row.icon}`}>
+                    <ContactMethodIcon type={row.icon} />
                   </span>
                   <span className="min-w-0 flex-1 truncate text-[15px] text-[#1a3d42]">{row.value}</span>
                 </>

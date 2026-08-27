@@ -27,9 +27,93 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Sora:wght@300;400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,200..700,0..1,-50..200&display=swap"
       rel="stylesheet"
     />
+    <style>
+      .km-app-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        min-height: 100vh;
+        min-height: 100dvh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 20% 18%, rgba(232, 145, 58, 0.28), transparent 27%),
+          radial-gradient(circle at 85% 82%, rgba(74, 222, 200, 0.2), transparent 30%),
+          linear-gradient(145deg, #075e62, #0d7377 55%, #109493);
+        color: #fff;
+        font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+      }
+      .km-app-splash-mark {
+        display: flex;
+        width: 5.25rem;
+        height: 5.25rem;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 1.5rem;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 24px 55px rgba(0, 35, 38, 0.28);
+        animation: km-splash-mark 1.8s ease-in-out infinite;
+      }
+      .km-app-splash-mark img {
+        width: 3.1rem;
+        height: 3.75rem;
+        object-fit: contain;
+      }
+      .km-app-splash-name {
+        margin: 1.25rem 0 0;
+        font-family: "Bricolage Grotesque", Sora, sans-serif;
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .km-app-splash-copy {
+        margin: 0.35rem 0 0;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.78rem;
+      }
+      .km-app-splash-dots {
+        display: flex;
+        gap: 0.38rem;
+        margin-top: 1.4rem;
+      }
+      .km-app-splash-dots span {
+        width: 0.42rem;
+        height: 0.42rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.75);
+        animation: km-splash-dot 1.2s ease-in-out infinite;
+      }
+      .km-app-splash-dots span:nth-child(2) { animation-delay: 0.16s; }
+      .km-app-splash-dots span:nth-child(3) { animation-delay: 0.32s; }
+      @keyframes km-splash-mark {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-5px) scale(1.02); }
+      }
+      @keyframes km-splash-dot {
+        0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+        30% { opacity: 1; transform: translateY(-4px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .km-app-splash-mark,
+        .km-app-splash-dots span { animation: none; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="km-app-splash" role="status" aria-label="Opening Kadi Moja">
+        <div class="km-app-splash-mark">
+          <img src="/logos/kadi-moja-mark.svg" alt="" />
+        </div>
+        <p class="km-app-splash-name">Kadi Moja</p>
+        <p class="km-app-splash-copy">Opening your digital card</p>
+        <div class="km-app-splash-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

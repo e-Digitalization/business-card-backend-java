@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import './styles/index.css';
 import MuiThemeProvider from './components/MuiThemeProvider.jsx';
+import AppSplash from './components/AppSplash.jsx';
 
 const envGoogleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -16,7 +17,9 @@ const Bootstrap = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${apiBase}/api/auth/google/status`)
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 5000);
+    fetch(`${apiBase}/api/auth/google/status`, { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
@@ -27,15 +30,18 @@ const Bootstrap = () => {
         /* keep env fallback */
       })
       .finally(() => {
+        window.clearTimeout(timeout);
         if (!cancelled) setReady(true);
       });
     return () => {
       cancelled = true;
+      window.clearTimeout(timeout);
+      controller.abort();
     };
   }, []);
 
   if (!ready) {
-    return null;
+    return <AppSplash message="Preparing your experience" />;
   }
 
   const tree = (

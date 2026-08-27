@@ -6,6 +6,7 @@ import { getCardThemeVars } from '../utils/cardTheme.js';
 import SocialLinks from '../components/SocialLinks.jsx';
 import ContactMethodIcon from '../components/ContactMethodIcon.jsx';
 import { AppointmentLink, YoutubeVideos } from '../components/ProfileExtras.jsx';
+import AppSplash from '../components/AppSplash.jsx';
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -54,11 +55,7 @@ const ProfilePage = () => {
   const showPhoto = Boolean(photoSrc) && !photoFailed;
 
   if (loading) {
-    return (
-      <div className="km-card-page flex min-h-screen items-center justify-center">
-        <p className="km-fade-in text-sm text-[#1a3d42]/50">Opening card…</p>
-      </div>
-    );
+    return <AppSplash />;
   }
 
   if (error) {

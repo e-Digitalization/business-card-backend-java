@@ -148,7 +148,13 @@ if [ "$DEPLOY_WEB" = true ]; then
 fi
 
 log "Checking https://kadimoja.com/ ..."
-code=$(curl -sk -o /dev/null -w "%{http_code}" https://kadimoja.com/ || echo "000")
+code=000
+for _ in $(seq 1 15); do
+  code=$(curl -sk -o /dev/null -w "%{http_code}" https://kadimoja.com/ || true)
+  code=${code:-000}
+  [ "$code" != "200" ] || break
+  sleep 2
+done
 if [ "$code" != "200" ]; then
   echo "Site check failed (HTTP $code). Check: docker logs business-card-backend-1 / business-card-web-1" >&2
   exit 1

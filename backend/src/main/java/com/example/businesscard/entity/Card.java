@@ -53,6 +53,10 @@ public class Card {
 
     private boolean active = true;
 
+    // Populated on demand from TapLogRepository — not persisted on the card itself.
+    @Transient
+    private long tapCount;
+
     public Long getId() {
         return id;
     }
@@ -219,5 +223,13 @@ public class Card {
 
     public void setAccentColor(String accentColor) {
         this.accentColor = accentColor;
+    }
+
+    public long getTapCount() {
+        return tapCount;
+    }
+
+    public void setTapCount(long tapCount) {
+        this.tapCount = tapCount;
     }
 }

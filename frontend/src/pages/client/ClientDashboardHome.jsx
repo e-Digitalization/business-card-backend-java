@@ -53,6 +53,15 @@ const StatIcon = ({ name }) => {
       </svg>
     );
   }
+  if (name === 'taps') {
+    return (
+      <svg {...props}>
+        <circle cx="8" cy="16" r="2.3" />
+        <path d="M12.5 12.5a6 6 0 0 1 0 8.5" strokeLinecap="round" />
+        <path d="M16 9a10.5 10.5 0 0 1 0 14.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
   return (
     <svg {...props}>
       <path
@@ -169,6 +178,13 @@ const ClientDashboardHome = () => {
       icon: 'status'
     },
     {
+      label: 'Taps',
+      value: card?.tapCount ?? 0,
+      hint: 'NFC card taps',
+      tone: 'bg-[#eefbf3] text-[#0d9d5e]',
+      icon: 'taps'
+    },
+    {
       label: 'Share ready',
       value: card?.phone || card?.whatsapp ? 1 : 0,
       hint: 'Phone / WhatsApp',
@@ -251,7 +267,7 @@ const ClientDashboardHome = () => {
             </>
           ) : (
             <p className="mt-2 text-sm text-[#1a3d42]/55">
-              One-time TZS 100,000 payment. Request a printed NFC card for taps.
+             
             </p>
           )}
           <Link
@@ -333,10 +349,16 @@ const ClientDashboardHome = () => {
                   Contacts
                 </Link>
                 <Link
+                  to="/me/card#branding"
+                  className="rounded-md border border-black/10 px-4 py-2.5 text-sm font-medium text-[#1a3d42]"
+                >
+                  Edit card look
+                </Link>
+                <Link
                   to="/me/looks"
                   className="rounded-md border border-black/10 px-4 py-2.5 text-sm font-medium text-[#1a3d42]"
                 >
-                  NFC & card look
+                  NFC card
                 </Link>
               </div>
             </div>

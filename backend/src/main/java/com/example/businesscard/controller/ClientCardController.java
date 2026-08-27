@@ -5,6 +5,7 @@ import com.example.businesscard.dto.CardRequest;
 import com.example.businesscard.entity.Card;
 import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.repository.CardRepository;
+import com.example.businesscard.repository.TapLogRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.PhotoUploadService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,13 +27,16 @@ public class ClientCardController {
     private final ClientAuthService clientAuthService;
     private final CardRepository cardRepository;
     private final PhotoUploadService photoUploadService;
+    private final TapLogRepository tapLogRepository;
 
     public ClientCardController(ClientAuthService clientAuthService,
                                 CardRepository cardRepository,
-                                PhotoUploadService photoUploadService) {
+                                PhotoUploadService photoUploadService,
+                                TapLogRepository tapLogRepository) {
         this.clientAuthService = clientAuthService;
         this.cardRepository = cardRepository;
         this.photoUploadService = photoUploadService;
+        this.tapLogRepository = tapLogRepository;
     }
 
     @GetMapping("/me")
@@ -44,7 +48,7 @@ public class ClientCardController {
         body.put("fullName", user.getFullName());
         body.put("pictureUrl", user.getPictureUrl());
         body.put("hasGoogle", user.getGoogleSub() != null);
-        body.put("card", user.getCard());
+        body.put("card", withTapCount(user.getCard()));
         return ApiResponse.ok(body);
     }
 
@@ -52,7 +56,7 @@ public class ClientCardController {
     public ApiResponse<Card> getCard(HttpServletRequest request) {
         ClientUser user = currentUser(request);
         Card card = clientAuthService.ensureCard(user, false);
-        return ApiResponse.ok(card);
+        return ApiResponse.ok(withTapCount(card));
     }
 
     @PutMapping("/me/card")
@@ -142,6 +146,13 @@ public class ClientCardController {
         Card card = clientAuthService.ensureCard(user, false);
         card.setLogoUrl(null);
         return ApiResponse.ok(cardRepository.save(card));
+    }
+
+    private Card withTapCount(Card card) {
+        if (card != null) {
+            card.setTapCount(tapLogRepository.countByCardId(card.getId()));
+        }
+        return card;
     }
 
     private ClientUser currentUser(HttpServletRequest request) {

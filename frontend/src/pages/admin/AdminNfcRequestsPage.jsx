@@ -107,7 +107,7 @@ const AdminNfcRequestsPage = () => {
         {!loading && items.length === 0 && (
           <div className="px-5 py-12 text-center">
             <p className="font-display text-lg font-semibold text-[#1a3d42]">No NFC requests yet</p>
-            <p className="mt-1 text-sm text-[#1a3d42]/50">Requests appear after users order from NFC & card look.</p>
+            <p className="mt-1 text-sm text-[#1a3d42]/50">Requests appear after users order from NFC card.</p>
           </div>
         )}
 

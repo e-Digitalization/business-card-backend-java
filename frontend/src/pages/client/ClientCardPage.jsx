@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import api from '../../services/api.js';
 import { resolveMediaUrl } from '../../utils/media.js';
 import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS, getCardThemeVars } from '../../utils/cardTheme.js';
@@ -24,6 +24,7 @@ const fields = [
 
 const ClientCardPage = () => {
   const { card, setCard, refresh } = useContext(ClientWorkspaceContext);
+  const location = useLocation();
   const [form, setForm] = useState(card);
   const [saving, setSaving] = useState(false);
   const [regenLoading, setRegenLoading] = useState(false);
@@ -35,6 +36,12 @@ const ClientCardPage = () => {
   useEffect(() => {
     setForm(card);
   }, [card]);
+
+  // Jump straight to the branding section when linked as /me/card#branding.
+  useEffect(() => {
+    if (!form || !location.hash) return;
+    document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [form, location.hash]);
 
   if (!form) {
     return <p className="text-sm text-[#1a3d42]/50">Loading card…</p>;
@@ -168,7 +175,7 @@ const ClientCardPage = () => {
         </button>
       </section>
 
-      <section className="client-panel p-5 sm:p-7">
+      <section id="branding" className="client-panel p-5 sm:p-7 scroll-mt-24">
         <p className="text-xs uppercase tracking-[0.14em] text-[#9a6b45]">Branding</p>
         <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">Card look</h2>
         <p className="mt-1 text-sm text-[#1a3d42]/55">

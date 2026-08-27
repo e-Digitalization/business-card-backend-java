@@ -220,7 +220,7 @@ const ClientLayout = () => {
                   className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
                 >
                   <span className="snav-bullet" />
-                  NFC & card look
+                  NFC card
                 </NavLink>
               </div>
             </div>

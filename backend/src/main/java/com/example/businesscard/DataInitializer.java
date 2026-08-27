@@ -7,28 +7,42 @@ import com.example.businesscard.repository.AdminUserRepository;
 import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.CardTagRepository;
 import com.example.businesscard.service.PrivateSlugService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
+
     private final CardRepository cardRepository;
     private final CardTagRepository cardTagRepository;
     private final AdminUserRepository adminUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final PrivateSlugService privateSlugService;
+    private final String defaultAdminUsername;
+    private final String defaultAdminPassword;
 
     public DataInitializer(CardRepository cardRepository,
                            CardTagRepository cardTagRepository,
                            AdminUserRepository adminUserRepository,
                            PasswordEncoder passwordEncoder,
-                           PrivateSlugService privateSlugService) {
+                           PrivateSlugService privateSlugService,
+                           @Value("${app.admin.default-username:}") String defaultAdminUsername,
+                           @Value("${app.admin.default-password:}") String defaultAdminPassword) {
         this.cardRepository = cardRepository;
         this.cardTagRepository = cardTagRepository;
         this.adminUserRepository = adminUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.privateSlugService = privateSlugService;
+        this.defaultAdminUsername = defaultAdminUsername;
+        this.defaultAdminPassword = defaultAdminPassword;
     }
 
     @Override
@@ -39,13 +53,30 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedAdminUser() {
-        if (adminUserRepository.findByUsername("admin").isPresent()) {
+        if (adminUserRepository.count() > 0) {
             return;
         }
+
+        String username = defaultAdminUsername.isBlank() ? "admin" : defaultAdminUsername;
+        String password = defaultAdminPassword.isBlank() ? generateRandomPassword() : defaultAdminPassword;
+
         AdminUser admin = new AdminUser();
-        admin.setUsername("admin");
-        admin.setPasswordHash(passwordEncoder.encode("admin123"));
+        admin.setUsername(username);
+        admin.setPasswordHash(passwordEncoder.encode(password));
         adminUserRepository.save(admin);
+
+        if (defaultAdminPassword.isBlank()) {
+            log.warn("No ADMIN_USERNAME/ADMIN_PASSWORD configured — created initial admin user '{}' with generated password: {}. " +
+                    "Log in and rotate this immediately, or set ADMIN_USERNAME/ADMIN_PASSWORD before first boot.", username, password);
+        } else {
+            log.info("Created initial admin user '{}' from configured ADMIN_USERNAME/ADMIN_PASSWORD.", username);
+        }
+    }
+
+    private String generateRandomPassword() {
+        byte[] bytes = new byte[18];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     private void migrateGuessableSlugs() {

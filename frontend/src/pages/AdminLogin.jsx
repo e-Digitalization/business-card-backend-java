@@ -33,8 +33,8 @@ const slides = [
 const AdminLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -234,11 +234,7 @@ const AdminLogin = () => {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-xs text-[#1a3d42]/45">
-              Default: <span className="font-medium text-[#1a3d42]/70">admin</span> /{' '}
-              <span className="font-medium text-[#1a3d42]/70">admin123</span>
-            </p>
-            <p className="mt-3 text-center">
+            <p className="mt-6 text-center">
               <Link to="/" className="text-sm text-[#0d7377] hover:underline">
                 ← Back to website
               </Link>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api.js';
+import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js';
 
 const fieldDefs = [
   ['fullName', 'Full Name'],
@@ -76,6 +77,12 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
       card: { ...p.card, [key]: e.target.value }
     }));
 
+  const setCardField = (key, value) =>
+    setPayload((p) => ({
+      ...p,
+      card: { ...p.card, [key]: value }
+    }));
+
   const onUpdate = async (e) => {
     e.preventDefault();
     if (!cardId || !card) return;
@@ -137,6 +144,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
         <div className="flex gap-2 border-b border-black/5 px-5 pt-3">
           {[
             ['details', 'Details'],
+            ['look', 'Card look'],
             ['nfc', 'NFC Tags']
           ].map(([key, label]) => (
             <button
@@ -194,6 +202,61 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
             </form>
           )}
 
+          {!loading && card && tab === 'look' && (
+            <form id="edit-card-form" onSubmit={onUpdate}>
+              <p className="mb-2 text-sm font-medium text-[#1a3d42]/70">Theme</p>
+              <div className="flex flex-wrap gap-2">
+                {CARD_THEME_OPTIONS.map((option) => {
+                  const preset = CARD_THEME_PRESETS[option.value];
+                  const isActive = (card.theme || 'lagoon') === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setCardField('theme', option.value)}
+                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition ${
+                        isActive ? 'border-[#0d7377] bg-[#e7f5f4] text-[#1a3d42]' : 'border-black/10 text-[#1a3d42]/70'
+                      }`}
+                    >
+                      <span
+                        className="h-4 w-4 rounded-full"
+                        style={{
+                          background: preset
+                            ? `linear-gradient(135deg, ${preset.c1}, ${preset.accent})`
+                            : `linear-gradient(135deg, ${card.primaryColor || '#0d7377'}, ${card.accentColor || '#e8913a'})`
+                        }}
+                      />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {card.theme === 'custom' && (
+                <div className="mt-3 flex flex-wrap gap-4">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-medium text-[#1a3d42]/70">Primary color</span>
+                    <input
+                      type="color"
+                      value={card.primaryColor || '#0d7377'}
+                      onChange={(e) => setCardField('primaryColor', e.target.value)}
+                      className="h-9 w-16 rounded border border-black/10"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-medium text-[#1a3d42]/70">Accent color</span>
+                    <input
+                      type="color"
+                      value={card.accentColor || '#e8913a'}
+                      onChange={(e) => setCardField('accentColor', e.target.value)}
+                      className="h-9 w-16 rounded border border-black/10"
+                    />
+                  </label>
+                </div>
+              )}
+            </form>
+          )}
+
           {!loading && card && tab === 'nfc' && (
             <div>
               <p className="text-sm text-[#1a3d42]/55">
@@ -244,7 +307,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           )}
         </div>
 
-        {tab === 'details' && card && (
+        {(tab === 'details' || tab === 'look') && card && (
           <div className="flex justify-end gap-2 border-t border-black/5 px-5 py-4">
             <button
               type="button"

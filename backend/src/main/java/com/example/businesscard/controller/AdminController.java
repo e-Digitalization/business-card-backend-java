@@ -22,17 +22,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+    private static final Set<String> ALLOWED_THEMES = Set.of("lagoon", "midnight", "sunset", "custom");
     private final CardRepository cardRepository;
     private final CardTagRepository cardTagRepository;
     private final PrivateSlugService privateSlugService;
@@ -220,6 +223,15 @@ public class AdminController {
         card.setGithub(request.getGithub());
         card.setInstagram(request.getInstagram());
         card.setActive(request.isActive());
+
+        if (request.getTheme() != null) {
+            if (!ALLOWED_THEMES.contains(request.getTheme())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown card theme.");
+            }
+            card.setTheme(request.getTheme());
+        }
+        card.setPrimaryColor(request.getPrimaryColor());
+        card.setAccentColor(request.getAccentColor());
     }
 
     private <T> ApiResponse<T> ok(String message, T data) {

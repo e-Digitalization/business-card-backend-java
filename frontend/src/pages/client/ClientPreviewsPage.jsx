@@ -60,6 +60,11 @@ const ClientPreviewsPage = () => {
     twitter: card?.twitter,
     github: card?.github,
     instagram: card?.instagram,
+    youtubeChannel: card?.youtubeChannel,
+    youtubeVideo1: card?.youtubeVideo1,
+    youtubeVideo2: card?.youtubeVideo2,
+    youtubeVideo3: card?.youtubeVideo3,
+    bookingUrl: card?.bookingUrl,
     source: 'tap'
   };
   const themeVars = getCardThemeVars(card);

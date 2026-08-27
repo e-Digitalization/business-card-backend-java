@@ -79,6 +79,11 @@ public class ClientCardController {
         card.setTwitter(body.getTwitter());
         card.setGithub(body.getGithub());
         card.setInstagram(body.getInstagram());
+        card.setYoutubeChannel(body.getYoutubeChannel());
+        card.setYoutubeVideo1(body.getYoutubeVideo1());
+        card.setYoutubeVideo2(body.getYoutubeVideo2());
+        card.setYoutubeVideo3(body.getYoutubeVideo3());
+        card.setBookingUrl(body.getBookingUrl());
         card.setActive(body.isActive());
 
         if (body.getTheme() != null) {

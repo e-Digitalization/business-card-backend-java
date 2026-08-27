@@ -19,7 +19,12 @@ const fields = [
   ['linkedin', 'LinkedIn'],
   ['twitter', 'Twitter / X'],
   ['github', 'GitHub'],
-  ['instagram', 'Instagram']
+  ['instagram', 'Instagram'],
+  ['youtubeChannel', 'YouTube channel'],
+  ['youtubeVideo1', 'YouTube video 1'],
+  ['youtubeVideo2', 'YouTube video 2'],
+  ['youtubeVideo3', 'YouTube video 3'],
+  ['bookingUrl', 'Appointment booking link']
 ];
 
 const ClientCardPage = () => {
@@ -292,7 +297,12 @@ const ClientCardPage = () => {
                 linkedin: form.linkedin,
                 twitter: form.twitter,
                 github: form.github,
-                instagram: form.instagram
+                instagram: form.instagram,
+                youtubeChannel: form.youtubeChannel,
+                youtubeVideo1: form.youtubeVideo1,
+                youtubeVideo2: form.youtubeVideo2,
+                youtubeVideo3: form.youtubeVideo3,
+                bookingUrl: form.bookingUrl
               }}
               variant="lagoon"
               themeVars={getCardThemeVars(form)}

@@ -3,6 +3,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 const NETWORKS = [
   {
@@ -28,6 +29,12 @@ const NETWORKS = [
     label: 'Instagram',
     Icon: InstagramIcon,
     baseUrl: 'https://www.instagram.com/'
+  },
+  {
+    key: 'youtubeChannel',
+    label: 'YouTube',
+    Icon: YouTubeIcon,
+    baseUrl: 'https://www.youtube.com/'
   }
 ];
 

@@ -16,7 +16,12 @@ const fieldDefs = [
   ['linkedin', 'LinkedIn'],
   ['twitter', 'Twitter / X'],
   ['github', 'GitHub'],
-  ['instagram', 'Instagram']
+  ['instagram', 'Instagram'],
+  ['youtubeChannel', 'YouTube channel'],
+  ['youtubeVideo1', 'YouTube video 1'],
+  ['youtubeVideo2', 'YouTube video 2'],
+  ['youtubeVideo3', 'YouTube video 3'],
+  ['bookingUrl', 'Appointment booking link']
 ];
 
 const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {

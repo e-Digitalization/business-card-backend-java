@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
 import SocialLinks from '../../components/SocialLinks.jsx';
 import ContactMethodIcon from '../../components/ContactMethodIcon.jsx';
+import { AppointmentLink, YoutubeVideos } from '../../components/ProfileExtras.jsx';
 
 /**
  * Beautiful card visual for saved/scanned contacts.
@@ -94,6 +95,7 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null, themeVars 
         </div>
 
         {footer && <div className="km-fade-up km-fade-up-delay mt-5">{footer}</div>}
+        <AppointmentLink profile={contact} className="mt-2" />
 
         {rows.length > 0 && (
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">
@@ -127,6 +129,7 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null, themeVars 
         )}
 
         <SocialLinks profile={contact} className="mt-6 justify-center" />
+        <YoutubeVideos profile={contact} className="mt-6" />
 
         {contact?.notes && (
           <p className="km-fade-up mt-5 rounded-xl bg-[#f7f4ef] px-3.5 py-3 text-sm leading-relaxed text-[#1a3d42]/65">

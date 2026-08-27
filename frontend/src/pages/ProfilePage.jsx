@@ -5,6 +5,7 @@ import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
 import { getCardThemeVars } from '../utils/cardTheme.js';
 import SocialLinks from '../components/SocialLinks.jsx';
 import ContactMethodIcon from '../components/ContactMethodIcon.jsx';
+import { AppointmentLink, YoutubeVideos } from '../components/ProfileExtras.jsx';
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -144,6 +145,7 @@ const ProfilePage = () => {
             <a href={vcardUrl} className="km-card-cta text-center">
               Save contact details
             </a>
+            <AppointmentLink profile={profile} />
           </div>
 
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">
@@ -176,6 +178,7 @@ const ProfilePage = () => {
           </ul>
 
           <SocialLinks profile={profile} className="mt-7 justify-center" />
+          <YoutubeVideos profile={profile} className="mt-7" />
         </div>
       </article>
     </div>

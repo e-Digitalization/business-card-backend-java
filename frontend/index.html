@@ -27,52 +27,9 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Sora:wght@300;400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,200..700,0..1,-50..200&display=swap"
       rel="stylesheet"
     />
-    <style>
-      .km-app-splash {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: flex;
-        min-height: 100vh;
-        min-height: 100dvh;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background: #0d7377;
-        color: #fff;
-        font-family: Sora, ui-sans-serif, system-ui, sans-serif;
-      }
-      .km-app-splash-mark {
-        display: flex;
-        width: 5.5rem;
-        height: 6.5rem;
-        align-items: center;
-        justify-content: center;
-        animation: km-splash-mark 1.5s ease-out both;
-      }
-      .km-app-splash-mark img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-      @keyframes km-splash-mark {
-        from { opacity: 0; transform: scale(0.88); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .km-app-splash-mark { animation: none; }
-      }
-    </style>
   </head>
   <body>
-    <div id="root">
-      <div class="km-app-splash" role="status" aria-label="Opening Kadi Moja">
-        <div class="km-app-splash-mark">
-          <img src="/logos/kadi-moja-mark-light.svg" alt="" />
-        </div>
-      </div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -6,7 +6,6 @@ import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import './styles/index.css';
 import MuiThemeProvider from './components/MuiThemeProvider.jsx';
-import AppSplash from './components/AppSplash.jsx';
 
 const envGoogleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -41,7 +40,7 @@ const Bootstrap = () => {
   }, []);
 
   if (!ready) {
-    return <AppSplash />;
+    return null;
   }
 
   const tree = (

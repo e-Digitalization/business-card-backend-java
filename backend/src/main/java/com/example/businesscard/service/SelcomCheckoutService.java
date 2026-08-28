@@ -319,6 +319,8 @@ public class SelcomCheckoutService {
             user.setScanSubscribedAt(now);
         }
         user.setScanSubscriptionExpiresAt(newExpiry);
+        // Each paid month starts the monthly scan allowance fresh.
+        user.setScanSubscriptionUsed(0);
         clientUserRepository.save(user);
     }
 

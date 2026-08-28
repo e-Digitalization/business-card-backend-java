@@ -220,7 +220,12 @@ const ClientDashboardHome = () => {
           <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">AI Scan Monthly</h2>
           {subscription?.subscribed ? (
             <>
-              <p className="mt-2 text-sm text-emerald-700">Active · unlimited AI scans</p>
+              <p className="mt-2 text-sm text-emerald-700">
+                Active ·{' '}
+                {subscription?.monthlyUsed != null
+                  ? `${subscription.monthlyUsed} of ${subscription?.monthlyLimit ?? 20} scans used this month`
+                  : `${subscription?.monthlyLimit ?? 20} card scans / month`}
+              </p>
               <p className="mt-1 text-sm text-[#1a3d42]/55">
                 Renews / expires {formatDate(subscription.expiresAt) || 'after this month'}
               </p>

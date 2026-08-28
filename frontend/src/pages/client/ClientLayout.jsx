@@ -184,7 +184,6 @@ const ClientLayout = () => {
             onClick={() => setCardOpen((v) => !v)}
           >
             <span className="snav-item-icon">{icons.card}</span>
-            <span className="flex-1 text-left">My Kadi Moja</span>
             <Chevron open={cardOpen} />
           </button>
           <div className="snav-collapse">

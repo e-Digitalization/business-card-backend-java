@@ -16,17 +16,24 @@ import java.util.Map;
 public class ScanQuotaService {
     private final ClientUserRepository clientUserRepository;
     private final int freeLimit;
+    private final int monthlyLimit;
 
     public ScanQuotaService(
         ClientUserRepository clientUserRepository,
-        @Value("${app.scan.free-limit:2}") int freeLimit
+        @Value("${app.scan.free-limit:2}") int freeLimit,
+        @Value("${app.scan.monthly-limit:20}") int monthlyLimit
     ) {
         this.clientUserRepository = clientUserRepository;
         this.freeLimit = Math.max(0, freeLimit);
+        this.monthlyLimit = Math.max(0, monthlyLimit);
     }
 
     public int freeLimit() {
         return freeLimit;
+    }
+
+    public int monthlyLimit() {
+        return monthlyLimit;
     }
 
     public boolean hasActiveSubscription(ClientUser user) {
@@ -39,16 +46,26 @@ public class ScanQuotaService {
         return expires.isAfter(Instant.now());
     }
 
+    /** Scans still available in the current subscription month (0 when the cap is hit). */
+    public int subscriptionRemaining(ClientUser user) {
+        return Math.max(0, monthlyLimit - Math.max(0, user.getScanSubscriptionUsed()));
+    }
+
     public Map<String, Object> quotaSnapshot(ClientUser user) {
         int used = Math.max(0, user.getAiScanCount());
         boolean subscribed = hasActiveSubscription(user);
-        int remaining = subscribed ? Integer.MAX_VALUE : Math.max(0, freeLimit - used);
-        boolean canScan = subscribed || used < freeLimit;
+        int monthlyUsed = Math.max(0, user.getScanSubscriptionUsed());
+        int remaining = subscribed
+            ? subscriptionRemaining(user)
+            : Math.max(0, freeLimit - used);
+        boolean canScan = subscribed ? remaining > 0 : used < freeLimit;
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("freeLimit", freeLimit);
+        map.put("monthlyLimit", monthlyLimit);
         map.put("used", used);
-        map.put("remaining", subscribed ? null : remaining);
+        map.put("monthlyUsed", subscribed ? monthlyUsed : null);
+        map.put("remaining", remaining);
         map.put("subscribed", subscribed);
         map.put("canScan", canScan);
         map.put("billingPeriod", "monthly");
@@ -59,11 +76,17 @@ public class ScanQuotaService {
     }
 
     public void assertCanScan(ClientUser user) {
-        if (hasActiveSubscription(user)) return;
+        if (hasActiveSubscription(user)) {
+            if (subscriptionRemaining(user) > 0) return;
+            throw new ResponseStatusException(
+                HttpStatus.PAYMENT_REQUIRED,
+                "You've used all " + monthlyLimit + " AI scans for this month. Your allowance resets when the subscription renews."
+            );
+        }
         if (user.getAiScanCount() < freeLimit) return;
         throw new ResponseStatusException(
             HttpStatus.PAYMENT_REQUIRED,
-            "Free AI scans used up. Subscribe monthly to continue scanning cards."
+            "Free AI scans used up. Subscribe monthly to scan up to " + monthlyLimit + " cards a month."
         );
     }
 
@@ -71,10 +94,11 @@ public class ScanQuotaService {
     public ClientUser recordSuccessfulScan(ClientUser user) {
         ClientUser fresh = clientUserRepository.findById(user.getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
-        if (!hasActiveSubscription(fresh)) {
+        if (hasActiveSubscription(fresh)) {
+            fresh.setScanSubscriptionUsed(Math.max(0, fresh.getScanSubscriptionUsed()) + 1);
+        } else {
             fresh.setAiScanCount(fresh.getAiScanCount() + 1);
-            fresh = clientUserRepository.save(fresh);
         }
-        return fresh;
+        return clientUserRepository.save(fresh);
     }
 }

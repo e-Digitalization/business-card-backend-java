@@ -44,6 +44,10 @@ public class ClientUser {
 
     private Instant scanSubscriptionExpiresAt;
 
+    // Scans consumed in the current subscription month; reset on renewal.
+    @Column(nullable = false)
+    private int scanSubscriptionUsed = 0;
+
     public Long getId() {
         return id;
     }
@@ -130,5 +134,13 @@ public class ClientUser {
 
     public void setScanSubscriptionExpiresAt(Instant scanSubscriptionExpiresAt) {
         this.scanSubscriptionExpiresAt = scanSubscriptionExpiresAt;
+    }
+
+    public int getScanSubscriptionUsed() {
+        return scanSubscriptionUsed;
+    }
+
+    public void setScanSubscriptionUsed(int scanSubscriptionUsed) {
+        this.scanSubscriptionUsed = scanSubscriptionUsed;
     }
 }

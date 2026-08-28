@@ -86,7 +86,6 @@ const ClientCardPage = () => {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-[#9a6b45]">My Kadi Moja</p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-[#1a3d42]">Edit digital card</h1>
           <p className="mt-1 text-sm text-[#1a3d42]/55">
             These details appear when someone taps your NFC card or opens your private link.

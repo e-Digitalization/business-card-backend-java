@@ -93,7 +93,6 @@ const ClientCardLookPage = () => {
     <div className="max-w-4xl space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-[#9a6b45]">Branding</p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-[#1a3d42]">Card look</h1>
           <p className="mt-1 text-sm text-[#1a3d42]/55">
             Choose a colour theme and add your company logo. Your contact details live under Edit card.

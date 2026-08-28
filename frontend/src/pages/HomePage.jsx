@@ -436,7 +436,6 @@ const HomePage = () => {
       <section className="km-landing-showcase relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Your cards</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
               Make an impression that stays
             </h2>
@@ -473,7 +472,6 @@ const HomePage = () => {
       <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Why switch</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
               Most business cards get lost. Yours shouldn&apos;t.
             </h2>
@@ -487,7 +485,6 @@ const HomePage = () => {
       <section id="samples" className="km-section-foam px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">Live sample</p>
             <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">See both cards in action</h2>
             <p className="mt-4 text-km-ink/65 leading-relaxed">
               Physical NFC card and the digital profile it unlocks.

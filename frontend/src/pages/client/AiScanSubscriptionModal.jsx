@@ -58,9 +58,13 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
   const price = subscription?.priceTzs ?? 10000;
   const currency = subscription?.currency || 'TZS';
   const freeLimit = subscription?.freeLimit ?? 2;
+  const monthlyLimit = subscription?.monthlyLimit ?? 20;
+  const monthlyUsed = subscription?.monthlyUsed ?? null;
   const remaining = subscription?.remaining ?? freeLimit;
   const subscribed = Boolean(subscription?.subscribed);
   const providerLabel = subscription?.provider || 'selcom';
+  const isNmb = String(providerLabel).includes('nmb');
+  const payLabel = isNmb ? 'NMB control number' : 'Selcom mobile money / card';
   const isNmbOrder = pendingOrder?.provider === 'nmb' || Boolean(pendingOrder?.controlNumber);
 
   const startCheckout = async (e) => {
@@ -83,8 +87,8 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
       }
       setMessage(
         data?.mock
-          ? 'Demo checkout ready — confirm payment below to unlock unlimited AI scans.'
-          : 'Checkout created. Complete payment to unlock unlimited scans.'
+          ? `Demo checkout ready — confirm payment below to unlock ${monthlyLimit} AI scans a month.`
+          : `Checkout created. Complete payment to unlock ${monthlyLimit} AI scans a month.`
       );
     } catch (err) {
       setError(err?.response?.data?.message || err?.response?.data?.detail || 'Could not start payment.');
@@ -100,7 +104,7 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
     try {
       await api.post('/api/client/subscription/mock-pay', { orderId: pendingOrder.orderId });
       setPendingOrder(null);
-      setMessage('Subscription active — unlimited AI scans unlocked.');
+      setMessage(`AI Scan Monthly is active — ${monthlyLimit} card scans this month.`);
       onSubscribed?.();
       onClose?.();
     } catch (err) {
@@ -120,7 +124,7 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
       setPendingOrder((prev) => ({ ...prev, ...data }));
       if (data?.status === 'PAID' || data?.subscribed) {
         setPendingOrder(null);
-        setMessage('Payment confirmed — unlimited AI scans unlocked.');
+        setMessage(`Payment confirmed — ${monthlyLimit} AI scans unlocked for this month.`);
         onSubscribed?.();
         onClose?.();
         return;
@@ -136,8 +140,8 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
   return (
     <div className="km-contact-viewer" role="dialog" aria-modal="true" aria-label="Subscription">
       <button type="button" className="absolute inset-0 cursor-default" aria-label="Close" onClick={onClose} />
-      <div className="km-contact-viewer-panel relative z-10 max-w-md">
-        <div className="rounded-xl bg-white p-5 text-[#1a3d42] shadow-xl">
+      <div className="km-contact-viewer-panel relative z-10" style={{ width: 'min(100%, 520px)' }}>
+        <div className="rounded-2xl bg-white p-6 text-[#1a3d42] shadow-xl sm:p-7">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Subscription</p>
@@ -146,7 +150,7 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md border border-black/10 px-2.5 py-1 text-sm"
+              className="rounded-md border border-black/10 px-2.5 py-1 text-sm hover:bg-[#f7f4ef]"
             >
               ✕
             </button>
@@ -155,19 +159,34 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
           {subscribed ? (
             <>
               <p className="mt-3 text-sm text-emerald-700">Your monthly subscription is active.</p>
-              <div className="mt-4 rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3">
-                <p className="text-sm text-[#1a3d42]/55">Unlimited AI scans</p>
-                <p className="mt-1 text-sm text-[#1a3d42]">
-                  Expires {formatDate(subscription.expiresAt) || 'after this billing month'}
+              <div className="mt-4 rounded-xl border border-black/5 bg-[#f7f4ef] px-4 py-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm font-semibold text-[#1a3d42]">{monthlyLimit} card scans / month</p>
+                  {monthlyUsed != null && (
+                    <p className="text-xs font-medium text-[#1a3d42]/55">
+                      {monthlyUsed} of {monthlyLimit} used
+                    </p>
+                  )}
+                </div>
+                {monthlyUsed != null && (
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/10">
+                    <div
+                      className="h-full rounded-full bg-[#0d7377]"
+                      style={{ width: `${Math.min(100, Math.round((monthlyUsed / Math.max(1, monthlyLimit)) * 100))}%` }}
+                    />
+                  </div>
+                )}
+                <p className="mt-3 text-sm text-[#1a3d42]">
+                  Renews / expires {formatDate(subscription.expiresAt) || 'after this billing month'}
                 </p>
-                <p className="mt-2 text-xs text-[#1a3d42]/50">
-                  Renew from this window when the period ends ({formatMoney(price, currency)} / month).
+                <p className="mt-1 text-xs text-[#1a3d42]/50">
+                  Your {monthlyLimit} scans reset each time you renew ({formatMoney(price, currency)} / month).
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-4 w-full rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white"
+                className="mt-5 w-full rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white"
               >
                 Done
               </button>
@@ -175,18 +194,37 @@ const AiScanSubscriptionModal = ({ open, onClose, subscription, onSubscribed }) 
           ) : (
             <>
               <p className="mt-3 text-sm text-[#1a3d42]/60">
-                Free plan: {remaining} of {freeLimit} AI scans left. Subscribe for unlimited scanning for 30 days
-                ({String(providerLabel).includes('nmb') ? 'NMB control number' : 'Selcom mobile money / card'}).
+                Free plan: {remaining} of {freeLimit} AI scans left. Subscribe to scan up to {monthlyLimit} business
+                cards per month for 30 days, paid with {payLabel}.
               </p>
-              <div className="mt-4 rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3">
-                <p className="text-sm text-[#1a3d42]/55">AI Scan Monthly</p>
-                <p className="mt-1 font-display text-2xl font-semibold text-[#1a3d42]">
+              <div className="mt-4 rounded-xl border border-black/5 bg-[#f7f4ef] px-4 py-4">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm text-[#1a3d42]/55">AI Scan Monthly</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#9a6b45]">
+                    {monthlyLimit} scans / month
+                  </p>
+                </div>
+                <p className="mt-1 font-display text-3xl font-semibold text-[#1a3d42]">
                   {formatMoney(price, currency)}
                 </p>
                 <p className="mt-1 text-xs text-[#1a3d42]/50">
-                  Per month · {String(providerLabel).includes('nmb') ? 'NMB' : 'Selcom'}
+                  Per month · {isNmb ? 'NMB' : 'Selcom'}
                 </p>
               </div>
+
+              <ul className="mt-4 space-y-1.5 text-sm text-[#1a3d42]/70">
+                {[
+                  `${monthlyLimit} AI business-card scans every month`,
+                  'Auto-fills name, title, company, phone & email',
+                  'Saved straight into your Contacts',
+                  'Renew anytime from this window'
+                ].map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span aria-hidden="true" className="text-[#0d7377]">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
 
               {message && (
                 <p className="mt-3 rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">

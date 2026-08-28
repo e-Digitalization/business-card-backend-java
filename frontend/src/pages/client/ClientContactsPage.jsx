@@ -25,8 +25,10 @@ const defaultScanStatus = {
   enabled: false,
   provider: 'none',
   freeLimit: 2,
+  monthlyLimit: 20,
   used: 0,
   remaining: 2,
+  monthlyUsed: null,
   subscribed: false,
   canScan: true,
   priceTzs: 10000,
@@ -143,7 +145,7 @@ const ClientContactsPage = () => {
         .get(`/api/client/subscription/orders/${order}`)
         .then(async (res) => {
           if (res.data.data?.subscribed || res.data.data?.status === 'PAID') {
-            setMessage('Subscription active — unlimited AI scans unlocked.');
+            setMessage(`Subscription active — ${aiScan.monthlyLimit ?? 20} AI scans unlocked for this month.`);
             await loadScanStatus();
           } else {
             setMessage('Payment received. Activating your subscription…');
@@ -189,9 +191,10 @@ const ClientContactsPage = () => {
   }, [totalElements, q]);
 
   const quotaLabel = useMemo(() => {
+    const monthlyLimit = aiScan.monthlyLimit ?? 20;
     if (aiScan.subscribed) {
-      const until = formatDate(aiScan.expiresAt);
-      return until ? `Unlimited AI scans · until ${until}` : 'Unlimited AI scans · monthly';
+      const left = aiScan.remaining ?? monthlyLimit;
+      return `${left} of ${monthlyLimit} AI scans left this month`;
     }
     const remaining = aiScan.remaining ?? Math.max(0, (aiScan.freeLimit || 2) - (aiScan.used || 0));
     return `${remaining} free AI scan${remaining === 1 ? '' : 's'} left`;
@@ -309,7 +312,9 @@ const ClientContactsPage = () => {
               remaining: parsed.remaining ?? prev.remaining,
               subscribed: parsed.subscribed ?? prev.subscribed,
               canScan: parsed.canScan ?? prev.canScan,
-              freeLimit: parsed.freeLimit ?? prev.freeLimit
+              freeLimit: parsed.freeLimit ?? prev.freeLimit,
+              monthlyLimit: parsed.monthlyLimit ?? prev.monthlyLimit,
+              monthlyUsed: parsed.monthlyUsed ?? prev.monthlyUsed
             }));
           }
           finishProgress('AI scan complete');
@@ -379,8 +384,8 @@ const ClientContactsPage = () => {
       }
       setMessage(
         data?.mock
-          ? 'Demo checkout ready — confirm payment below to unlock unlimited AI scans.'
-          : 'Checkout created. Complete payment to unlock unlimited scans.'
+          ? `Demo checkout ready — confirm payment below to unlock ${aiScan.monthlyLimit ?? 20} AI scans a month.`
+          : `Checkout created. Complete payment to unlock ${aiScan.monthlyLimit ?? 20} AI scans a month.`
       );
     } catch (err) {
       setError(err?.response?.data?.message || 'Could not start payment.');
@@ -397,7 +402,7 @@ const ClientContactsPage = () => {
       await api.post('/api/client/subscription/mock-pay', { orderId: pendingOrder.orderId });
       setSubscribeOpen(false);
       setPendingOrder(null);
-      setMessage('Subscription active — unlimited AI scans unlocked.');
+      setMessage(`Subscription active — ${aiScan.monthlyLimit ?? 20} AI scans unlocked for this month.`);
       await loadScanStatus();
     } catch (err) {
       setError(err?.response?.data?.message || 'Could not complete demo payment.');
@@ -513,7 +518,7 @@ const ClientContactsPage = () => {
                 : `Free plan includes ${aiScan.freeLimit || 2} AI scans. Then ${formatMoney(
                     aiScan.priceTzs,
                     aiScan.currency
-                  )} / month via Selcom.`}
+                  )} / month for ${aiScan.monthlyLimit ?? 20} scans, via Selcom.`}
             </p>
           </div>
           {!aiScan.subscribed && (
@@ -724,8 +729,8 @@ const ClientContactsPage = () => {
             aria-label="Close"
             onClick={() => setSubscribeOpen(false)}
           />
-          <div className="km-contact-viewer-panel relative z-10 max-w-md">
-            <div className="rounded-xl bg-white p-5 text-[#1a3d42] shadow-xl">
+          <div className="km-contact-viewer-panel relative z-10" style={{ width: 'min(100%, 520px)' }}>
+            <div className="rounded-2xl bg-white p-6 text-[#1a3d42] shadow-xl sm:p-7">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Subscription</p>
@@ -734,18 +739,23 @@ const ClientContactsPage = () => {
                 <button
                   type="button"
                   onClick={() => setSubscribeOpen(false)}
-                  className="rounded-md border border-black/10 px-2.5 py-1 text-sm"
+                  className="rounded-md border border-black/10 px-2.5 py-1 text-sm hover:bg-[#f7f4ef]"
                 >
                   ✕
                 </button>
               </div>
               <p className="mt-3 text-sm text-[#1a3d42]/60">
                 You’ve used your {aiScan.freeLimit || 2} free AI card scans. Subscribe monthly with Selcom (M-Pesa, Tigo
-                Pesa, Airtel Money, or card) for unlimited scanning for 30 days.
+                Pesa, Airtel Money, or card) to scan up to {aiScan.monthlyLimit ?? 20} business cards per month for 30 days.
               </p>
-              <div className="mt-4 rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3">
-                <p className="text-sm text-[#1a3d42]/55">AI Scan Monthly</p>
-                <p className="mt-1 font-display text-2xl font-semibold text-[#1a3d42]">
+              <div className="mt-4 rounded-xl border border-black/5 bg-[#f7f4ef] px-4 py-4">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm text-[#1a3d42]/55">AI Scan Monthly</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#9a6b45]">
+                    {aiScan.monthlyLimit ?? 20} scans / month
+                  </p>
+                </div>
+                <p className="mt-1 font-display text-3xl font-semibold text-[#1a3d42]">
                   {formatMoney(aiScan.priceTzs, aiScan.currency)}
                 </p>
                 <p className="mt-1 text-xs text-[#1a3d42]/50">Per month · billed via Selcom</p>

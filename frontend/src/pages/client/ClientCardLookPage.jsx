@@ -90,7 +90,7 @@ const ClientCardLookPage = () => {
   const theme = form.theme || 'lagoon';
 
   return (
-    <div className="space-y-5">
+    <div className="max-w-4xl space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-[#9a6b45]">Branding</p>
@@ -108,7 +108,7 @@ const ClientCardLookPage = () => {
       </div>
 
       <form onSubmit={onSave} className="client-panel p-5 sm:p-7">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_264px] lg:gap-10">
+        <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:gap-8">
           <div className="space-y-4">
             <div className="rounded-xl border border-black/10 bg-[#faf8f4] p-4">
               <span className="block text-sm font-medium text-[#1a3d42]">Company logo</span>
@@ -158,7 +158,7 @@ const ClientCardLookPage = () => {
             <div className="rounded-xl border border-black/10 bg-[#faf8f4] p-4">
               <span className="block text-sm font-medium text-[#1a3d42]">Theme</span>
               <p className="mt-0.5 text-xs text-[#1a3d42]/50">Sets the colours on your public card.</p>
-              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="mt-3 grid grid-cols-2 gap-2">
                 {CARD_THEME_OPTIONS.map((option) => {
                   const preset = CARD_THEME_PRESETS[option.value];
                   const isActive = theme === option.value;
@@ -213,41 +213,50 @@ const ClientCardLookPage = () => {
           </div>
 
           <div className="lg:sticky lg:top-6 lg:self-start">
-            <p className="mb-2 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/40 lg:text-left">
+            <p className="mb-1 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/40">
               Live preview
             </p>
-            <div className="mx-auto w-full max-w-[264px] overflow-hidden rounded-[1.75rem] border border-black/5 shadow-[0_18px_44px_rgba(26,61,66,0.18)]">
-              <ContactCardVisual
-                contact={{
-                  fullName: form.fullName || 'Your name',
-                  title: form.title,
-                  company: form.company,
-                  phone: form.phone,
-                  email: form.email,
-                  location: form.location,
-                  photoUrl: form.photoUrl,
-                  logoUrl: form.logoUrl,
-                  website: form.website,
-                  whatsapp: form.whatsapp,
-                  linkedin: form.linkedin,
-                  twitter: form.twitter,
-                  github: form.github,
-                  instagram: form.instagram,
-                  youtubeChannel: form.youtubeChannel,
-                  youtubeVideos: form.youtubeVideos,
-                  bookingUrl: form.bookingUrl,
-                  podcastUrl: form.podcastUrl,
-                  tiktok: form.tiktok,
-                  telegram: form.telegram,
-                  wechat: form.wechat,
-                  weibo: form.weibo,
-                  douyin: form.douyin,
-                  xiaohongshu: form.xiaohongshu
-                }}
-                variant="lagoon"
-                themeVars={getCardThemeVars(form)}
-              />
+            <div className="km-phone-stage">
+              <div className="km-phone-frame">
+                <div className="km-phone-notch" aria-hidden="true" />
+                <div className="km-phone-screen">
+                  <div className="km-phone-card-scale">
+                    <ContactCardVisual
+                      contact={{
+                        fullName: form.fullName || 'Your name',
+                        title: form.title,
+                        company: form.company,
+                        phone: form.phone,
+                        email: form.email,
+                        location: form.location,
+                        photoUrl: form.photoUrl,
+                        logoUrl: form.logoUrl,
+                        website: form.website,
+                        whatsapp: form.whatsapp,
+                        linkedin: form.linkedin,
+                        twitter: form.twitter,
+                        github: form.github,
+                        instagram: form.instagram,
+                        youtubeChannel: form.youtubeChannel,
+                        youtubeVideos: form.youtubeVideos,
+                        bookingUrl: form.bookingUrl,
+                        podcastUrl: form.podcastUrl,
+                        tiktok: form.tiktok,
+                        telegram: form.telegram,
+                        wechat: form.wechat,
+                        weibo: form.weibo,
+                        douyin: form.douyin,
+                        xiaohongshu: form.xiaohongshu
+                      }}
+                      variant="lagoon"
+                      themeVars={getCardThemeVars(form)}
+                    />
+                  </div>
+                </div>
+                <div className="km-phone-home" aria-hidden="true" />
+              </div>
             </div>
+            <p className="mt-1 text-center text-xs text-[#1a3d42]/45">Updates as you change the theme or logo.</p>
           </div>
         </div>
 

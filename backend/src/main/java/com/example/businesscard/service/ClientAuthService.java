@@ -161,13 +161,6 @@ public class ClientAuthService {
         return toAuthResponse(user);
     }
 
-    @Transactional
-    public Card regenerateSlug(ClientUser user) {
-        Card card = ensureCard(user, false);
-        card.setSlug(privateSlugService.nextUnique());
-        return cardRepository.save(card);
-    }
-
     private ClientAuthResponse toAuthResponse(ClientUser user) {
         String token = tokenProvider.generateToken(
             "client:" + user.getId(),

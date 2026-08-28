@@ -107,12 +107,6 @@ public class ClientCardController {
         return ApiResponse.ok(cardRepository.save(card));
     }
 
-    @PostMapping("/me/card/regenerate-slug")
-    public ApiResponse<Card> regenerateSlug(HttpServletRequest request) {
-        ClientUser user = currentUser(request);
-        return ApiResponse.ok(clientAuthService.regenerateSlug(user));
-    }
-
     @PostMapping("/me/card/use-google-photo")
     public ApiResponse<Card> useGooglePhoto(HttpServletRequest request) {
         ClientUser user = currentUser(request);

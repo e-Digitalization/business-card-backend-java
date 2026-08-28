@@ -37,7 +37,7 @@ const ClientCardPage = () => {
   const location = useLocation();
   const [form, setForm] = useState(card);
   const [saving, setSaving] = useState(false);
-  const [regenLoading, setRegenLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [logoBusy, setLogoBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -81,21 +81,14 @@ const ClientCardPage = () => {
     }
   };
 
-  const regenerateLink = async () => {
-    if (!window.confirm('Generate a new private link? Your old /u/… link will stop working.')) return;
-    setRegenLoading(true);
-    setMessage('');
-    setError('');
+  const copyLink = async () => {
+    if (!publicPath) return;
     try {
-      const response = await api.post('/api/client/me/card/regenerate-slug');
-      setCard(response.data.data);
-      setForm(response.data.data);
-      await refresh();
-      setMessage('New private link created. Share the updated URL only with people you trust.');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not regenerate link.');
-    } finally {
-      setRegenLoading(false);
+      await navigator.clipboard.writeText(`${window.location.origin}${publicPath}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError('Could not copy the link. Copy it manually instead.');
     }
   };
 
@@ -171,18 +164,22 @@ const ClientCardPage = () => {
         <p className="mt-1 text-xs text-[#1a3d42]/50">
           This code is random on purpose so people cannot guess your card from your name.
         </p>
-        <p className="mt-3 break-all rounded-md bg-[#f7f4ef] px-3 py-3 text-sm font-medium text-[#0d7377]">
-          {typeof window !== 'undefined' ? window.location.origin : ''}
-          {publicPath}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <p className="min-w-0 flex-1 break-all rounded-md bg-[#f7f4ef] px-3 py-3 text-sm font-medium text-[#0d7377]">
+            {typeof window !== 'undefined' ? window.location.origin : ''}
+            {publicPath}
+          </p>
+          <button
+            type="button"
+            onClick={copyLink}
+            className="shrink-0 rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-medium text-[#1a3d42] hover:bg-[#f7f4ef]"
+          >
+            {copied ? 'Copied ✓' : 'Copy link'}
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-[#1a3d42]/45">
+          If this link is ever exposed, ask a Kadi Moja admin to issue a new one.
         </p>
-        <button
-          type="button"
-          onClick={regenerateLink}
-          disabled={regenLoading}
-          className="mt-3 rounded-md border border-[#9a6b45]/30 bg-[#9a6b45]/10 px-4 py-2.5 text-sm font-semibold text-[#9a6b45] disabled:opacity-60"
-        >
-          {regenLoading ? 'Generating…' : 'Generate new private link'}
-        </button>
       </section>
 
       <section id="branding" className="client-panel p-5 sm:p-7 scroll-mt-24">
@@ -192,26 +189,43 @@ const ClientCardPage = () => {
           Choose a color theme and add your company logo. Changes save with the rest of the card below.
         </p>
 
-        <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_auto]">
-          <div className="space-y-6">
-            <div>
-              <span className="mb-2 block text-sm font-medium text-[#1a3d42]/70">Company logo</span>
-              <div className="flex flex-wrap items-center gap-3">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_264px] lg:gap-10">
+          <div className="space-y-4">
+            <div className="rounded-xl border border-black/10 bg-[#faf8f4] p-4">
+              <span className="block text-sm font-medium text-[#1a3d42]">Company logo</span>
+              <p className="mt-0.5 text-xs text-[#1a3d42]/50">PNG, JPG, WebP or GIF · up to 5&nbsp;MB</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
                 {logoSrc ? (
-                  <img src={logoSrc} alt="" className="h-16 w-16 rounded-lg border border-black/10 object-contain bg-white" />
+                  <img
+                    src={logoSrc}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded-lg border border-black/10 bg-white object-contain"
+                  />
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-dashed border-black/15 text-[10px] text-[#1a3d42]/40">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-dashed border-black/20 bg-white text-[10px] text-[#1a3d42]/40">
                     No logo
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => logoFileRef.current?.click()}
-                  disabled={logoBusy}
-                  className="rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0a5f63] disabled:opacity-60"
-                >
-                  {logoBusy ? 'Working…' : 'Upload logo'}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => logoFileRef.current?.click()}
+                    disabled={logoBusy}
+                    className="rounded-md bg-[#0d7377] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0a5f63] disabled:opacity-60"
+                  >
+                    {logoBusy ? 'Working…' : form.logoUrl ? 'Replace' : 'Upload logo'}
+                  </button>
+                  {form.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={clearLogo}
+                      disabled={logoBusy}
+                      className="rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-medium text-[#1a3d42] disabled:opacity-60"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
                 <input
                   ref={logoFileRef}
                   type="file"
@@ -219,22 +233,13 @@ const ClientCardPage = () => {
                   className="hidden"
                   onChange={uploadLogo}
                 />
-                {form.logoUrl && (
-                  <button
-                    type="button"
-                    onClick={clearLogo}
-                    disabled={logoBusy}
-                    className="rounded-md border border-black/10 px-4 py-2.5 text-sm font-medium text-[#1a3d42] disabled:opacity-60"
-                  >
-                    Remove logo
-                  </button>
-                )}
               </div>
             </div>
 
-            <div>
-              <span className="mb-2 block text-sm font-medium text-[#1a3d42]/70">Theme</span>
-              <div className="flex flex-wrap gap-2">
+            <div className="rounded-xl border border-black/10 bg-[#faf8f4] p-4">
+              <span className="block text-sm font-medium text-[#1a3d42]">Theme</span>
+              <p className="mt-0.5 text-xs text-[#1a3d42]/50">Sets the colours on your public card.</p>
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {CARD_THEME_OPTIONS.map((option) => {
                   const preset = CARD_THEME_PRESETS[option.value];
                   const isActive = theme === option.value;
@@ -243,12 +248,14 @@ const ClientCardPage = () => {
                       key={option.value}
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, theme: option.value }))}
-                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition ${
-                        isActive ? 'border-[#0d7377] bg-[#e7f5f4] text-[#1a3d42]' : 'border-black/10 text-[#1a3d42]/70'
+                      className={`flex items-center gap-2 rounded-lg border bg-white px-3 py-2.5 text-sm font-medium transition ${
+                        isActive
+                          ? 'border-[#0d7377] text-[#1a3d42] ring-2 ring-[#0d7377]/20'
+                          : 'border-black/10 text-[#1a3d42]/70 hover:border-black/25'
                       }`}
                     >
                       <span
-                        className="h-4 w-4 rounded-full"
+                        className="h-4 w-4 shrink-0 rounded-full"
                         style={{
                           background: preset
                             ? `linear-gradient(135deg, ${preset.c1}, ${preset.accent})`
@@ -286,37 +293,42 @@ const ClientCardPage = () => {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[280px] overflow-hidden rounded-[1.75rem] shadow-[0_16px_40px_rgba(26,61,66,0.16)]">
-            <ContactCardVisual
-              contact={{
-                fullName: form.fullName || 'Your name',
-                title: form.title,
-                company: form.company,
-                phone: form.phone,
-                email: form.email,
-                location: form.location,
-                photoUrl: form.photoUrl,
-                logoUrl: form.logoUrl,
-                website: form.website,
-                whatsapp: form.whatsapp,
-                linkedin: form.linkedin,
-                twitter: form.twitter,
-                github: form.github,
-                instagram: form.instagram,
-                youtubeChannel: form.youtubeChannel,
-                youtubeVideos: form.youtubeVideos,
-                bookingUrl: form.bookingUrl,
-                podcastUrl: form.podcastUrl,
-                tiktok: form.tiktok,
-                telegram: form.telegram,
-                wechat: form.wechat,
-                weibo: form.weibo,
-                douyin: form.douyin,
-                xiaohongshu: form.xiaohongshu
-              }}
-              variant="lagoon"
-              themeVars={getCardThemeVars(form)}
-            />
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <p className="mb-2 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/40 lg:text-left">
+              Live preview
+            </p>
+            <div className="mx-auto w-full max-w-[264px] overflow-hidden rounded-[1.75rem] border border-black/5 shadow-[0_18px_44px_rgba(26,61,66,0.18)]">
+              <ContactCardVisual
+                contact={{
+                  fullName: form.fullName || 'Your name',
+                  title: form.title,
+                  company: form.company,
+                  phone: form.phone,
+                  email: form.email,
+                  location: form.location,
+                  photoUrl: form.photoUrl,
+                  logoUrl: form.logoUrl,
+                  website: form.website,
+                  whatsapp: form.whatsapp,
+                  linkedin: form.linkedin,
+                  twitter: form.twitter,
+                  github: form.github,
+                  instagram: form.instagram,
+                  youtubeChannel: form.youtubeChannel,
+                  youtubeVideos: form.youtubeVideos,
+                  bookingUrl: form.bookingUrl,
+                  podcastUrl: form.podcastUrl,
+                  tiktok: form.tiktok,
+                  telegram: form.telegram,
+                  wechat: form.wechat,
+                  weibo: form.weibo,
+                  douyin: form.douyin,
+                  xiaohongshu: form.xiaohongshu
+                }}
+                variant="lagoon"
+                themeVars={getCardThemeVars(form)}
+              />
+            </div>
           </div>
         </div>
       </section>

@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ClientLayout from './pages/client/ClientLayout.jsx';
 import ClientDashboardHome from './pages/client/ClientDashboardHome.jsx';
 import ClientCardPage from './pages/client/ClientCardPage.jsx';
+import ClientCardLookPage from './pages/client/ClientCardLookPage.jsx';
 import ClientSharePage from './pages/client/ClientSharePage.jsx';
 import ClientPhotoPage from './pages/client/ClientPhotoPage.jsx';
 import ClientContactsPage from './pages/client/ClientContactsPage.jsx';
@@ -60,6 +61,7 @@ const AppShell = () => {
         >
           <Route index element={<ClientDashboardHome />} />
           <Route path="card" element={<ClientCardPage />} />
+          <Route path="look" element={<ClientCardLookPage />} />
           <Route path="share" element={<ClientSharePage />} />
           <Route path="photo" element={<ClientPhotoPage />} />
           <Route path="contacts" element={<ClientContactsPage />} />

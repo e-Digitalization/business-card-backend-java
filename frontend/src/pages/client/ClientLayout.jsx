@@ -103,9 +103,9 @@ const ClientLayout = () => {
   useEffect(() => {
     if (
       location.pathname.startsWith('/me/card') ||
+      location.pathname.startsWith('/me/look') ||
       location.pathname.startsWith('/me/share') ||
-      location.pathname.startsWith('/me/photo') ||
-      location.pathname.startsWith('/me/looks')
+      location.pathname.startsWith('/me/photo')
     ) {
       setCardOpen(true);
     }
@@ -130,9 +130,9 @@ const ClientLayout = () => {
 
   const cardSectionActive =
     location.pathname.startsWith('/me/card') ||
+    location.pathname.startsWith('/me/look') ||
     location.pathname.startsWith('/me/share') ||
-    location.pathname.startsWith('/me/photo') ||
-    location.pathname.startsWith('/me/looks');
+    location.pathname.startsWith('/me/photo');
 
   const sidebar = (
     <aside className="snav flex h-full flex-col">
@@ -192,11 +192,20 @@ const ClientLayout = () => {
               <div className="snav-sub">
                 <NavLink
                   to="/me/card"
+                  end
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
                 >
                   <span className="snav-bullet" />
                   Edit card
+                </NavLink>
+                <NavLink
+                  to="/me/look"
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  Card look
                 </NavLink>
                 <NavLink
                   to="/me/share"

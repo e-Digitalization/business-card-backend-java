@@ -349,7 +349,7 @@ const ClientDashboardHome = () => {
                   Contacts
                 </Link>
                 <Link
-                  to="/me/card#branding"
+                  to="/me/look"
                   className="rounded-md border border-black/10 px-4 py-2.5 text-sm font-medium text-[#1a3d42]"
                 >
                   Edit card look

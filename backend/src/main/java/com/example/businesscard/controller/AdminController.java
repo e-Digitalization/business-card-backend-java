@@ -11,6 +11,7 @@ import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.CardTagRepository;
 import com.example.businesscard.service.AiCardScanService;
 import com.example.businesscard.service.CardInviteService;
+import com.example.businesscard.service.PhotoUploadService;
 import com.example.businesscard.service.PrivateSlugService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -41,17 +42,20 @@ public class AdminController {
     private final PrivateSlugService privateSlugService;
     private final AiCardScanService aiCardScanService;
     private final CardInviteService cardInviteService;
+    private final PhotoUploadService photoUploadService;
 
     public AdminController(CardRepository cardRepository,
                            CardTagRepository cardTagRepository,
                            PrivateSlugService privateSlugService,
                            AiCardScanService aiCardScanService,
-                           CardInviteService cardInviteService) {
+                           CardInviteService cardInviteService,
+                           PhotoUploadService photoUploadService) {
         this.cardRepository = cardRepository;
         this.cardTagRepository = cardTagRepository;
         this.privateSlugService = privateSlugService;
         this.aiCardScanService = aiCardScanService;
         this.cardInviteService = cardInviteService;
+        this.photoUploadService = photoUploadService;
     }
 
     @PostMapping("/cards")
@@ -104,6 +108,29 @@ public class AdminController {
         }
         card.setSlug(privateSlugService.nextUnique());
         return ResponseEntity.ok(ok("Private link regenerated", cardRepository.save(card)));
+    }
+
+    @PostMapping(value = "/cards/{id}/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Card>> uploadLogo(@PathVariable @NonNull UUID id,
+                                                        @RequestParam("file") MultipartFile file) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
+        if (card == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
+        }
+        card.setLogoUrl(photoUploadService.store(file, "logos"));
+        return ResponseEntity.ok(ok("Logo uploaded", cardRepository.save(card)));
+    }
+
+    @DeleteMapping("/cards/{id}/logo")
+    public ResponseEntity<ApiResponse<Card>> clearLogo(@PathVariable @NonNull UUID id) {
+        Card card = cardRepository.findByPublicId(id).orElse(null);
+        if (card == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(fail(HttpStatus.NOT_FOUND, "Card not found"));
+        }
+        card.setLogoUrl(null);
+        return ResponseEntity.ok(ok("Logo removed", cardRepository.save(card)));
     }
 
     @GetMapping("/cards/stats")

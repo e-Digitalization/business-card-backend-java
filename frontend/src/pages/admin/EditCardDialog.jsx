@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import api from '../../services/api.js';
 import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js';
+import { resolveMediaUrl } from '../../utils/media.js';
 import VideoListEditor from '../../components/VideoListEditor.jsx';
 
 const fieldDefs = [
@@ -13,7 +14,6 @@ const fieldDefs = [
   ['website', 'Website'],
   ['whatsapp', 'WhatsApp'],
   ['photoUrl', 'Photo URL'],
-  ['logoUrl', 'Logo URL'],
   ['linkedin', 'LinkedIn'],
   ['twitter', 'Twitter / X'],
   ['github', 'GitHub'],
@@ -36,6 +36,8 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
   const [payload, setPayload] = useState(null);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('details');
+  const [logoBusy, setLogoBusy] = useState(false);
+  const logoFileRef = useRef(null);
 
   useEffect(() => {
     if (!open || !cardId) return undefined;
@@ -113,6 +115,43 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
     const response = await api.get(`/api/admin/cards/${cardId}`);
     setPayload(response.data.data);
     onSaved?.();
+  };
+
+  // Logo upload persists on its own endpoint; merge just the new URL back so any
+  // other in-progress field edits in the dialog are preserved.
+  const uploadLogo = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setLogoBusy(true);
+    setError('');
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      const response = await api.post(`/api/admin/cards/${cardId}/logo`, body, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setCardField('logoUrl', response.data.data.logoUrl);
+      onSaved?.();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not upload logo.');
+    } finally {
+      setLogoBusy(false);
+      event.target.value = '';
+    }
+  };
+
+  const clearLogo = async () => {
+    setLogoBusy(true);
+    setError('');
+    try {
+      await api.delete(`/api/admin/cards/${cardId}/logo`);
+      setCardField('logoUrl', null);
+      onSaved?.();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not remove logo.');
+    } finally {
+      setLogoBusy(false);
+    }
   };
 
   const onAssignTag = async (e) => {
@@ -221,6 +260,55 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
 
           {!loading && card && tab === 'look' && (
             <form id="edit-card-form" onSubmit={onUpdate}>
+              <p className="mb-2 text-sm font-medium text-[#1a3d42]/70">Organisation logo</p>
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                {resolveMediaUrl(card.logoUrl) ? (
+                  <img
+                    src={resolveMediaUrl(card.logoUrl)}
+                    alt=""
+                    className="h-16 w-16 rounded-lg border border-black/10 bg-white object-contain"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-dashed border-black/15 text-[10px] text-[#1a3d42]/40">
+                    No logo
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => logoFileRef.current?.click()}
+                  disabled={logoBusy}
+                  className="rounded-md bg-[#9a6b45] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#865c3b] disabled:opacity-60"
+                >
+                  {logoBusy ? 'Working…' : card.logoUrl ? 'Replace logo' : 'Upload logo'}
+                </button>
+                <input
+                  ref={logoFileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={uploadLogo}
+                />
+                {card.logoUrl && (
+                  <button
+                    type="button"
+                    onClick={clearLogo}
+                    disabled={logoBusy}
+                    className="rounded-md border border-black/10 px-4 py-2.5 text-sm font-medium text-[#1a3d42] disabled:opacity-60"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <label className="mb-5 block">
+                <span className="mb-1 block text-xs font-medium text-[#1a3d42]/60">…or paste a logo image URL</span>
+                <input
+                  value={card.logoUrl || ''}
+                  onChange={onChange('logoUrl')}
+                  placeholder="https://…/logo.png"
+                  className="admin-input"
+                />
+              </label>
+
               <p className="mb-2 text-sm font-medium text-[#1a3d42]/70">Theme</p>
               <div className="flex flex-wrap gap-2">
                 {CARD_THEME_OPTIONS.map((option) => {

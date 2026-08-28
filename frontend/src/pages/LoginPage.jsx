@@ -48,11 +48,28 @@ const LoginPage = () => {
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState(role === 'admin' ? 'admin123' : '');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Sign-up is two steps: fill the form, then confirm the emailed OTP.
+  const [signupStage, setSignupStage] = useState('form');
+  const [otp, setOtp] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
+
+  const resetSignupFlow = () => {
+    setSignupStage('form');
+    setOtp('');
+    setPendingEmail('');
+    setInfo('');
+    setError('');
+  };
+
+  const isOtpStep = role === 'account' && mode === 'signup' && signupStage === 'otp';
 
   const fromPath = location.state?.from?.pathname || '';
   const fromAccount =
@@ -104,6 +121,19 @@ const LoginPage = () => {
     }
   };
 
+  const requestSignupCode = async () => {
+    const response = await api.post('/api/auth/register', { fullName, email, password });
+    const data = response.data || {};
+    setPendingEmail(data.email || email.trim().toLowerCase());
+    setSignupStage('otp');
+    setOtp('');
+    if (data.otpPreview) {
+      setInfo(`Email delivery isn't configured yet — your code is ${data.otpPreview}`);
+    } else {
+      setInfo(`We sent a 6-digit code to ${data.email || email}. It expires in ${data.expiresInMinutes || 15} minutes.`);
+    }
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setError('');
@@ -115,17 +145,51 @@ const LoginPage = () => {
         return;
       }
       if (mode === 'signup') {
-        const response = await api.post('/api/auth/register', { fullName, email, password });
-        finishClient(response.data);
-      } else {
-        const response = await api.post('/api/auth/client-login', { email, password });
-        finishClient(response.data);
+        if (signupStage === 'form') {
+          if (password.length < 6) {
+            setError('Password must be at least 6 characters.');
+            return;
+          }
+          if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+          }
+          setInfo('');
+          await requestSignupCode();
+        } else {
+          const response = await api.post('/api/auth/register/verify', {
+            email: pendingEmail,
+            otp: otp.trim()
+          });
+          finishClient(response.data);
+        }
+        return;
       }
+      const response = await api.post('/api/auth/client-login', { email, password });
+      finishClient(response.data);
     } catch (err) {
       const status = err.response?.status;
       if (status === 409) setError('An account with this email already exists.');
-      else if (status === 401) setError(role === 'admin' ? 'Invalid admin credentials.' : 'Invalid email or password.');
-      else setError(err.response?.data?.message || 'Could not sign in.');
+      else if (status === 429) setError('Too many attempts. Request a new code.');
+      else if (status === 401) {
+        if (role === 'admin') setError('Invalid admin credentials.');
+        else if (mode === 'signup') setError('Incorrect verification code.');
+        else setError('Invalid email or password.');
+      } else setError(err.response?.data?.message || 'Could not sign in.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendSignupCode = async () => {
+    setError('');
+    setInfo('');
+    setLoading(true);
+    try {
+      await requestSignupCode();
+      setInfo('New code sent. Check your inbox.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not resend the code.');
     } finally {
       setLoading(false);
     }
@@ -249,7 +313,7 @@ const LoginPage = () => {
                 aria-selected={role === 'account'}
                 onClick={() => {
                   setRole('account');
-                  setError('');
+                  resetSignupFlow();
                 }}
                 className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${
                   role === 'account' ? 'bg-white text-[#0d7377] shadow-[0_3px_12px_rgba(26,61,66,0.08)]' : 'text-[#1a3d42]/50 hover:text-[#1a3d42]/75'
@@ -264,7 +328,7 @@ const LoginPage = () => {
                 onClick={() => {
                   setRole('admin');
                   setMode('login');
-                  setError('');
+                  resetSignupFlow();
                 }}
                 className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${
                   role === 'admin' ? 'bg-white text-[#0d7377] shadow-[0_3px_12px_rgba(26,61,66,0.08)]' : 'text-[#1a3d42]/50 hover:text-[#1a3d42]/75'
@@ -275,15 +339,23 @@ const LoginPage = () => {
             </div>
 
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#b1784c]">
-              {role === 'admin' ? 'Administration' : mode === 'signup' ? 'Join Kadi Moja' : 'Welcome back'}
+              {role === 'admin' ? 'Administration' : isOtpStep ? 'Almost there' : mode === 'signup' ? 'Join Kadi Moja' : 'Welcome back'}
             </p>
             <h1 className="font-display text-[2rem] font-semibold leading-tight tracking-[-0.03em] text-[#1a3d42]">
-              {role === 'admin' ? 'Admin sign in' : mode === 'signup' ? 'Create account' : 'Karibu tena'}
+              {role === 'admin'
+                ? 'Admin sign in'
+                : isOtpStep
+                  ? 'Verify your email'
+                  : mode === 'signup'
+                    ? 'Create account'
+                    : 'Karibu tena'}
             </h1>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#1a3d42]/55">
               {role === 'admin'
                 ? 'Manage digital cards and NFC tags.'
-                : 'Sign in to edit your card, scan cards, and manage contacts.'}
+                : isOtpStep
+                  ? 'We emailed you a one-time code to confirm this address.'
+                  : 'Sign in to edit your card, scan cards, and manage contacts.'}
             </p>
 
             {role === 'account' && googleEnabled && mode === 'login' && (
@@ -299,7 +371,7 @@ const LoginPage = () => {
               </div>
             )}
 
-            {role === 'account' && googleEnabled && (
+            {role === 'account' && googleEnabled && !isOtpStep && (
               <div className="my-6 flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/35">
                 <span className="h-px flex-1 bg-black/10" />
                 or continue with email
@@ -307,67 +379,130 @@ const LoginPage = () => {
               </div>
             )}
 
-            <form onSubmit={onSubmit} className={`space-y-5 ${role === 'account' && googleEnabled ? '' : 'mt-7'}`}>
-              {role === 'account' && mode === 'signup' && (
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Full name</span>
-                  <input
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    className="admin-input"
-                    placeholder="Japhari Mbaru"
-                  />
-                </label>
-              )}
-
-              {role === 'account' ? (
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Email address</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="admin-input"
-                    placeholder="you@email.com"
-                  />
-                </label>
+            <form onSubmit={onSubmit} className={`space-y-5 ${role === 'account' && googleEnabled && !isOtpStep ? '' : 'mt-7'}`}>
+              {isOtpStep ? (
+                <>
+                  <div className="rounded-lg border border-black/10 bg-[#f7f4ef] px-3.5 py-3 text-sm text-[#1a3d42]/70">
+                    Enter the 6-digit code sent to{' '}
+                    <span className="font-semibold text-[#1a3d42]">{pendingEmail}</span>.
+                  </div>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Verification code</span>
+                    <input
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      required
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      placeholder="123456"
+                      className="admin-input text-center text-lg font-semibold tracking-[0.4em]"
+                    />
+                  </label>
+                  <div className="flex items-center justify-between text-sm">
+                    <button
+                      type="button"
+                      className="font-semibold text-[#0d7377] hover:underline disabled:opacity-50"
+                      onClick={resendSignupCode}
+                      disabled={loading}
+                    >
+                      Resend code
+                    </button>
+                    <button
+                      type="button"
+                      className="text-[#1a3d42]/55 hover:text-[#1a3d42] hover:underline"
+                      onClick={resetSignupFlow}
+                    >
+                      Use a different email
+                    </button>
+                  </div>
+                </>
               ) : (
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Username</span>
-                  <input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    className="admin-input"
-                    autoComplete="username"
-                  />
-                </label>
+                <>
+                  {role === 'account' && mode === 'signup' && (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Full name</span>
+                      <input
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="admin-input"
+                        placeholder="Japhari Mbaru"
+                      />
+                    </label>
+                  )}
+
+                  {role === 'account' ? (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Email address</span>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="admin-input"
+                        placeholder="you@email.com"
+                      />
+                    </label>
+                  ) : (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Username</span>
+                      <input
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                        className="admin-input"
+                        autoComplete="username"
+                      />
+                    </label>
+                  )}
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Password</span>
+                    <div className="admin-input-wrap">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={role === 'account' ? 6 : 1}
+                        className="w-full bg-transparent outline-none"
+                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="rounded px-1 text-xs font-bold text-[#9a6b45] hover:text-[#74492c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9a6b45]/30"
+                      >
+                        {showPassword ? 'Hide' : 'Show'}
+                      </button>
+                    </div>
+                  </label>
+
+                  {role === 'account' && mode === 'signup' && (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Confirm password</span>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        className={`admin-input ${
+                          confirmPassword && confirmPassword !== password ? 'border-rose-300' : ''
+                        }`}
+                        autoComplete="new-password"
+                      />
+                      {confirmPassword && confirmPassword !== password && (
+                        <span className="mt-1 block text-xs text-rose-500">Passwords do not match.</span>
+                      )}
+                    </label>
+                  )}
+                </>
               )}
 
-              <label className="block">
-                <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Password</span>
-                <div className="admin-input-wrap">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={role === 'account' ? 6 : 1}
-                    className="w-full bg-transparent outline-none"
-                    autoComplete={role === 'admin' ? 'current-password' : 'current-password'}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="rounded px-1 text-xs font-bold text-[#9a6b45] hover:text-[#74492c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9a6b45]/30"
-                  >
-                    {showPassword ? 'Hide' : 'Show'}
-                  </button>
-                </div>
-              </label>
-
+              {info && (
+                <p className="rounded-lg border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">{info}</p>
+              )}
               {error && (
                 <p role="alert" className="rounded-lg border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-600">{error}</p>
               )}
@@ -382,12 +517,14 @@ const LoginPage = () => {
                   : role === 'admin'
                     ? 'Ingia / Admin sign in'
                     : mode === 'signup'
-                      ? 'Create account'
+                      ? isOtpStep
+                        ? 'Verify & create account'
+                        : 'Send verification code'
                       : 'Sign in'}
               </button>
             </form>
 
-            {role === 'account' && (
+            {role === 'account' && !isOtpStep && (
               <p className="mt-6 text-center text-sm text-[#1a3d42]/55">
                 {mode === 'signup' ? 'Already have an account?' : 'New to Kadi Moja?'}{' '}
                 <button
@@ -395,7 +532,7 @@ const LoginPage = () => {
                   className="font-semibold text-[#0d7377] hover:underline"
                   onClick={() => {
                     setMode((m) => (m === 'signup' ? 'login' : 'signup'));
-                    setError('');
+                    resetSignupFlow();
                   }}
                 >
                   {mode === 'signup' ? 'Sign in' : 'Create account'}

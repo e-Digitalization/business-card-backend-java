@@ -64,8 +64,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ClientAuthResponse> register(@Valid @RequestBody ClientRegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(clientAuthService.register(request));
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody ClientRegisterRequest request) {
+        // Step 1: emails a verification code; the account is created on /register/verify.
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(clientAuthService.startRegistration(request));
+    }
+
+    @PostMapping("/register/verify")
+    public ResponseEntity<ClientAuthResponse> verifyRegistration(@RequestBody Map<String, String> body) {
+        String email = body == null ? null : body.get("email");
+        String otp = body == null ? null : body.get("otp");
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientAuthService.verifyRegistration(email, otp));
     }
 
     @PostMapping("/client-login")

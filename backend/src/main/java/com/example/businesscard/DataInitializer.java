@@ -14,9 +14,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-
 @Component
 public class DataInitializer implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
@@ -56,27 +53,19 @@ public class DataInitializer implements CommandLineRunner {
         if (adminUserRepository.count() > 0) {
             return;
         }
-
-        String username = defaultAdminUsername.isBlank() ? "admin" : defaultAdminUsername;
-        String password = defaultAdminPassword.isBlank() ? generateRandomPassword() : defaultAdminPassword;
+        // No default/guessable admin is ever created. An initial admin is only
+        // seeded when BOTH ADMIN_USERNAME and ADMIN_PASSWORD are explicitly set.
+        if (defaultAdminUsername.isBlank() || defaultAdminPassword.isBlank()) {
+            log.warn("No admin users exist and ADMIN_USERNAME/ADMIN_PASSWORD are not both set — "
+                + "no admin account was created. Set both and restart to seed the first admin.");
+            return;
+        }
 
         AdminUser admin = new AdminUser();
-        admin.setUsername(username);
-        admin.setPasswordHash(passwordEncoder.encode(password));
+        admin.setUsername(defaultAdminUsername.trim());
+        admin.setPasswordHash(passwordEncoder.encode(defaultAdminPassword));
         adminUserRepository.save(admin);
-
-        if (defaultAdminPassword.isBlank()) {
-            log.warn("No ADMIN_USERNAME/ADMIN_PASSWORD configured — created initial admin user '{}' with generated password: {}. " +
-                    "Log in and rotate this immediately, or set ADMIN_USERNAME/ADMIN_PASSWORD before first boot.", username, password);
-        } else {
-            log.info("Created initial admin user '{}' from configured ADMIN_USERNAME/ADMIN_PASSWORD.", username);
-        }
-    }
-
-    private String generateRandomPassword() {
-        byte[] bytes = new byte[18];
-        new SecureRandom().nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        log.info("Created initial admin user '{}' from configured ADMIN_USERNAME/ADMIN_PASSWORD.", defaultAdminUsername.trim());
     }
 
     private void migrateGuessableSlugs() {

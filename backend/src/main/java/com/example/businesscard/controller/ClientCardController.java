@@ -84,6 +84,13 @@ public class ClientCardController {
         card.setYoutubeVideo2(body.getYoutubeVideo2());
         card.setYoutubeVideo3(body.getYoutubeVideo3());
         card.setBookingUrl(body.getBookingUrl());
+        card.setPodcastUrl(body.getPodcastUrl());
+        card.setTiktok(body.getTiktok());
+        card.setTelegram(body.getTelegram());
+        card.setWechat(body.getWechat());
+        card.setWeibo(body.getWeibo());
+        card.setDouyin(body.getDouyin());
+        card.setXiaohongshu(body.getXiaohongshu());
         card.setActive(body.isActive());
 
         if (body.getTheme() != null) {

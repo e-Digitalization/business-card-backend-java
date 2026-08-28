@@ -2,8 +2,26 @@ import React from 'react';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import PodcastsIcon from '@mui/icons-material/Podcasts';
+import TelegramIcon from '@mui/icons-material/Telegram';
 import XIcon from '@mui/icons-material/X';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import { safeExternalUrl } from '../utils/profileLinks.js';
+
+const MusicSocialIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M14 3v11.2a4.2 4.2 0 1 1-2-3.6V6.4c2 1.8 3.8 2.7 6.5 2.8V12A10.2 10.2 0 0 1 14 10.6" />
+  </svg>
+);
+
+const WeChatIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M9.5 4C5.9 4 3 6.4 3 9.3c0 1.6.9 3 2.3 4l-.6 2.1 2.4-1.2c.7.2 1.5.4 2.4.4h.4a5.7 5.7 0 0 1-.2-1.5c0-3.1 2.8-5.6 6.3-5.6h.3C15.4 5.5 12.7 4 9.5 4Zm-2.2 3.1a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6Zm4.4 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6Z" />
+    <path d="M21 13.1c0-2.5-2.4-4.6-5.4-4.6s-5.4 2.1-5.4 4.6 2.4 4.6 5.4 4.6c.7 0 1.4-.1 2-.3l2 1-.5-1.8c1.2-.8 1.9-2.1 1.9-3.5Zm-7.2-.7a.7.7 0 1 1 0-1.4.7.7 0 0 1 0 1.4Zm3.7 0a.7.7 0 1 1 0-1.4.7.7 0 0 1 0 1.4Z" />
+  </svg>
+);
+
+const LetterIcon = ({ children }) => <span className="km-social-letter">{children}</span>;
 
 const NETWORKS = [
   {
@@ -35,6 +53,48 @@ const NETWORKS = [
     label: 'YouTube',
     Icon: YouTubeIcon,
     baseUrl: 'https://www.youtube.com/'
+  },
+  {
+    key: 'podcastUrl',
+    label: 'Podcast',
+    Icon: PodcastsIcon,
+    direct: true
+  },
+  {
+    key: 'tiktok',
+    label: 'TikTok',
+    Icon: MusicSocialIcon,
+    baseUrl: 'https://www.tiktok.com/@'
+  },
+  {
+    key: 'telegram',
+    label: 'Telegram',
+    Icon: TelegramIcon,
+    baseUrl: 'https://t.me/'
+  },
+  {
+    key: 'wechat',
+    label: 'WeChat',
+    Icon: WeChatIcon,
+    direct: true
+  },
+  {
+    key: 'weibo',
+    label: 'Weibo',
+    Icon: () => <LetterIcon>微</LetterIcon>,
+    baseUrl: 'https://weibo.com/'
+  },
+  {
+    key: 'douyin',
+    label: 'Douyin',
+    Icon: MusicSocialIcon,
+    baseUrl: 'https://www.douyin.com/user/'
+  },
+  {
+    key: 'xiaohongshu',
+    label: 'Xiaohongshu',
+    Icon: () => <LetterIcon>RED</LetterIcon>,
+    baseUrl: 'https://www.xiaohongshu.com/user/profile/'
   }
 ];
 
@@ -45,15 +105,17 @@ const socialHref = (value, baseUrl) => {
 };
 
 const SocialLinks = ({ profile, className = '' }) => {
-  const visible = NETWORKS.filter(({ key }) => profile?.[key]);
+  const visible = NETWORKS.filter(
+    ({ key, direct }) => profile?.[key] && (!direct || safeExternalUrl(profile[key]))
+  );
   if (!visible.length) return null;
 
   return (
     <div className={`km-social-links ${className}`}>
-      {visible.map(({ key, label, Icon, baseUrl }) => (
+      {visible.map(({ key, label, Icon, baseUrl, direct }) => (
         <a
           key={key}
-          href={socialHref(profile[key], baseUrl)}
+          href={direct ? safeExternalUrl(profile[key]) : socialHref(profile[key], baseUrl)}
           target="_blank"
           rel="noreferrer"
           className={`km-card-social km-card-social--${key}`}

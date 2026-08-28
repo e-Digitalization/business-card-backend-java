@@ -2598,6 +2598,18 @@ a.km-card-row:hover {
   gap: 0.75rem;
 }
 
+.km-card-social svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+
+.km-social-letter {
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .km-card-social:hover {
   border-color: var(--km-card-c2, #0d7377);
   color: var(--km-card-c2, #0d7377);
@@ -2631,6 +2643,51 @@ a.km-card-row:hover {
 .km-card-social--youtubeChannel:hover {
   border-color: #ff0000;
   background: #ff0000;
+  color: #fff;
+}
+
+.km-card-social--podcastUrl,
+.km-card-social--podcastUrl:hover {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  color: #fff;
+}
+
+.km-card-social--tiktok,
+.km-card-social--tiktok:hover,
+.km-card-social--douyin,
+.km-card-social--douyin:hover {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+  box-shadow: -2px 1px 0 #25f4ee, 2px -1px 0 #fe2c55;
+}
+
+.km-card-social--telegram,
+.km-card-social--telegram:hover {
+  border-color: #229ed9;
+  background: #229ed9;
+  color: #fff;
+}
+
+.km-card-social--wechat,
+.km-card-social--wechat:hover {
+  border-color: #07c160;
+  background: #07c160;
+  color: #fff;
+}
+
+.km-card-social--weibo,
+.km-card-social--weibo:hover {
+  border-color: #e6162d;
+  background: #e6162d;
+  color: #fff;
+}
+
+.km-card-social--xiaohongshu,
+.km-card-social--xiaohongshu:hover {
+  border-color: #ff2442;
+  background: #ff2442;
   color: #fff;
 }
 

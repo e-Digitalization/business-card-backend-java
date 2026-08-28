@@ -25,6 +25,13 @@ public class CardRequest {
     private String youtubeVideo2;
     private String youtubeVideo3;
     private String bookingUrl;
+    private String podcastUrl;
+    private String tiktok;
+    private String telegram;
+    private String wechat;
+    private String weibo;
+    private String douyin;
+    private String xiaohongshu;
     private String theme;
     private String primaryColor;
     private String accentColor;
@@ -188,6 +195,62 @@ public class CardRequest {
 
     public void setBookingUrl(String bookingUrl) {
         this.bookingUrl = bookingUrl;
+    }
+
+    public String getPodcastUrl() {
+        return podcastUrl;
+    }
+
+    public void setPodcastUrl(String podcastUrl) {
+        this.podcastUrl = podcastUrl;
+    }
+
+    public String getTiktok() {
+        return tiktok;
+    }
+
+    public void setTiktok(String tiktok) {
+        this.tiktok = tiktok;
+    }
+
+    public String getTelegram() {
+        return telegram;
+    }
+
+    public void setTelegram(String telegram) {
+        this.telegram = telegram;
+    }
+
+    public String getWechat() {
+        return wechat;
+    }
+
+    public void setWechat(String wechat) {
+        this.wechat = wechat;
+    }
+
+    public String getWeibo() {
+        return weibo;
+    }
+
+    public void setWeibo(String weibo) {
+        this.weibo = weibo;
+    }
+
+    public String getDouyin() {
+        return douyin;
+    }
+
+    public void setDouyin(String douyin) {
+        this.douyin = douyin;
+    }
+
+    public String getXiaohongshu() {
+        return xiaohongshu;
+    }
+
+    public void setXiaohongshu(String xiaohongshu) {
+        this.xiaohongshu = xiaohongshu;
     }
 
     public boolean isActive() {

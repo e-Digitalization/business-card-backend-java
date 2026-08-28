@@ -227,6 +227,13 @@ public class AdminController {
         card.setYoutubeVideo2(request.getYoutubeVideo2());
         card.setYoutubeVideo3(request.getYoutubeVideo3());
         card.setBookingUrl(request.getBookingUrl());
+        card.setPodcastUrl(request.getPodcastUrl());
+        card.setTiktok(request.getTiktok());
+        card.setTelegram(request.getTelegram());
+        card.setWechat(request.getWechat());
+        card.setWeibo(request.getWeibo());
+        card.setDouyin(request.getDouyin());
+        card.setXiaohongshu(request.getXiaohongshu());
         card.setActive(request.isActive());
 
         if (request.getTheme() != null) {

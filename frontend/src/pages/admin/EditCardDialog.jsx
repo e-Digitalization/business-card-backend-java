@@ -21,7 +21,14 @@ const fieldDefs = [
   ['youtubeVideo1', 'YouTube video 1'],
   ['youtubeVideo2', 'YouTube video 2'],
   ['youtubeVideo3', 'YouTube video 3'],
-  ['bookingUrl', 'Appointment booking link']
+  ['bookingUrl', 'Appointment booking link'],
+  ['podcastUrl', 'Podcast link'],
+  ['tiktok', 'TikTok'],
+  ['telegram', 'Telegram'],
+  ['wechat', 'WeChat profile link'],
+  ['weibo', 'Weibo'],
+  ['douyin', 'Douyin'],
+  ['xiaohongshu', 'Xiaohongshu / RED']
 ];
 
 const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {

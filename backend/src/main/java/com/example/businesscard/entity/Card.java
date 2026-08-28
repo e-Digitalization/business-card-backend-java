@@ -53,6 +53,14 @@ public class Card {
     private String youtubeVideo3;
     @Column(columnDefinition = "TEXT")
     private String bookingUrl;
+    @Column(columnDefinition = "TEXT")
+    private String podcastUrl;
+    private String tiktok;
+    private String telegram;
+    private String wechat;
+    private String weibo;
+    private String douyin;
+    private String xiaohongshu;
 
     // One of "lagoon" (default), "midnight", "sunset", "executive", "custom" — see frontend/src/utils/cardTheme.js
     private String theme = "lagoon";
@@ -241,6 +249,62 @@ public class Card {
 
     public void setBookingUrl(String bookingUrl) {
         this.bookingUrl = bookingUrl;
+    }
+
+    public String getPodcastUrl() {
+        return podcastUrl;
+    }
+
+    public void setPodcastUrl(String podcastUrl) {
+        this.podcastUrl = podcastUrl;
+    }
+
+    public String getTiktok() {
+        return tiktok;
+    }
+
+    public void setTiktok(String tiktok) {
+        this.tiktok = tiktok;
+    }
+
+    public String getTelegram() {
+        return telegram;
+    }
+
+    public void setTelegram(String telegram) {
+        this.telegram = telegram;
+    }
+
+    public String getWechat() {
+        return wechat;
+    }
+
+    public void setWechat(String wechat) {
+        this.wechat = wechat;
+    }
+
+    public String getWeibo() {
+        return weibo;
+    }
+
+    public void setWeibo(String weibo) {
+        this.weibo = weibo;
+    }
+
+    public String getDouyin() {
+        return douyin;
+    }
+
+    public void setDouyin(String douyin) {
+        this.douyin = douyin;
+    }
+
+    public String getXiaohongshu() {
+        return xiaohongshu;
+    }
+
+    public void setXiaohongshu(String xiaohongshu) {
+        this.xiaohongshu = xiaohongshu;
     }
 
     public boolean isActive() {

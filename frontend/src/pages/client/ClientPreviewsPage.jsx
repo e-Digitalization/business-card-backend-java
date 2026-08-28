@@ -65,6 +65,13 @@ const ClientPreviewsPage = () => {
     youtubeVideo2: card?.youtubeVideo2,
     youtubeVideo3: card?.youtubeVideo3,
     bookingUrl: card?.bookingUrl,
+    podcastUrl: card?.podcastUrl,
+    tiktok: card?.tiktok,
+    telegram: card?.telegram,
+    wechat: card?.wechat,
+    weibo: card?.weibo,
+    douyin: card?.douyin,
+    xiaohongshu: card?.xiaohongshu,
     source: 'tap'
   };
   const themeVars = getCardThemeVars(card);

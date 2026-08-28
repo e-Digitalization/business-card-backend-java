@@ -24,7 +24,14 @@ const fields = [
   ['youtubeVideo1', 'YouTube video 1'],
   ['youtubeVideo2', 'YouTube video 2'],
   ['youtubeVideo3', 'YouTube video 3'],
-  ['bookingUrl', 'Appointment booking link']
+  ['bookingUrl', 'Appointment booking link'],
+  ['podcastUrl', 'Podcast link'],
+  ['tiktok', 'TikTok'],
+  ['telegram', 'Telegram'],
+  ['wechat', 'WeChat profile link'],
+  ['weibo', 'Weibo'],
+  ['douyin', 'Douyin'],
+  ['xiaohongshu', 'Xiaohongshu / RED']
 ];
 
 const ClientCardPage = () => {
@@ -302,7 +309,14 @@ const ClientCardPage = () => {
                 youtubeVideo1: form.youtubeVideo1,
                 youtubeVideo2: form.youtubeVideo2,
                 youtubeVideo3: form.youtubeVideo3,
-                bookingUrl: form.bookingUrl
+                bookingUrl: form.bookingUrl,
+                podcastUrl: form.podcastUrl,
+                tiktok: form.tiktok,
+                telegram: form.telegram,
+                wechat: form.wechat,
+                weibo: form.weibo,
+                douyin: form.douyin,
+                xiaohongshu: form.xiaohongshu
               }}
               variant="lagoon"
               themeVars={getCardThemeVars(form)}

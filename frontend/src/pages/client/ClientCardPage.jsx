@@ -5,6 +5,7 @@ import { resolveMediaUrl } from '../../utils/media.js';
 import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS, getCardThemeVars } from '../../utils/cardTheme.js';
 import { ClientWorkspaceContext } from './ClientLayout.jsx';
 import ContactCardVisual from './ContactCardVisual.jsx';
+import VideoListEditor from '../../components/VideoListEditor.jsx';
 
 const fields = [
   ['fullName', 'Full name'],
@@ -21,9 +22,6 @@ const fields = [
   ['github', 'GitHub'],
   ['instagram', 'Instagram'],
   ['youtubeChannel', 'YouTube channel'],
-  ['youtubeVideo1', 'YouTube video 1'],
-  ['youtubeVideo2', 'YouTube video 2'],
-  ['youtubeVideo3', 'YouTube video 3'],
   ['bookingUrl', 'Appointment booking link'],
   ['podcastUrl', 'Podcast link'],
   ['tiktok', 'TikTok'],
@@ -306,9 +304,7 @@ const ClientCardPage = () => {
                 github: form.github,
                 instagram: form.instagram,
                 youtubeChannel: form.youtubeChannel,
-                youtubeVideo1: form.youtubeVideo1,
-                youtubeVideo2: form.youtubeVideo2,
-                youtubeVideo3: form.youtubeVideo3,
+                youtubeVideos: form.youtubeVideos,
                 bookingUrl: form.bookingUrl,
                 podcastUrl: form.podcastUrl,
                 tiktok: form.tiktok,
@@ -333,6 +329,14 @@ const ClientCardPage = () => {
               <input value={form[key] || ''} onChange={onChange(key)} className="admin-input" />
             </label>
           ))}
+
+          <div className="sm:col-span-2">
+            <VideoListEditor
+              value={form.youtubeVideos || ''}
+              onChange={(next) => setForm((p) => ({ ...p, youtubeVideos: next }))}
+              accent="#0d7377"
+            />
+          </div>
         </div>
 
         {message && (

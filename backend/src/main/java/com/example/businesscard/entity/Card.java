@@ -45,12 +45,9 @@ public class Card {
     private String instagram;
     @Column(columnDefinition = "TEXT")
     private String youtubeChannel;
-    @Column(columnDefinition = "TEXT")
-    private String youtubeVideo1;
-    @Column(columnDefinition = "TEXT")
-    private String youtubeVideo2;
-    @Column(columnDefinition = "TEXT")
-    private String youtubeVideo3;
+    // Newline-separated list of featured YouTube video URLs / ids.
+    @Column(name = "youtube_videos", columnDefinition = "TEXT")
+    private String youtubeVideos;
     @Column(columnDefinition = "TEXT")
     private String bookingUrl;
     @Column(columnDefinition = "TEXT")
@@ -219,28 +216,12 @@ public class Card {
         this.youtubeChannel = youtubeChannel;
     }
 
-    public String getYoutubeVideo1() {
-        return youtubeVideo1;
+    public String getYoutubeVideos() {
+        return youtubeVideos;
     }
 
-    public void setYoutubeVideo1(String youtubeVideo1) {
-        this.youtubeVideo1 = youtubeVideo1;
-    }
-
-    public String getYoutubeVideo2() {
-        return youtubeVideo2;
-    }
-
-    public void setYoutubeVideo2(String youtubeVideo2) {
-        this.youtubeVideo2 = youtubeVideo2;
-    }
-
-    public String getYoutubeVideo3() {
-        return youtubeVideo3;
-    }
-
-    public void setYoutubeVideo3(String youtubeVideo3) {
-        this.youtubeVideo3 = youtubeVideo3;
+    public void setYoutubeVideos(String youtubeVideos) {
+        this.youtubeVideos = youtubeVideos;
     }
 
     public String getBookingUrl() {

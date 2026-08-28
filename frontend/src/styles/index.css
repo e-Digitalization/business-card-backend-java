@@ -1801,7 +1801,7 @@ body {
 .admin-dialog-panel {
   position: relative;
   z-index: 1;
-  width: min(720px, 100%);
+  width: min(880px, 100%);
   max-height: calc(100vh - 2rem);
   overflow: hidden;
   display: flex;
@@ -2722,6 +2722,13 @@ a.km-card-row:hover {
   padding-top: 1.25rem;
 }
 
+.km-card-videos-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .km-card-videos-title {
   display: flex;
   align-items: center;
@@ -2733,6 +2740,13 @@ a.km-card-row:hover {
 
 .km-card-videos-title svg {
   color: #ff0000;
+}
+
+.km-card-videos-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(26, 61, 66, 0.55);
+  font-variant-numeric: tabular-nums;
 }
 
 .km-card-videos-grid {
@@ -2747,6 +2761,233 @@ a.km-card-row:hover {
   border: 0;
   border-radius: 0.75rem;
   background: #111;
+  display: block;
+}
+
+/* Multi-video carousel */
+.km-card-videos-slider {
+  position: relative;
+  margin-top: 0.75rem;
+}
+
+.km-card-videos-viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.km-card-videos-track {
+  display: flex;
+  transition: transform 0.35s ease;
+}
+
+.km-card-videos-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.km-card-videos-poster {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  background: #111;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-card-videos-track {
+    transition: none;
+  }
+}
+
+.km-card-videos-arrow {
+  position: absolute;
+  z-index: 2;
+  top: calc(50% - 18px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(17, 17, 17, 0.62);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.km-card-videos-arrow:hover {
+  background: rgba(17, 17, 17, 0.82);
+  transform: scale(1.06);
+}
+
+.km-card-videos-arrow--prev {
+  left: 0.5rem;
+}
+
+.km-card-videos-arrow--next {
+  right: 0.5rem;
+}
+
+.km-card-videos-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.km-card-videos-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(26, 61, 66, 0.22);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.km-card-videos-dot.is-active {
+  background: var(--km-card-c2, #0d7377);
+  transform: scale(1.35);
+}
+
+/* Featured-videos editor (admin + client card forms) */
+.km-video-editor {
+  border: 1px solid rgba(26, 61, 66, 0.1);
+  border-radius: 0.75rem;
+  background: #faf8f4;
+  padding: 1rem;
+}
+
+.km-video-editor-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.km-video-editor-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a3d42;
+}
+
+.km-video-editor-hint {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgba(26, 61, 66, 0.55);
+}
+
+.km-video-editor-badge {
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: rgba(26, 61, 66, 0.08);
+  padding: 0.15rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(26, 61, 66, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.km-video-editor-rows {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.km-video-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.km-video-thumb {
+  flex-shrink: 0;
+  width: 64px;
+  height: 40px;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  background: rgba(26, 61, 66, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(26, 61, 66, 0.4);
+}
+
+.km-video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.km-video-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.km-video-input-invalid {
+  border-color: #f43f5e !important;
+}
+
+.km-video-row-error {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
+  color: #e11d48;
+}
+
+.km-video-remove {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(26, 61, 66, 0.12);
+  background: #fff;
+  color: rgba(26, 61, 66, 0.55);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.km-video-remove:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #e11d48;
+}
+
+.km-video-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.km-video-add {
+  margin-top: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px dashed;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.km-video-add:hover {
+  background: rgba(154, 107, 69, 0.06);
 }
 
 @keyframes kmPortraitIn {

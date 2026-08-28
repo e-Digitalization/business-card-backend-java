@@ -223,9 +223,7 @@ public class AdminController {
         card.setGithub(request.getGithub());
         card.setInstagram(request.getInstagram());
         card.setYoutubeChannel(request.getYoutubeChannel());
-        card.setYoutubeVideo1(request.getYoutubeVideo1());
-        card.setYoutubeVideo2(request.getYoutubeVideo2());
-        card.setYoutubeVideo3(request.getYoutubeVideo3());
+        card.setYoutubeVideos(request.getYoutubeVideos());
         card.setBookingUrl(request.getBookingUrl());
         card.setPodcastUrl(request.getPodcastUrl());
         card.setTiktok(request.getTiktok());

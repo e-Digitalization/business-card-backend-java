@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api.js';
 import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js';
+import VideoListEditor from '../../components/VideoListEditor.jsx';
 
 const fieldDefs = [
   ['fullName', 'Full Name'],
@@ -18,9 +19,6 @@ const fieldDefs = [
   ['github', 'GitHub'],
   ['instagram', 'Instagram'],
   ['youtubeChannel', 'YouTube channel'],
-  ['youtubeVideo1', 'YouTube video 1'],
-  ['youtubeVideo2', 'YouTube video 2'],
-  ['youtubeVideo3', 'YouTube video 3'],
   ['bookingUrl', 'Appointment booking link'],
   ['podcastUrl', 'Podcast link'],
   ['tiktok', 'TikTok'],
@@ -134,7 +132,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
     <div className="admin-dialog-root" role="dialog" aria-modal="true" aria-labelledby="edit-card-title">
       <button type="button" className="admin-dialog-backdrop" aria-label="Close dialog" onClick={onClose} />
       <div className="admin-dialog-panel">
-        <div className="flex items-start justify-between gap-3 border-b border-black/5 px-5 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-black/5 px-6 py-4">
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.14em] text-[#9a6b45]">Edit card</p>
             <h2 id="edit-card-title" className="mt-1 truncate font-display text-xl font-semibold text-[#1a3d42]">
@@ -153,7 +151,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           </button>
         </div>
 
-        <div className="flex gap-2 border-b border-black/5 px-5 pt-3">
+        <div className="flex gap-2 border-b border-black/5 px-6 pt-3">
           {[
             ['details', 'Details'],
             ['look', 'Card look'],
@@ -174,7 +172,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           ))}
         </div>
 
-        <div className="max-h-[min(70vh,640px)] overflow-y-auto px-5 py-4">
+        <div className="max-h-[min(76vh,720px)] overflow-y-auto px-6 py-5">
           {loading && <p className="py-8 text-sm text-[#1a3d42]/50">Loading card details…</p>}
 
           {!loading && error && !card && (
@@ -182,7 +180,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           )}
 
           {!loading && card && tab === 'details' && (
-            <form id="edit-card-form" onSubmit={onUpdate} className="grid gap-3 sm:grid-cols-2">
+            <form id="edit-card-form" onSubmit={onUpdate} className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2">
               <div className="sm:col-span-2 flex flex-wrap items-center gap-2 rounded-md border border-black/5 bg-[#f7f4ef] px-3 py-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium uppercase tracking-wide text-[#9a6b45]">Private link</p>
@@ -211,6 +209,13 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                   />
                 </label>
               ))}
+
+              <div className="sm:col-span-2">
+                <VideoListEditor
+                  value={card.youtubeVideos || ''}
+                  onChange={(next) => setCardField('youtubeVideos', next)}
+                />
+              </div>
             </form>
           )}
 
@@ -320,7 +325,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
         </div>
 
         {(tab === 'details' || tab === 'look') && card && (
-          <div className="flex justify-end gap-2 border-t border-black/5 px-5 py-4">
+          <div className="flex justify-end gap-2 border-t border-black/5 px-6 py-4">
             <button
               type="button"
               onClick={onClose}

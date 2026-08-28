@@ -35,7 +35,33 @@ export const youtubeVideoId = (value) => {
   }
 };
 
-export const youtubeVideoIds = (profile) =>
-  [profile?.youtubeVideo1, profile?.youtubeVideo2, profile?.youtubeVideo3]
-    .map(youtubeVideoId)
+// Featured videos are stored as one newline-separated string. Older cards may
+// still carry the legacy youtubeVideo1..3 fields, so fall back to those too.
+export const parseVideoList = (value) =>
+  String(value || '')
+    .split(/[\r\n,]+/)
+    .map((line) => line.trim())
     .filter(Boolean);
+
+export const MAX_FEATURED_VIDEOS = 12;
+
+export const youtubeVideoIds = (profile) => {
+  const raw = [
+    ...parseVideoList(profile?.youtubeVideos),
+    profile?.youtubeVideo1,
+    profile?.youtubeVideo2,
+    profile?.youtubeVideo3
+  ];
+
+  const seen = new Set();
+  const ids = [];
+  for (const entry of raw) {
+    const id = youtubeVideoId(entry);
+    if (id && !seen.has(id)) {
+      seen.add(id);
+      ids.push(id);
+    }
+    if (ids.length >= MAX_FEATURED_VIDEOS) break;
+  }
+  return ids;
+};

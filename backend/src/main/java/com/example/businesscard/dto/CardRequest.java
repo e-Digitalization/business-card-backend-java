@@ -21,9 +21,7 @@ public class CardRequest {
     private String github;
     private String instagram;
     private String youtubeChannel;
-    private String youtubeVideo1;
-    private String youtubeVideo2;
-    private String youtubeVideo3;
+    private String youtubeVideos;
     private String bookingUrl;
     private String podcastUrl;
     private String tiktok;
@@ -165,28 +163,12 @@ public class CardRequest {
         this.youtubeChannel = youtubeChannel;
     }
 
-    public String getYoutubeVideo1() {
-        return youtubeVideo1;
+    public String getYoutubeVideos() {
+        return youtubeVideos;
     }
 
-    public void setYoutubeVideo1(String youtubeVideo1) {
-        this.youtubeVideo1 = youtubeVideo1;
-    }
-
-    public String getYoutubeVideo2() {
-        return youtubeVideo2;
-    }
-
-    public void setYoutubeVideo2(String youtubeVideo2) {
-        this.youtubeVideo2 = youtubeVideo2;
-    }
-
-    public String getYoutubeVideo3() {
-        return youtubeVideo3;
-    }
-
-    public void setYoutubeVideo3(String youtubeVideo3) {
-        this.youtubeVideo3 = youtubeVideo3;
+    public void setYoutubeVideos(String youtubeVideos) {
+        this.youtubeVideos = youtubeVideos;
     }
 
     public String getBookingUrl() {

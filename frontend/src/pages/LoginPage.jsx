@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import BrandLogo from '../components/BrandLogo.jsx';
@@ -30,6 +30,68 @@ const loginAdverts = [
     text: 'Photograph a paper card — Kadi Moja reads the details and saves the contact.'
   }
 ];
+
+const OtpInput = ({ value, onChange }) => {
+  const inputRefs = useRef([]);
+  const digits = Array.from({ length: 6 }, (_, index) => value[index] || '');
+
+  const setDigit = (index, rawValue) => {
+    const entered = rawValue.replace(/\D/g, '');
+    if (entered.length > 1) {
+      const next = entered.slice(0, 6);
+      onChange(next);
+      inputRefs.current[Math.min(next.length, 5)]?.focus();
+      return;
+    }
+
+    const next = [...digits];
+    next[index] = entered;
+    onChange(next.join(''));
+    if (entered && index < 5) inputRefs.current[index + 1]?.focus();
+  };
+
+  const onPaste = (event) => {
+    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    event.preventDefault();
+    onChange(pasted);
+    inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+  };
+
+  return (
+    <div className="km-otp-input" onPaste={onPaste}>
+      {digits.map((digit, index) => (
+        <input
+          key={index}
+          ref={(node) => {
+            inputRefs.current[index] = node;
+          }}
+          value={digit}
+          onChange={(event) => setDigit(index, event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Backspace' && !digit && index > 0) {
+              inputRefs.current[index - 1]?.focus();
+            }
+            if (event.key === 'ArrowLeft' && index > 0) inputRefs.current[index - 1]?.focus();
+            if (event.key === 'ArrowRight' && index < 5) inputRefs.current[index + 1]?.focus();
+          }}
+          required
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]"
+          maxLength={index === 0 ? 6 : 1}
+          autoComplete={index === 0 ? 'one-time-code' : 'off'}
+          name={`otp-digit-${index + 1}`}
+          aria-label={`Verification code digit ${index + 1}`}
+          className="km-otp-digit"
+          autoFocus={index === 0}
+          data-1p-ignore
+          data-lpignore="true"
+        />
+      ))}
+    </div>
+  );
+};
 
 /**
  * One login area for clients and admins.
@@ -379,25 +441,28 @@ const LoginPage = () => {
               </div>
             )}
 
-            <form onSubmit={onSubmit} className={`space-y-5 ${role === 'account' && googleEnabled && !isOtpStep ? '' : 'mt-7'}`}>
+            <form
+              key={isOtpStep ? 'verification' : 'credentials'}
+              onSubmit={onSubmit}
+              autoComplete={isOtpStep ? 'off' : 'on'}
+              data-form-type={isOtpStep ? 'other' : undefined}
+              className={`space-y-5 ${role === 'account' && googleEnabled && !isOtpStep ? '' : 'mt-7'}`}
+            >
               {isOtpStep ? (
                 <>
-                  <div className="rounded-lg border border-black/10 bg-[#f7f4ef] px-3.5 py-3 text-sm text-[#1a3d42]/70">
-                    Enter the 6-digit code sent to{' '}
-                    <span className="font-semibold text-[#1a3d42]">{pendingEmail}</span>.
+                  <div className="km-otp-notice">
+                    <span className="km-otp-notice-icon" aria-hidden="true">✉</span>
+                    <p>
+                      Enter the 6-digit code sent to{' '}
+                      <span className="font-semibold text-[#1a3d42]">{pendingEmail}</span>.
+                    </p>
                   </div>
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">Verification code</span>
-                    <input
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      required
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      placeholder="123456"
-                      className="admin-input text-center text-lg font-semibold tracking-[0.4em]"
-                    />
-                  </label>
+                  <fieldset className="block">
+                    <legend className="mb-2 block text-sm font-semibold text-[#1a3d42]/75">
+                      Verification code
+                    </legend>
+                    <OtpInput value={otp} onChange={setOtp} />
+                  </fieldset>
                   <div className="flex items-center justify-between text-sm">
                     <button
                       type="button"

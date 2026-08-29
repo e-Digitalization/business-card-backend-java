@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -105,26 +105,80 @@ const socialHref = (value, baseUrl) => {
 };
 
 const SocialLinks = ({ profile, className = '' }) => {
+  const trackRef = useRef(null);
+  const [canScrollBack, setCanScrollBack] = useState(false);
+  const [canScrollForward, setCanScrollForward] = useState(false);
   const visible = NETWORKS.filter(
     ({ key, direct }) => profile?.[key] && (!direct || safeExternalUrl(profile[key]))
   );
+  const hasMany = visible.length > 6;
+
+  const updateScrollState = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    setCanScrollBack(track.scrollLeft > 2);
+    setCanScrollForward(track.scrollLeft + track.clientWidth < track.scrollWidth - 2);
+  };
+
+  useEffect(() => {
+    updateScrollState();
+    const track = trackRef.current;
+    if (!track || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(updateScrollState);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [visible.length]);
+
+  const scroll = (direction) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollBy({
+      left: direction * Math.max(150, track.clientWidth * 0.75),
+      behavior: 'smooth'
+    });
+  };
+
   if (!visible.length) return null;
 
   return (
-    <div className={`km-social-links ${className}`}>
-      {visible.map(({ key, label, Icon, baseUrl, direct }) => (
-        <a
-          key={key}
-          href={direct ? safeExternalUrl(profile[key]) : socialHref(profile[key], baseUrl)}
-          target="_blank"
-          rel="noreferrer"
-          className={`km-card-social km-card-social--${key}`}
-          aria-label={label}
-          title={label}
+    <div className={`km-social-carousel ${hasMany ? 'has-many' : ''} ${className}`}>
+      {hasMany && (
+        <button
+          type="button"
+          className="km-social-arrow"
+          onClick={() => scroll(-1)}
+          disabled={!canScrollBack}
+          aria-label="Previous social links"
         >
-          <Icon aria-hidden="true" fontSize="small" />
-        </a>
-      ))}
+          <span aria-hidden="true">‹</span>
+        </button>
+      )}
+      <div ref={trackRef} className="km-social-links" onScroll={updateScrollState}>
+        {visible.map(({ key, label, Icon, baseUrl, direct }) => (
+          <a
+            key={key}
+            href={direct ? safeExternalUrl(profile[key]) : socialHref(profile[key], baseUrl)}
+            target="_blank"
+            rel="noreferrer"
+            className={`km-card-social km-card-social--${key}`}
+            aria-label={label}
+            title={label}
+          >
+            <Icon aria-hidden="true" fontSize="small" />
+          </a>
+        ))}
+      </div>
+      {hasMany && (
+        <button
+          type="button"
+          className="km-social-arrow"
+          onClick={() => scroll(1)}
+          disabled={!canScrollForward}
+          aria-label="Next social links"
+        >
+          <span aria-hidden="true">›</span>
+        </button>
+      )}
     </div>
   );
 };

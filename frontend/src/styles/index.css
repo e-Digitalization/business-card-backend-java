@@ -2592,10 +2592,70 @@ a.km-card-row:hover {
   transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
+.km-social-carousel {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .km-social-links {
   display: flex;
-  flex-wrap: wrap;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: center;
   gap: 0.75rem;
+}
+
+.km-social-carousel.has-many .km-social-links {
+  flex: 1;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.km-social-carousel.has-many .km-social-links::-webkit-scrollbar {
+  display: none;
+}
+
+.km-social-carousel.has-many .km-card-social {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.km-social-arrow {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(26, 61, 66, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #1a3d42;
+  font-size: 1.35rem;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgba(26, 61, 66, 0.06);
+  transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.km-social-arrow:hover:not(:disabled) {
+  border-color: var(--km-card-c2, #0d7377);
+  color: var(--km-card-c2, #0d7377);
+}
+
+.km-social-arrow:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.km-social-arrow:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--km-card-accent, #e8913a) 30%, transparent);
+  outline-offset: 2px;
 }
 
 .km-card-social svg {

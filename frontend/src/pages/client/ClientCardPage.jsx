@@ -139,12 +139,20 @@ const ClientCardPage = () => {
         </Link>
       </div>
 
-      <form onSubmit={onSave} className="client-panel p-5 sm:p-7">
+      <form onSubmit={onSave} autoComplete="off" className="client-panel p-5 sm:p-7">
         <div className="grid gap-3 sm:grid-cols-2">
           {fields.map(([key, label]) => (
             <label key={key} className="block">
               <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">{label}</span>
-              <input value={form[key] || ''} onChange={onChange(key)} className="admin-input" />
+              <input
+                name={key}
+                value={form[key] || ''}
+                onChange={onChange(key)}
+                type={key === 'email' ? 'email' : key === 'phone' || key === 'whatsapp' ? 'tel' : 'text'}
+                autoComplete={key === 'fullName' ? 'name' : key === 'email' ? 'email' : 'off'}
+                spellCheck={key === 'fullName' || key === 'title' || key === 'company' || key === 'location'}
+                className="admin-input"
+              />
             </label>
           ))}
 

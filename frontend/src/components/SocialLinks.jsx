@@ -150,7 +150,9 @@ const SocialLinks = ({ profile, className = '' }) => {
           disabled={!canScrollBack}
           aria-label="Previous social links"
         >
-          <span aria-hidden="true">‹</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m12 5-5 5 5 5" />
+          </svg>
         </button>
       )}
       <div ref={trackRef} className="km-social-links" onScroll={updateScrollState}>
@@ -176,7 +178,9 @@ const SocialLinks = ({ profile, className = '' }) => {
           disabled={!canScrollForward}
           aria-label="Next social links"
         >
-          <span aria-hidden="true">›</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m8 5 5 5-5 5" />
+          </svg>
         </button>
       )}
     </div>

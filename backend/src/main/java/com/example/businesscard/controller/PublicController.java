@@ -2,6 +2,7 @@ package com.example.businesscard.controller;
 
 import com.example.businesscard.entity.Card;
 import com.example.businesscard.repository.CardRepository;
+import com.example.businesscard.util.ProfileLinkSanitizer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,11 +42,11 @@ public class PublicController {
         appendIfPresent(vcard, "EMAIL", card.getEmail());
         appendIfPresent(vcard, "ORG", card.getCompany());
         appendIfPresent(vcard, "TITLE", card.getTitle());
-        appendIfPresent(vcard, "URL", card.getWebsite());
-        appendIfPresent(vcard, "URL;TYPE=LinkedIn", card.getLinkedin());
-        appendIfPresent(vcard, "URL;TYPE=Twitter", card.getTwitter());
-        appendIfPresent(vcard, "URL;TYPE=GitHub", card.getGithub());
-        appendIfPresent(vcard, "URL;TYPE=Instagram", card.getInstagram());
+        appendIfPresent(vcard, "URL", ProfileLinkSanitizer.sanitize(card.getWebsite(), card.getPhotoUrl()));
+        appendIfPresent(vcard, "URL;TYPE=LinkedIn", ProfileLinkSanitizer.sanitize(card.getLinkedin(), card.getPhotoUrl()));
+        appendIfPresent(vcard, "URL;TYPE=Twitter", ProfileLinkSanitizer.sanitize(card.getTwitter(), card.getPhotoUrl()));
+        appendIfPresent(vcard, "URL;TYPE=GitHub", ProfileLinkSanitizer.sanitize(card.getGithub(), card.getPhotoUrl()));
+        appendIfPresent(vcard, "URL;TYPE=Instagram", ProfileLinkSanitizer.sanitize(card.getInstagram(), card.getPhotoUrl()));
         vcard.append("END:VCARD\n");
 
         String fileName = safeFileName(card.getFullName());
@@ -55,6 +56,7 @@ public class PublicController {
         // directly when this URL is opened as a normal link, instead of routing
         // through the browser's file-download flow.
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + fileName + ".vcf");
+        headers.setCacheControl("no-store, no-cache, must-revalidate");
 
         return new ResponseEntity<>(vcard.toString(), headers, HttpStatus.OK);
     }

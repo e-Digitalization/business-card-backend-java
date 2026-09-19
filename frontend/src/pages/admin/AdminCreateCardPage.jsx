@@ -23,8 +23,8 @@ const empty = {
 };
 
 const fields = [
-  ['fullName', 'Full Name', 'Japhari Mbaru'],
-  ['title', 'Title / Position', 'Founder'],
+  ['fullName', 'Full Name', 'Joseph Ng\'ang\'a'],
+  ['title', 'Title / Position', 'Founder & Systems Architect'],
   ['company', 'Organisation', 'Swahili Systems'],
   ['location', 'Location', 'Dar es Salaam, Tanzania'],
   ['phone', 'Phone', '+255 714 076 404'],

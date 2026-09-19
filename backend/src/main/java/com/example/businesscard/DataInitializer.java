@@ -79,14 +79,14 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedSampleCards() {
         seedCard(
-            "Japhari Mbaru",
+            "Joseph Ng'ang'a",
             "Founder & Systems Architect",
             "Swahili Systems",
             "Dar es Salaam, Tanzania",
             "+255 714 076 404",
-            "japhari@swahilisystems.com",
+            "joseph@swahilisystems.com",
             "https://swahilisystems.com",
-            "+255714076404",
+            "+255674987567",
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
             "/logos/swahili-systems.svg",
             "TAG12345"

@@ -173,7 +173,11 @@ const ProfilePage = () => {
             })}
           </ul>
 
-          <SocialLinks profile={profile} className="mt-7 justify-center" />
+          <SocialLinks
+            profile={profile}
+            whatsappUrl={wa ? `https://wa.me/${wa}` : ''}
+            className="mt-7 justify-center"
+          />
           <YoutubeVideos profile={profile} className="mt-7" />
         </div>
       </article>

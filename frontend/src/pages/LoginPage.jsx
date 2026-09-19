@@ -491,7 +491,7 @@ const LoginPage = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         required
                         className="admin-input"
-                        placeholder="Japhari Mbaru"
+                        placeholder=""
                       />
                     </label>
                   )}

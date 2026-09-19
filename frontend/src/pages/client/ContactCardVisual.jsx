@@ -128,7 +128,11 @@ const ContactCardVisual = ({ contact, variant = 'ink', footer = null, themeVars 
           </ul>
         )}
 
-        <SocialLinks profile={contact} className="mt-6 justify-center" />
+        <SocialLinks
+          profile={contact}
+          whatsappUrl={wa ? `https://wa.me/${wa}` : ''}
+          className="mt-6 justify-center"
+        />
         <YoutubeVideos profile={contact} className="mt-6" />
 
         {contact?.notes && (

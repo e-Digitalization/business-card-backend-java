@@ -8,6 +8,12 @@ import XIcon from '@mui/icons-material/X';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { safeExternalUrl } from '../utils/profileLinks.js';
 
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.8-.6-3-1.3-5-4.4-5.1-4.6-.2-.2-1.3-1.7-1.3-3.2s.8-2.3 1.1-2.6c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.9-1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.3.1.2.1.8-.1 1.4Z" />
+  </svg>
+);
+
 const MusicSocialIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M14 3v11.2a4.2 4.2 0 1 1-2-3.6V6.4c2 1.8 3.8 2.7 6.5 2.8V12A10.2 10.2 0 0 1 14 10.6" />
@@ -104,13 +110,21 @@ const socialHref = (value, baseUrl) => {
   return `${baseUrl}${clean.replace(/^@/, '').replace(/^\/+|\/+$/g, '')}`;
 };
 
-const SocialLinks = ({ profile, className = '' }) => {
+const SocialLinks = ({ profile, whatsappUrl = '', className = '' }) => {
   const trackRef = useRef(null);
   const [canScrollBack, setCanScrollBack] = useState(false);
   const [canScrollForward, setCanScrollForward] = useState(false);
-  const visible = NETWORKS.filter(
-    ({ key, direct }) => profile?.[key] && (!direct || safeExternalUrl(profile[key]))
-  );
+  const visible = [
+    whatsappUrl && { key: 'whatsapp', label: 'WhatsApp', Icon: WhatsAppIcon, href: whatsappUrl },
+    ...NETWORKS.filter(
+      ({ key, direct }) => profile?.[key] && (!direct || safeExternalUrl(profile[key]))
+    ).map((network) => ({
+      ...network,
+      href: network.direct
+        ? safeExternalUrl(profile[network.key])
+        : socialHref(profile[network.key], network.baseUrl)
+    }))
+  ].filter(Boolean);
   const hasMany = visible.length > 6;
 
   const updateScrollState = () => {
@@ -156,10 +170,10 @@ const SocialLinks = ({ profile, className = '' }) => {
         </button>
       )}
       <div ref={trackRef} className="km-social-links" onScroll={updateScrollState}>
-        {visible.map(({ key, label, Icon, baseUrl, direct }) => (
+        {visible.map(({ key, label, Icon, href }) => (
           <a
             key={key}
-            href={direct ? safeExternalUrl(profile[key]) : socialHref(profile[key], baseUrl)}
+            href={href}
             target="_blank"
             rel="noreferrer"
             className={`km-card-social km-card-social--${key}`}

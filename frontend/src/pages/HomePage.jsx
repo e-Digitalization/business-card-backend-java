@@ -1,19 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo.jsx';
+import HeroSlider from '../components/HeroSlider.jsx';
+import MobileMenu from '../components/MobileMenu.jsx';
 import ContactCardVisual from './client/ContactCardVisual';
 
-const heroDemoContact = {
-  fullName: 'Neema Hassan',
-  title: 'Brand Strategist',
-  company: 'Dar Collective',
-  email: 'neema@darcollective.co.tz',
-  phone: '+255 712 345 678',
-  whatsapp: '+255 712 345 678',
-  website: 'www.darcollective.co.tz',
-  location: 'Dar es Salaam, Tanzania',
-  photoUrl: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80'
-};
 
 const products = [
   {
@@ -48,19 +39,19 @@ const steps = [
     n: '01',
     title: 'Tap',
     body: 'Hold the card to any modern phone. No app required.',
-    image: '/illustrations/how-tap.jpg'
+    image: '/illustrations/how-tap-cutout.png'
   },
   {
     n: '02',
     title: 'Open',
     body: 'Your private profile appears with contacts, links, and socials.',
-    image: '/illustrations/how-share.jpg'
+    image: '/illustrations/how-share-cutout.png'
   },
   {
     n: '03',
     title: 'Saved',
     body: 'They save you instantly. QR is there when NFC isn’t.',
-    image: '/illustrations/how-saved.jpg'
+    image: '/illustrations/how-saved-cutout.png'
   }
 ];
 
@@ -242,6 +233,7 @@ const DigitalCardSample = ({ person, className = '' }) => (
 const HomePage = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -251,42 +243,34 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="bg-km-paper text-km-ink font-sans">
+    <div className="km-home bg-km-paper text-km-ink font-sans">
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        className={`sticky top-0 z-50 border-b border-km-ink/10 bg-white transition-shadow duration-300 ${
           scrolled
-            ? 'border-b border-km-ink/10 bg-white shadow-sm'
-            : 'bg-transparent'
+            ? 'shadow-sm'
+            : ''
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 lg:px-8">
           <BrandLogo
             href="#top"
-            tone={scrolled ? 'color' : 'light'}
+            tone="color"
             textClassName="text-2xl"
             markClassName="h-9 w-9"
           />
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav aria-label="Main navigation" className="hidden items-center gap-5 xl:gap-7 lg:flex">
             {navLinks.map(([href, label]) => (
               <a
                 key={href}
                 href={href}
-                className={`text-sm font-medium transition-colors ${
-                  scrolled
-                    ? 'text-[#1a3d42] hover:text-[#0d7377]'
-                    : 'text-white hover:text-white/90'
-                }`}
+                className="text-sm font-medium text-km-ink transition-colors hover:text-km-lagoon"
               >
                 {label}
               </a>
             ))}
             <Link
               to="/login"
-              className={`text-sm font-medium transition-colors ${
-                scrolled
-                  ? 'text-[#1a3d42] hover:text-[#0d7377]'
-                  : 'text-white hover:text-white/90'
-              }`}
+              className="text-sm font-medium text-km-ink transition-colors hover:text-km-lagoon"
             >
               Sign in
             </Link>
@@ -296,144 +280,31 @@ const HomePage = () => {
           </nav>
           <button
             type="button"
-            className={`border px-3 py-2 text-sm md:hidden ${
-              scrolled ? 'border-km-ink/20 text-km-ink' : 'border-white/30 text-white'
-            }`}
+            className="km-menu-toggle lg:hidden"
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
-            aria-label="Toggle menu"
+            aria-controls="home-mobile-nav"
+            aria-label="Open menu"
+            aria-haspopup="dialog"
           >
-            {menuOpen ? 'Close' : 'Menu'}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
         </div>
-        {menuOpen && (
-          <div className="space-y-3 border-t border-km-ink/8 bg-white px-5 py-4 md:hidden">
-            {navLinks.map(([href, label]) => (
-              <a key={href} href={href} className="block text-km-ink/80" onClick={() => setMenuOpen(false)}>
-                {label}
-              </a>
-            ))}
-            <Link to="/login" className="block text-km-ink/80" onClick={() => setMenuOpen(false)}>
-              Sign in
-            </Link>
-            <Link to="/login" className="km-btn-primary w-full" onClick={() => setMenuOpen(false)}>
-              Create account
-            </Link>
-          </div>
-        )}
+        <MobileMenu open={menuOpen} onClose={closeMenu} />
       </header>
 
-      {/* Hero — meeting atmosphere + tap exchange + full digital card */}
-      <section id="top" className="km-landing-hero km-landing-hero--v2 relative overflow-hidden text-white">
-        <div className="km-landing-hero-bg" aria-hidden="true">
-          <img
-            src="https://images.unsplash.com/photo-1758599543278-32d9d073941e?auto=format&fit=crop&w=1800&q=80"
-            alt=""
-            className="km-landing-hero-bg-img km-landing-hero-bg-img--exchange"
-          />
-          <div className="km-landing-hero-bg-veil" />
-          <div className="km-landing-hero-bg-glow" />
-        </div>
+      <HeroSlider />
 
-        <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-6xl items-center gap-10 px-5 pb-16 pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6 lg:px-8 lg:pb-20 lg:pt-24">
-          <div className="km-landing-hero-copy max-w-xl">
-            
-            <div className="animate-fade-up mt-4 flex items-center gap-4">
-            
-            </div>
-            <h1 className="animate-fade-up-delay mt-6 font-display text-[clamp(1.75rem,4.2vw,2.85rem)] font-semibold leading-[1.12]">
-              The <span className="km-landing-accent-text">last card</span>
-              <br />
-              you&apos;ll ever need
-            </h1>
-            <p className="animate-fade-up-delay-2 mt-5 max-w-md text-base leading-relaxed text-white/72 sm:text-lg">
-              In the meeting, tap once — your contacts, WhatsApp, and socials open on their phone. No app required.
-            </p>
-            <div className="animate-fade-up-delay-2 mt-9 flex flex-wrap gap-3">
-              <a href="#products" className="km-btn-primary km-landing-cta-primary">
-                Get your card →
-              </a>
-              <Link to="/c/TAG12345" className="km-btn-ghost km-landing-cta-ghost">
-                See live demo
-              </Link>
-            </div>
-          </div>
-
-          <div className="km-landing-hero-props relative mx-auto w-full max-w-[460px] lg:max-w-none lg:justify-self-end">
-            <div className="km-landing-hero-prop-stage km-landing-hero-prop-stage--tap">
-              {/* Physical NFC approaching the phone — tap exchange */}
-              <div className="km-hero-nfc km-hero-nfc--tap" aria-hidden="true">
-                <div className="km-hero-nfc-shine" />
-                <div className="km-hero-nfc-inner">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <img src="/logos/kadi-moja-mark-light.png" alt="" className="h-7 w-7" />
-                      <div>
-                        <p className="font-display text-base font-bold tracking-tight text-white">Kadi Moja</p>
-                        <p className="mt-0.5 text-[9px] uppercase tracking-[0.18em] text-white/50">Digital NFC</p>
-                      </div>
-                    </div>
-                    <div className="km-hero-nfc-waves">
-                      <span />
-                      <span />
-                      <span />
-                    </div>
-                  </div>
-                  <div className="mt-auto flex items-end justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-semibold text-white">Neema Hassan</p>
-                      <p className="text-[10px] text-white/55">Tap to exchange</p>
-                    </div>
-                    <div className="mt-3 h-px w-10 bg-gradient-to-r from-[#e8913a] to-transparent" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="km-hero-tap-pulse" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-
-              {/* Phone — full digital card after tap */}
-              <div className="km-landing-hero-device km-landing-hero-device--profile" aria-label="Digital business card on phone">
-                <div className="km-phone-frame km-landing-hero-phone-frame">
-                  <div className="km-phone-notch" />
-                  <div className="km-phone-screen km-landing-hero-phone-screen">
-                    <div className="km-phone-card-scale km-landing-hero-card-scale">
-                      <ContactCardVisual
-                        contact={heroDemoContact}
-                        variant="lagoon"
-                        footer={
-                          <div className="flex flex-col gap-2">
-                            <div className="rounded-xl bg-[#0d7377] py-2.5 text-center text-[11px] font-semibold text-white">
-                              Save contact details
-                            </div>
-                            <div className="rounded-xl border border-[#0d7377]/35 bg-white py-2.5 text-center text-[11px] font-semibold text-[#0d7377]">
-                              Save to my Contacts
-                            </div>
-                          </div>
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="km-phone-home" />
-                </div>
-              </div>
-            </div>
-           
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-km-lagoon/10 bg-km-foam">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-5 text-sm text-km-ink/65 lg:px-8">
-        
-        </div>
-      </section>
+      <div className="border-b border-km-lagoon/10 bg-km-foam">
+        <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-5 text-sm font-medium text-km-ink lg:px-8">
+          {['No app required', 'iPhone & Android', 'NFC + QR sharing', 'Update details anytime'].map((benefit) => (
+            <li key={benefit} className="flex items-center gap-2"><span aria-hidden="true" className="text-km-lagoon">✓</span>{benefit}</li>
+          ))}
+        </ul>
+      </div>
 
       {/* Digital + NFC card showcase */}
-      <section className="km-landing-showcase relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+      <section id="products" className="km-landing-showcase relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
@@ -627,13 +498,13 @@ const HomePage = () => {
           <div className="mt-14 grid gap-6 md:grid-cols-3">
             {steps.map((step) => (
               <article key={step.title} className="km-how-card overflow-hidden bg-km-sand/40">
-                <div className="bg-white px-5 pt-6">
+                <div className="km-how-image">
                   <img
-                    src={`${step.image}?v=3`}
+                    src={step.image}
                     alt=""
                     width={600}
                     height={900}
-                    className="mx-auto h-56 w-auto max-w-full object-contain sm:h-64"
+                    className="mx-auto max-w-full"
                     loading="lazy"
                   />
                 </div>

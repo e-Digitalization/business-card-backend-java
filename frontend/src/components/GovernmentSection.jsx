@@ -3,8 +3,10 @@ import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
 import PlaceIcon from '@mui/icons-material/Place';
 import AutoSlider from './AutoSlider.jsx';
+import EventDateTile from './EventDateTile.jsx';
 import EventDialog from './EventDialog.jsx';
-import { cleanGovernment, formatEventDate, hasCategory, isUpcomingEvent } from '../utils/cardCategories.js';
+import { cleanGovernment, hasCategory, isUpcomingEvent } from '../utils/cardCategories.js';
+import { getCardThemeVars } from '../utils/cardTheme.js';
 import { resolveMediaUrl } from '../utils/media.js';
 
 const useGovernment = (profile) =>
@@ -25,24 +27,28 @@ const EventCard = ({ event, onOpen }) => {
   const canOpen = Boolean(event.description || event.linkUrl || event.venue);
   return (
     <article className="km-event-card">
-      <div className="km-event-media">
-        {event.imageUrl && <img src={resolveMediaUrl(event.imageUrl)} alt="" loading="lazy" draggable="false" />}
-        {event.date && (
-          <span className={`km-event-date ${upcoming ? 'is-upcoming' : ''}`}>
-            <EventIcon aria-hidden="true" sx={{ fontSize: 14 }} />
-            {formatEventDate(event.date)}
-          </span>
+      {/* Same picture slot with or without a photo, so every slide has the same shape */}
+      <div className={`km-event-media ${event.imageUrl ? '' : 'is-placeholder'}`}>
+        {event.imageUrl ? (
+          <img src={resolveMediaUrl(event.imageUrl)} alt="" loading="lazy" draggable="false" />
+        ) : (
+          <EventIcon aria-hidden="true" className="km-event-placeholder-icon" />
         )}
         {upcoming && <span className="km-event-badge">Upcoming</span>}
       </div>
       <div className="km-event-body">
-        {event.title && <h3 className="km-event-title">{event.title}</h3>}
-        {event.venue && (
-          <p className="km-event-venue">
-            <PlaceIcon aria-hidden="true" sx={{ fontSize: 15 }} />
-            {event.venue}
-          </p>
-        )}
+        <div className="km-event-head">
+          <EventDateTile value={event.date} />
+          <div className="km-event-head-text">
+            {event.title && <h3 className="km-event-title">{event.title}</h3>}
+            {event.venue && (
+              <p className="km-event-venue">
+                <PlaceIcon aria-hidden="true" sx={{ fontSize: 15 }} />
+                {event.venue}
+              </p>
+            )}
+          </div>
+        </div>
         {event.description && <p className="km-event-desc">{event.description}</p>}
         {canOpen && (
           <button type="button" className="km-event-more" onClick={() => onOpen(event)}>
@@ -72,7 +78,7 @@ export const GovernmentEvents = ({ profile, className = '' }) => {
         paused={Boolean(open)}
         renderSlide={(event) => <EventCard event={event} onOpen={setOpen} />}
       />
-      <EventDialog event={open} onClose={() => setOpen(null)} />
+      <EventDialog event={open} onClose={() => setOpen(null)} themeVars={getCardThemeVars(profile)} />
     </section>
   );
 };

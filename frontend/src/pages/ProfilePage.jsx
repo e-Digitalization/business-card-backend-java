@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
@@ -16,7 +17,6 @@ import { AppointmentLink, YoutubeVideos } from '../components/ProfileExtras.jsx'
 import ResearcherSection, { hasResearchContent } from '../components/ResearcherSection.jsx';
 import { BankerAds, BankerServices, hasBankerAds, hasBankerServices } from '../components/BankerSection.jsx';
 import { GovernmentEvents, GovernmentOffice, hasGovernmentEvents, hasGovernmentOffice } from '../components/GovernmentSection.jsx';
-import { categoryLabel, parseCategories } from '../utils/cardCategories.js';
 
 const ProfilePage = ({ demoProfile = null }) => {
   const { slug } = useParams();
@@ -199,7 +199,7 @@ const ProfilePage = ({ demoProfile = null }) => {
           </svg>
         </header>
 
-        <div ref={bodyRef} className="km-card-body relative px-6 pb-7 pt-1">
+        <div ref={bodyRef} className={`km-card-body relative px-6 pt-1 ${showTabs ? 'pb-28' : 'pb-7'}`}>
           {logoSrc && (
             <img src={logoSrc} alt="" className="km-card-logo km-fade-up" />
           )}
@@ -213,13 +213,6 @@ const ProfilePage = ({ demoProfile = null }) => {
             )}
             {profile.company && (
               <p className="mt-0.5 text-sm italic text-[#1a3d42]/50">{profile.company}</p>
-            )}
-            {parseCategories(profile.categories).length > 0 && (
-              <div className="km-card-categories">
-                {parseCategories(profile.categories).map((id) => (
-                  <span key={id}>{categoryLabel(id)}</span>
-                ))}
-              </div>
             )}
           </div>
 
@@ -288,28 +281,32 @@ const ProfilePage = ({ demoProfile = null }) => {
           </div>
         </div>
 
-        {showTabs && (
-          <nav className="km-card-tabbar" aria-label="Card sections">
-            <div className="km-card-tabbar-pill" role="tablist" style={{ '--tabs': tabs.length, '--i': activeIndex }}>
-              <span className="km-tab-indicator" aria-hidden="true" />
-              {tabs.map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={tab === id}
-                  className={tab === id ? 'is-active' : ''}
-                  onClick={() => changeTab(id)}
-                >
-                  <span className="km-tab-icon">
-                    <Icon aria-hidden="true" />
-                  </span>
-                  <span className="km-tab-label">{label}</span>
-                </button>
-              ))}
-            </div>
-          </nav>
-        )}
+        {/* Rendered in a portal and pinned to the screen (position: fixed): a sticky bar inside the card
+            drifts away from the screen edge on iOS Safari and inside any transformed / clipped parent. */}
+        {showTabs &&
+          createPortal(
+            <nav className="km-card-tabbar" aria-label="Card sections" style={getCardThemeVars(profile)}>
+              <div className="km-card-tabbar-pill" role="tablist" style={{ '--tabs': tabs.length, '--i': activeIndex }}>
+                <span className="km-tab-indicator" aria-hidden="true" />
+                {tabs.map(({ id, label, Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === id}
+                    className={tab === id ? 'is-active' : ''}
+                    onClick={() => changeTab(id)}
+                  >
+                    <span className="km-tab-icon">
+                      <Icon aria-hidden="true" />
+                    </span>
+                    <span className="km-tab-label">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </nav>,
+            document.body
+          )}
       </article>
     </div>
   );

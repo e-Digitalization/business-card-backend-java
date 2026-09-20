@@ -219,6 +219,13 @@ export const formatEventDate = (value) => {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(d);
 };
 
+// "Thursday, 5 November 2026" for the details sheet; falls back to the raw text.
+export const formatEventDateLong = (value) => {
+  const d = parseEventDate(value);
+  if (!d) return text(value);
+  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
+};
+
 export const isUpcomingEvent = (value) => {
   const d = parseEventDate(value);
   if (!d) return false;
@@ -413,6 +420,14 @@ export const SAMPLE_GOVERNMENT = {
       date: '2026-08-20',
       venue: 'Dar es Salaam',
       description: 'Investors were briefed on the new PPP project pipeline, procurement steps and incentives.',
+      linkUrl: ''
+    },
+    {
+      imageUrl: '',
+      title: 'Annual Development Partners Meeting',
+      date: 'Q1 2027',
+      venue: 'To be announced',
+      description: 'Date to be confirmed. Partners will review progress on the national development priorities.',
       linkUrl: ''
     }
   ],

@@ -3707,23 +3707,7 @@ a.km-card-row:hover {
   color: #fff;
 }
 
-.km-card-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.6rem;
-}
 
-.km-card-categories span {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--km-card-c2, #0d7377);
-  background: rgba(13, 115, 119, 0.1);
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-}
 
 .km-card-research {
   border-top: 1px solid rgba(26, 61, 66, 0.08);
@@ -3888,9 +3872,15 @@ a.km-card-row:hover {
 
 /* Bottom tab bar on the public card (shown when a category adds sections) */
 .km-card-tabbar {
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
-  z-index: 5;
+  z-index: 50;
+  /* as wide as the card, centred on the screen */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   padding: 1.4rem 0.9rem calc(0.7rem + env(safe-area-inset-bottom));
   pointer-events: none;
   /* soft fade so content never collides with the floating pill */
@@ -4243,7 +4233,19 @@ a.km-card-row:hover {
 .km-event-media {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--km-card-c2, #0d7377), #14424a);
+  background: linear-gradient(135deg, var(--km-card-c1, #0a5f63), var(--km-card-c3, #14424a));
+}
+
+.km-event-media.is-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.km-event-media .km-event-placeholder-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+  color: rgba(255, 255, 255, 0.22);
 }
 
 .km-event-media img {
@@ -4251,26 +4253,6 @@ a.km-card-row:hover {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.km-event-date {
-  position: absolute;
-  left: 0.6rem;
-  top: 0.6rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.25rem 0.55rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #1a3d42;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.km-event-date.is-upcoming {
-  background: #e8923a;
-  color: #fff;
 }
 
 .km-event-badge {
@@ -4597,4 +4579,110 @@ a.km-card-row:hover {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(26, 61, 66, 0.5);
+}
+
+/* ---- Event date tile + header row ---- */
+.km-event-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.km-event-head-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.km-date-tile {
+  flex-shrink: 0;
+  width: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(26, 61, 66, 0.14);
+  background: #fff;
+  box-shadow: 0 3px 10px -4px rgba(8, 30, 34, 0.35);
+  line-height: 1;
+}
+
+.km-date-tile-month {
+  width: 100%;
+  padding: 0.28rem 0;
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--km-card-c2, #0d7377);
+}
+
+.km-date-tile.is-upcoming .km-date-tile-month {
+  background: var(--km-card-accent, #e8923a);
+}
+
+.km-date-tile-day {
+  padding-top: 0.3rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a3d42;
+}
+
+.km-date-tile-year {
+  padding: 0.15rem 0 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: rgba(26, 61, 66, 0.55);
+}
+
+.km-date-tile--lg {
+  width: 4.2rem;
+}
+
+.km-date-tile--lg .km-date-tile-month {
+  font-size: 0.74rem;
+  padding: 0.34rem 0;
+}
+
+.km-date-tile--lg .km-date-tile-day {
+  font-size: 1.9rem;
+}
+
+.km-date-tile--lg .km-date-tile-year {
+  font-size: 0.7rem;
+}
+
+.km-event-date-text {
+  flex-shrink: 0;
+  max-width: 5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.6rem;
+  background: var(--km-card-c2, #0d7377);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.km-event-head .km-event-title {
+  margin-top: 0.1rem;
+}
+
+.km-event-desc {
+  margin-top: 0.7rem;
+}
+
+.km-event-dialog-body .km-event-head {
+  align-items: center;
+}
+
+.km-event-dialog-body .km-event-dialog-title {
+  margin-top: 0;
+}
+
+.km-event-dialog-body .km-event-meta {
+  margin-top: 0.4rem;
 }

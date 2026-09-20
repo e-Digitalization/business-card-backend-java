@@ -43,6 +43,22 @@ public class EmailService {
         return send(to, subject, body);
     }
 
+    /**
+     * Sends an admin-issued invite OTP so the card owner can claim their
+     * account at /claim. Returns true when handed to the SMTP server; false
+     * when email is not configured (the caller then falls back to surfacing
+     * the code for manual sharing).
+     */
+    public boolean sendInviteOtp(String to, String otp, String claimPath) {
+        String subject = "Claim your Kadi Moja digital card";
+        String body = "Karibu Kadi Moja!\n\n"
+            + "An admin created a digital card for you. Use this code to claim it and set your password: " + otp + "\n\n"
+            + "Open " + claimPath + ", enter this email and the code above, then choose a password. "
+            + "The code expires in 24 hours.\n\n"
+            + "If you weren't expecting this, you can ignore this email.";
+        return send(to, subject, body);
+    }
+
     private boolean send(String to, String subject, String body) {
         JavaMailSender sender = mailSender.getIfAvailable();
         if (!enabled || sender == null) {

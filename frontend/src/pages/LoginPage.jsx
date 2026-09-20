@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
+import { notify } from '../utils/toast.js';
 
 const loginAdverts = [
   {
@@ -114,8 +115,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [info, setInfo] = useState('');
+  const [otpPreview, setOtpPreview] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Sign-up is two steps: fill the form, then confirm the emailed OTP.
@@ -127,8 +127,7 @@ const LoginPage = () => {
     setSignupStage('form');
     setOtp('');
     setPendingEmail('');
-    setInfo('');
-    setError('');
+    setOtpPreview('');
   };
 
   const isOtpStep = role === 'account' && mode === 'signup' && signupStage === 'otp';
@@ -169,7 +168,6 @@ const LoginPage = () => {
   };
 
   const onGoogleSuccess = async (credentialResponse) => {
-    setError('');
     setLoading(true);
     try {
       const response = await api.post('/api/auth/google', {
@@ -177,7 +175,7 @@ const LoginPage = () => {
       });
       finishClient(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Google sign-in failed.');
+      notify.error(err.response?.data?.message || 'Google sign-in failed.');
     } finally {
       setLoading(false);
     }
@@ -190,15 +188,17 @@ const LoginPage = () => {
     setSignupStage('otp');
     setOtp('');
     if (data.otpPreview) {
-      setInfo(`Email delivery isn't configured yet — your code is ${data.otpPreview}`);
+      setOtpPreview(data.otpPreview);
     } else {
-      setInfo(`We sent a 6-digit code to ${data.email || email}. It expires in ${data.expiresInMinutes || 15} minutes.`);
+      setOtpPreview('');
+      notify.success(
+        `We sent a 6-digit code to ${data.email || email}. It expires in ${data.expiresInMinutes || 15} minutes.`
+      );
     }
   };
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    setError('');
     setLoading(true);
     try {
       if (role === 'admin') {
@@ -209,14 +209,13 @@ const LoginPage = () => {
       if (mode === 'signup') {
         if (signupStage === 'form') {
           if (password.length < 6) {
-            setError('Password must be at least 6 characters.');
+            notify.error('Password must be at least 6 characters.');
             return;
           }
           if (password !== confirmPassword) {
-            setError('Passwords do not match.');
+            notify.error('Passwords do not match.');
             return;
           }
-          setInfo('');
           await requestSignupCode();
         } else {
           const response = await api.post('/api/auth/register/verify', {
@@ -231,27 +230,25 @@ const LoginPage = () => {
       finishClient(response.data);
     } catch (err) {
       const status = err.response?.status;
-      if (status === 409) setError('An account with this email already exists.');
-      else if (status === 429) setError('Too many attempts. Request a new code.');
+      if (status === 409) notify.error('An account with this email already exists.');
+      else if (status === 429) notify.error('Too many attempts. Request a new code.');
       else if (status === 401) {
-        if (role === 'admin') setError('Invalid admin credentials.');
-        else if (mode === 'signup') setError('Incorrect verification code.');
-        else setError('Invalid email or password.');
-      } else setError(err.response?.data?.message || 'Could not sign in.');
+        if (role === 'admin') notify.error('Invalid admin credentials.');
+        else if (mode === 'signup') notify.error('Incorrect verification code.');
+        else notify.error('Invalid email or password.');
+      } else notify.error(err.response?.data?.message || 'Could not sign in.');
     } finally {
       setLoading(false);
     }
   };
 
   const resendSignupCode = async () => {
-    setError('');
-    setInfo('');
     setLoading(true);
     try {
       await requestSignupCode();
-      setInfo('New code sent. Check your inbox.');
+      notify.success('New code sent. Check your inbox.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not resend the code.');
+      notify.error(err.response?.data?.message || 'Could not resend the code.');
     } finally {
       setLoading(false);
     }
@@ -424,7 +421,7 @@ const LoginPage = () => {
               <div className="km-google-login mt-6 flex justify-center">
                 <GoogleLogin
                   onSuccess={onGoogleSuccess}
-                  onError={() => setError('Google sign-in was cancelled.')}
+                  onError={() => notify.error('Google sign-in was cancelled.')}
                   useOneTap={false}
                   text="signin_with"
                   shape="rectangular"
@@ -565,11 +562,10 @@ const LoginPage = () => {
                 </>
               )}
 
-              {info && (
-                <p className="rounded-lg border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">{info}</p>
-              )}
-              {error && (
-                <p role="alert" className="rounded-lg border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-600">{error}</p>
+              {otpPreview && (
+                <p className="rounded-lg border border-amber-100 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-700">
+                  Email delivery isn't configured yet — your code is <strong>{otpPreview}</strong>
+                </p>
               )}
 
               <button

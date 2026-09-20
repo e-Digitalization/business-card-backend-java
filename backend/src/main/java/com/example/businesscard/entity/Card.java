@@ -66,6 +66,18 @@ public class Card {
     @Column(name = "accent_color")
     private String accentColor;
 
+    // Comma-separated category ids, e.g. "researcher,banker". See CardProfileValidator.
+    @Column(columnDefinition = "TEXT")
+    private String categories;
+    // JSON document with researcher metrics and publications (only used when the
+    // "researcher" category is selected).
+    @Column(name = "researcher_data", columnDefinition = "TEXT")
+    private String researcherData;
+
+    // JSON document with banker details (only used when the "banker" category is selected).
+    @Column(name = "banker_data", columnDefinition = "TEXT")
+    private String bankerData;
+
     private boolean active = true;
 
     // Populated on demand from TapLogRepository — not persisted on the card itself.
@@ -294,6 +306,30 @@ public class Card {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
+    public String getBankerData() {
+        return bankerData;
+    }
+
+    public void setBankerData(String bankerData) {
+        this.bankerData = bankerData;
+    }
+
+    public String getResearcherData() {
+        return researcherData;
+    }
+
+    public void setResearcherData(String researcherData) {
+        this.researcherData = researcherData;
     }
 
     public String getTheme() {

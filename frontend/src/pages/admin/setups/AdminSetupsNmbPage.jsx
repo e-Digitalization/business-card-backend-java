@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusPill, useAdminSetups } from './useAdminSetups.jsx';
 
 const AdminSetupsNmbPage = () => {
-  const { loading, saving, error, message, setups, load, save, clearKey } = useAdminSetups();
+  const { loading, saving, setups, load, save, clearKey } = useAdminSetups();
 
   const [baseUrl, setBaseUrl] = useState('https://nmb.spg.co.tz');
   const [clientUsr, setClientUsr] = useState('');
@@ -45,20 +45,11 @@ const AdminSetupsNmbPage = () => {
   const nmb = setups?.nmb || {};
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="space-y-5">
       <p className="text-sm text-[#1a3d42]/55">
         NMB Payment Gateway (<code>nmb.spg.co.tz</code>): login → generate control number → confirm payment. Leave
         username / password blank to keep the current value.
       </p>
-
-      {error && (
-        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
-      )}
-      {message && (
-        <p className="rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {message}
-        </p>
-      )}
 
       <section className="admin-panel p-5">
         <div className="flex flex-wrap gap-3">
@@ -92,45 +83,47 @@ const AdminSetupsNmbPage = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">NMB</p>
             <h2 className="mt-1 font-display text-lg font-semibold text-[#1a3d42]">Gateway credentials</h2>
           </div>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Base URL</span>
-            <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} className="admin-input" />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">System name</span>
-            <input
-              value={systemName}
-              onChange={(e) => setSystemName(e.target.value)}
-              className="admin-input"
-              placeholder="SP1007"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
-              Client username (leave blank to keep)
-            </span>
-            <input
-              type="password"
-              value={clientUsr}
-              onChange={(e) => setClientUsr(e.target.value)}
-              className="admin-input"
-              autoComplete="off"
-              placeholder={nmb.maskedClientUsr || '••••'}
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
-              Client key / password (leave blank to keep)
-            </span>
-            <input
-              type="password"
-              value={clientKey}
-              onChange={(e) => setClientKey(e.target.value)}
-              className="admin-input"
-              autoComplete="off"
-              placeholder={nmb.maskedClientKey || '••••'}
-            />
-          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Base URL</span>
+              <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} className="admin-input" />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">System name</span>
+              <input
+                value={systemName}
+                onChange={(e) => setSystemName(e.target.value)}
+                className="admin-input"
+                placeholder="SP1007"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
+                Client username (leave blank to keep)
+              </span>
+              <input
+                type="password"
+                value={clientUsr}
+                onChange={(e) => setClientUsr(e.target.value)}
+                className="admin-input"
+                autoComplete="off"
+                placeholder={nmb.maskedClientUsr || '••••'}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
+                Client key / password (leave blank to keep)
+              </span>
+              <input
+                type="password"
+                value={clientKey}
+                onChange={(e) => setClientKey(e.target.value)}
+                className="admin-input"
+                autoComplete="off"
+                placeholder={nmb.maskedClientKey || '••••'}
+              />
+            </label>
+          </div>
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Active payment provider</span>
             <select

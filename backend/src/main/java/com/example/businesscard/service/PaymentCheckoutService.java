@@ -43,11 +43,11 @@ public class PaymentCheckoutService {
         return selcomCheckoutService.startCheckout(user, phone);
     }
 
-    public Map<String, Object> startNfcCheckout(ClientUser user, String phone, String deliveryNotes) {
+    public Map<String, Object> startNfcCheckout(ClientUser user, String phone, String deliveryNotes, String productCode) {
         if ("nmb".equals(activeProvider())) {
-            return nmbCheckoutService.startNfcCardCheckout(user, phone, deliveryNotes);
+            return nmbCheckoutService.startNfcCardCheckout(user, phone, deliveryNotes, productCode);
         }
-        return selcomCheckoutService.startNfcCardCheckout(user, phone, deliveryNotes);
+        return selcomCheckoutService.startNfcCardCheckout(user, phone, deliveryNotes, productCode);
     }
 
     public Map<String, Object> refreshOrder(ClientUser user, String orderId) {

@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createWorker } from 'tesseract.js';
 import api from '../../services/api.js';
+import CategoryPicker from '../../components/CategoryPicker.jsx';
+import BankerEditor from '../../components/BankerEditor.jsx';
+import ResearcherEditor from '../../components/ResearcherEditor.jsx';
+import { hasCategory } from '../../utils/cardCategories.js';
 import { parseBusinessCardText, preprocessCardImage } from '../../utils/ocrCard.js';
 
 const empty = {
@@ -19,6 +23,9 @@ const empty = {
   twitter: '',
   github: '',
   instagram: '',
+  categories: '',
+  researcherData: '',
+  bankerData: '',
   active: true
 };
 
@@ -148,7 +155,7 @@ const AdminCreateCardPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5">
+    <div className="space-y-5">
       <p className="text-sm text-[#1a3d42]/55">
         Scan a paper business card to prefill, or enter details manually. After create, invite the owner with an OTP
         so they can set a login password.
@@ -204,7 +211,7 @@ const AdminCreateCardPage = () => {
       </section>
 
       <form onSubmit={onSubmit} className="admin-panel p-5 sm:p-7">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {fields.map(([key, label, placeholder]) => (
             <label key={key} className="block">
               <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">{label}</span>
@@ -217,6 +224,32 @@ const AdminCreateCardPage = () => {
               />
             </label>
           ))}
+          <div className="sm:col-span-2 lg:col-span-3">
+            <CategoryPicker
+              value={form.categories}
+              onChange={(next) => setForm((p) => ({ ...p, categories: next }))}
+            />
+          </div>
+          {hasCategory(form, 'banker') && (
+            <div className="sm:col-span-2 lg:col-span-3">
+              <BankerEditor
+                value={form.bankerData}
+                onChange={(next) => setForm((p) => ({ ...p, bankerData: next }))}
+                uploadUrl="/api/admin/uploads/banner"
+                accent="#9a6b45"
+              />
+            </div>
+          )}
+          {hasCategory(form, 'researcher') && (
+            <div className="sm:col-span-2 lg:col-span-3">
+              <ResearcherEditor
+                value={form.researcherData}
+                onChange={(next) => setForm((p) => ({ ...p, researcherData: next }))}
+                importUrl="/api/admin/import/scholar"
+                accent="#9a6b45"
+              />
+            </div>
+          )}
         </div>
 
         {message && (

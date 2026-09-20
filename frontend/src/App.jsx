@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { SAMPLE_BANKER_PROFILE, SAMPLE_PROFILE } from './utils/cardCategories.js';
 import ProfilePage from './pages/ProfilePage.jsx';
 import RedirectPage from './pages/RedirectPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -11,6 +12,7 @@ import ClientSharePage from './pages/client/ClientSharePage.jsx';
 import ClientPhotoPage from './pages/client/ClientPhotoPage.jsx';
 import ClientContactsPage from './pages/client/ClientContactsPage.jsx';
 import ClientPreviewsPage from './pages/client/ClientPreviewsPage.jsx';
+import ClientRequestCardPage from './pages/client/ClientRequestCardPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ClientProtectedRoute from './components/ClientProtectedRoute.jsx';
@@ -46,6 +48,8 @@ const AppShell = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/u/:slug" element={<ProfilePage />} />
+        <Route path="/demo/banker" element={<ProfilePage demoProfile={SAMPLE_BANKER_PROFILE} />} />
+        <Route path="/demo/researcher" element={<ProfilePage demoProfile={SAMPLE_PROFILE} />} />
         <Route path="/c/:tagCode" element={<RedirectPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/claim" element={<ClaimAccountPage />} />
@@ -66,6 +70,7 @@ const AppShell = () => {
           <Route path="photo" element={<ClientPhotoPage />} />
           <Route path="contacts" element={<ClientContactsPage />} />
           <Route path="looks" element={<ClientPreviewsPage />} />
+          <Route path="request-card" element={<ClientRequestCardPage />} />
         </Route>
         <Route
           path="/admin"

@@ -5,6 +5,7 @@ import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import NfcPrintModal from '../../components/NfcPrintModal.jsx';
 import CopyButton from '../../components/CopyButton.jsx';
 import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
+import { notify } from '../../utils/toast.js';
 
 const AdminCardDetailPage = () => {
   const { id } = useParams();
@@ -16,7 +17,6 @@ const AdminCardDetailPage = () => {
   const [tagCode, setTagCode] = useState('');
   const [inviteBusy, setInviteBusy] = useState(false);
   const [inviteResult, setInviteResult] = useState(null);
-  const [message, setMessage] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -43,14 +43,13 @@ const AdminCardDetailPage = () => {
   const onAssignTag = async (e) => {
     e.preventDefault();
     if (!tagCode.trim()) return;
-    setMessage('');
     try {
       await api.post(`/api/admin/cards/${id}/tag`, { tagCode: tagCode.trim() });
       setTagCode('');
-      setMessage('NFC tag linked.');
+      notify.success('NFC tag linked.');
       await load();
     } catch {
-      setError('Could not link that NFC tag. It may already be in use.');
+      notify.error('Could not link that NFC tag. It may already be in use.');
     }
   };
 
@@ -61,15 +60,19 @@ const AdminCardDetailPage = () => {
 
   const onInvite = async () => {
     setInviteBusy(true);
-    setError('');
     setInviteResult(null);
     try {
       const res = await api.post(`/api/admin/cards/${id}/invite`);
-      setInviteResult(res.data.data || null);
-      setMessage('Invite OTP created — share it with the card owner.');
+      const data = res.data.data || null;
+      setInviteResult(data);
+      if (data?.delivered) {
+        notify.success(`Invite OTP emailed to ${data.email}.`);
+      } else {
+        notify.info('Invite OTP created, but email delivery is not configured.');
+      }
       await load();
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.detail || 'Could not create invite.');
+      notify.error(err.response?.data?.message || err.response?.data?.detail || 'Could not create invite.');
     } finally {
       setInviteBusy(false);
     }
@@ -134,15 +137,6 @@ const AdminCardDetailPage = () => {
         </div>
       </div>
 
-      {error && (
-        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
-      )}
-      {message && (
-        <p className="rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {message}
-        </p>
-      )}
-
       <section className="overflow-hidden rounded-xl border border-black/5 bg-white shadow-[0_12px_40px_rgba(26,61,66,0.06)]">
         <div className="relative h-36 bg-gradient-to-br from-[#0d7377] via-[#1a3d42] to-[#0a5f63]">
           <div className="absolute inset-0 opacity-40"
@@ -206,8 +200,8 @@ const AdminCardDetailPage = () => {
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Credentials</p>
           <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">Login access</h2>
           <p className="mt-2 text-sm text-[#1a3d42]/55">
-            Admin-created cards start without a password. Send an OTP so the owner can claim the card and set
-            credentials.
+            Admin-created cards start without a password. Sending an invite emails the owner an OTP automatically
+            so they can claim the card and set credentials.
           </p>
 
           <div className="mt-4 space-y-2 rounded-lg border border-black/5 bg-[#f7f4ef] px-4 py-3 text-sm">
@@ -249,15 +243,24 @@ const AdminCardDetailPage = () => {
             <p className="mt-2 text-xs text-rose-600">Add an email on the card before inviting.</p>
           )}
 
-          {inviteResult?.otp && (
+          {inviteResult && (
             <div className="mt-4 rounded-lg border border-[#0d7377]/20 bg-[#e8f4f4] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0d7377]">Share this OTP</p>
-              <p className="mt-2 font-display text-3xl font-semibold tracking-[0.2em] text-[#1a3d42]">
-                {inviteResult.otp}
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0d7377]">
+                {inviteResult.delivered ? 'OTP emailed automatically' : 'Email delivery unavailable'}
               </p>
               <p className="mt-2 text-sm text-[#1a3d42]/65">
                 Email: <strong>{inviteResult.email}</strong>
               </p>
+              {inviteResult.otpPreview && (
+                <>
+                  <p className="mt-2 font-display text-3xl font-semibold tracking-[0.2em] text-[#1a3d42]">
+                    {inviteResult.otpPreview}
+                  </p>
+                  <p className="mt-1 text-xs text-[#1a3d42]/50">
+                    SMTP isn't configured here, so share this code with the owner manually.
+                  </p>
+                </>
+              )}
               <p className="mt-1 text-xs text-[#1a3d42]/50">
                 Owner opens <code className="rounded bg-white px-1">/claim</code>, enters email + OTP, sets a
                 password. Expires in 24 hours.

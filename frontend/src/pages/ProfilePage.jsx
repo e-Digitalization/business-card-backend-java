@@ -3,18 +3,26 @@ import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
 import { getCardThemeVars } from '../utils/cardTheme.js';
+import PersonIcon from '@mui/icons-material/Person';
+import SchoolIcon from '@mui/icons-material/School';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SocialLinks from '../components/SocialLinks.jsx';
 import ContactMethodIcon from '../components/ContactMethodIcon.jsx';
 import { AppointmentLink, YoutubeVideos } from '../components/ProfileExtras.jsx';
+import ResearcherSection, { hasResearchContent } from '../components/ResearcherSection.jsx';
+import { BankerProfile, BankerServices, hasBankerServices } from '../components/BankerSection.jsx';
+import { categoryLabel, parseCategories } from '../utils/cardCategories.js';
 
-const ProfilePage = () => {
+const ProfilePage = ({ demoProfile = null }) => {
   const { slug } = useParams();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(demoProfile);
+  const [tab, setTab] = useState('profile');
+  const [loading, setLoading] = useState(!demoProfile);
   const [error, setError] = useState('');
   const [photoFailed, setPhotoFailed] = useState(false);
 
   useEffect(() => {
+    if (demoProfile) return undefined;
     let mounted = true;
     setLoading(true);
     setPhotoFailed(false);
@@ -35,7 +43,7 @@ const ProfilePage = () => {
     return () => {
       mounted = false;
     };
-  }, [slug]);
+  }, [slug, demoProfile]);
 
   const vcardUrl = `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/profile/${slug}/vcard`;
 
@@ -68,6 +76,13 @@ const ProfilePage = () => {
     );
   }
 
+  const tabs = [
+    { id: 'profile', label: 'Profile', Icon: PersonIcon },
+    hasBankerServices(profile) && { id: 'services', label: 'Services', Icon: AccountBalanceIcon },
+    hasResearchContent(profile) && { id: 'research', label: 'Research', Icon: SchoolIcon }
+  ].filter(Boolean);
+  const showTabs = tabs.length > 1;
+
   const rows = [
     profile.email && { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, icon: 'mail' },
     primaryPhone && { label: 'Phone', value: phoneList.join(' · '), href: `tel:${primaryPhone}`, icon: 'call' },
@@ -89,7 +104,7 @@ const ProfilePage = () => {
   return (
     <div className="km-card-page min-h-screen px-0 pb-12 sm:px-4 sm:py-10">
       <article
-        className="km-card mx-auto w-full max-w-[400px] overflow-hidden bg-white sm:rounded-[1.75rem]"
+        className="km-card mx-auto w-full max-w-[400px] overflow-clip bg-white sm:rounded-[1.75rem]"
         style={getCardThemeVars(profile)}
       >
         <header className="km-card-hero km-fade-in">
@@ -135,6 +150,13 @@ const ProfilePage = () => {
             {profile.company && (
               <p className="mt-0.5 text-sm italic text-[#1a3d42]/50">{profile.company}</p>
             )}
+            {parseCategories(profile.categories).length > 0 && (
+              <div className="km-card-categories">
+                {parseCategories(profile.categories).map((id) => (
+                  <span key={id}>{categoryLabel(id)}</span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="km-fade-up km-fade-up-delay mt-5 flex flex-col gap-2">
@@ -144,6 +166,8 @@ const ProfilePage = () => {
             <AppointmentLink profile={profile} />
           </div>
 
+          {tab === 'profile' && (
+          <>
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">
             {rows.map((row) => {
               const inner = (
@@ -173,13 +197,31 @@ const ProfilePage = () => {
             })}
           </ul>
 
+          <BankerProfile profile={profile} className="mt-6" />
+
           <SocialLinks
             profile={profile}
             whatsappUrl={wa ? `https://wa.me/${wa}` : ''}
             className="mt-7 justify-center"
           />
           <YoutubeVideos profile={profile} className="mt-7" />
+          </>
+          )}
+
+          {tab === 'services' && <BankerServices profile={profile} className="mt-6" />}
+          {tab === 'research' && <ResearcherSection profile={profile} className="mt-6 !border-0 !pt-0" />}
         </div>
+
+        {showTabs && (
+          <nav className="km-card-tabbar" aria-label="Card sections">
+            {tabs.map(({ id, label, Icon }) => (
+              <button key={id} type="button" className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>
+                <Icon aria-hidden="true" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
+        )}
       </article>
     </div>
   );

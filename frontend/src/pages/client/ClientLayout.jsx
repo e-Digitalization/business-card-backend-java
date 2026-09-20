@@ -105,7 +105,8 @@ const ClientLayout = () => {
       location.pathname.startsWith('/me/card') ||
       location.pathname.startsWith('/me/look') ||
       location.pathname.startsWith('/me/share') ||
-      location.pathname.startsWith('/me/photo')
+      location.pathname.startsWith('/me/photo') ||
+      location.pathname.startsWith('/me/request-card')
     ) {
       setCardOpen(true);
     }
@@ -132,7 +133,8 @@ const ClientLayout = () => {
     location.pathname.startsWith('/me/card') ||
     location.pathname.startsWith('/me/look') ||
     location.pathname.startsWith('/me/share') ||
-    location.pathname.startsWith('/me/photo');
+    location.pathname.startsWith('/me/photo') ||
+    location.pathname.startsWith('/me/request-card');
 
   const sidebar = (
     <aside className="snav flex h-full flex-col">
@@ -184,6 +186,7 @@ const ClientLayout = () => {
             onClick={() => setCardOpen((v) => !v)}
           >
             <span className="snav-item-icon">{icons.card}</span>
+            <span className="flex-1 text-left">My card</span>
             <Chevron open={cardOpen} />
           </button>
           <div className="snav-collapse">
@@ -229,6 +232,14 @@ const ClientLayout = () => {
                 >
                   <span className="snav-bullet" />
                   NFC card
+                </NavLink>
+                <NavLink
+                  to="/me/request-card"
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
+                >
+                  <span className="snav-bullet" />
+                  Request card
                 </NavLink>
               </div>
             </div>

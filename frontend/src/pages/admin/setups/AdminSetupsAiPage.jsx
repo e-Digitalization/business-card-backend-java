@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusPill, useAdminSetups } from './useAdminSetups.jsx';
 
 const AdminSetupsAiPage = () => {
-  const { loading, saving, error, message, setups, load, save, clearKey } = useAdminSetups();
+  const { loading, saving, setups, load, save, clearKey } = useAdminSetups();
 
   const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [openaiModel, setOpenaiModel] = useState('gpt-4o-mini');
@@ -42,19 +42,10 @@ const AdminSetupsAiPage = () => {
   const scan = setups?.scan || {};
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="space-y-5">
       <p className="text-sm text-[#1a3d42]/55">
         OpenAI / Gemini power AI card scan. Google Client ID powers Sign in with Google.
       </p>
-
-      {error && (
-        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
-      )}
-      {message && (
-        <p className="rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {message}
-        </p>
-      )}
 
       <section className="admin-panel p-5">
         <div className="flex flex-wrap gap-3">
@@ -83,26 +74,28 @@ const AdminSetupsAiPage = () => {
               Current key: <code className="text-xs">{openai.maskedKey || 'not set'}</code>
             </p>
           </div>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API key (leave blank to keep)</span>
-            <input
-              type="password"
-              value={openaiApiKey}
-              onChange={(e) => setOpenaiApiKey(e.target.value)}
-              placeholder="sk-proj-…"
-              className="admin-input"
-              autoComplete="off"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Model</span>
-            <input
-              value={openaiModel}
-              onChange={(e) => setOpenaiModel(e.target.value)}
-              className="admin-input"
-              placeholder="gpt-4o-mini"
-            />
-          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API key (leave blank to keep)</span>
+              <input
+                type="password"
+                value={openaiApiKey}
+                onChange={(e) => setOpenaiApiKey(e.target.value)}
+                placeholder="sk-proj-…"
+                className="admin-input"
+                autoComplete="off"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Model</span>
+              <input
+                value={openaiModel}
+                onChange={(e) => setOpenaiModel(e.target.value)}
+                className="admin-input"
+                placeholder="gpt-4o-mini"
+              />
+            </label>
+          </div>
           {openai.source === 'database' && (
             <button
               type="button"
@@ -124,20 +117,22 @@ const AdminSetupsAiPage = () => {
               <code className="text-xs">{gemini.maskedKey || 'not set'}</code>
             </p>
           </div>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API key (leave blank to keep)</span>
-            <input
-              type="password"
-              value={geminiApiKey}
-              onChange={(e) => setGeminiApiKey(e.target.value)}
-              className="admin-input"
-              autoComplete="off"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Model</span>
-            <input value={geminiModel} onChange={(e) => setGeminiModel(e.target.value)} className="admin-input" />
-          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API key (leave blank to keep)</span>
+              <input
+                type="password"
+                value={geminiApiKey}
+                onChange={(e) => setGeminiApiKey(e.target.value)}
+                className="admin-input"
+                autoComplete="off"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Model</span>
+              <input value={geminiModel} onChange={(e) => setGeminiModel(e.target.value)} className="admin-input" />
+            </label>
+          </div>
           {gemini.source === 'database' && (
             <button
               type="button"

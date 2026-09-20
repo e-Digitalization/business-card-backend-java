@@ -201,7 +201,7 @@ const ClientDashboardHome = () => {
   return (
     <div className="space-y-6">
       {welcomeOpen && (
-        <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
+        <div className="km-fade-in flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
           <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">
             ✓
           </span>
@@ -214,7 +214,7 @@ const ClientDashboardHome = () => {
         </div>
       )}
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="km-fade-up grid gap-4 lg:grid-cols-2">
         <div className="client-panel p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Subscription</p>
           <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">AI Scan Monthly</h2>
@@ -284,7 +284,7 @@ const ClientDashboardHome = () => {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="km-fade-up km-fade-up-delay grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {stats.map((stat) => (
           <div key={stat.label} className="client-stat-card">
             <div className="flex items-start justify-between gap-3">
@@ -301,7 +301,7 @@ const ClientDashboardHome = () => {
         ))}
       </div>
 
-      <section className="client-panel overflow-hidden">
+      <section className="km-fade-up km-fade-up-delay-2 client-panel overflow-hidden">
         {completeness < 70 ? (
           <div className="px-6 py-12 text-center">
             <div className="mx-auto flex h-36 w-full max-w-md items-end justify-center gap-3">
@@ -383,7 +383,7 @@ const ClientDashboardHome = () => {
         )}
       </section>
 
-      <section className="client-panel">
+      <section className="km-fade-up km-fade-up-delay-2 client-panel">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 px-5 py-4">
           <div>
             <h2 className="font-display text-lg font-semibold text-[#1a3d42]">Kadi Moja profiles</h2>

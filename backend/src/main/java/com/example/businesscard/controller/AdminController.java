@@ -12,7 +12,9 @@ import com.example.businesscard.repository.CardTagRepository;
 import com.example.businesscard.service.AiCardScanService;
 import com.example.businesscard.service.CardInviteService;
 import com.example.businesscard.service.PhotoUploadService;
+import com.example.businesscard.service.ScholarImportService;
 import com.example.businesscard.service.PrivateSlugService;
+import com.example.businesscard.util.CardProfileValidator;
 import com.example.businesscard.util.ProfileLinkSanitizer;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -44,19 +46,22 @@ public class AdminController {
     private final AiCardScanService aiCardScanService;
     private final CardInviteService cardInviteService;
     private final PhotoUploadService photoUploadService;
+    private final ScholarImportService scholarImportService;
 
     public AdminController(CardRepository cardRepository,
                            CardTagRepository cardTagRepository,
                            PrivateSlugService privateSlugService,
                            AiCardScanService aiCardScanService,
                            CardInviteService cardInviteService,
-                           PhotoUploadService photoUploadService) {
+                           PhotoUploadService photoUploadService,
+                           ScholarImportService scholarImportService) {
         this.cardRepository = cardRepository;
         this.cardTagRepository = cardTagRepository;
         this.privateSlugService = privateSlugService;
         this.aiCardScanService = aiCardScanService;
         this.cardInviteService = cardInviteService;
         this.photoUploadService = photoUploadService;
+        this.scholarImportService = scholarImportService;
     }
 
     @PostMapping("/cards")
@@ -109,6 +114,18 @@ public class AdminController {
         }
         card.setSlug(privateSlugService.nextUnique());
         return ResponseEntity.ok(ok("Private link regenerated", cardRepository.save(card)));
+    }
+
+    // Imports researcher details from a Google Scholar profile link (data only; saved with the card).
+    @PostMapping("/import/scholar")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> importScholar(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(ok("Scholar profile imported", scholarImportService.importProfile(body.get("url"))));
+    }
+
+    // Stores a banner image and returns its URL only; the URL is saved with the card's banker data.
+    @PostMapping(value = "/uploads/banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadBanner(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(ok("Banner uploaded", Map.of("url", photoUploadService.store(file, "banners"))));
     }
 
     @PostMapping(value = "/cards/{id}/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -260,6 +277,9 @@ public class AdminController {
         card.setWeibo(ProfileLinkSanitizer.sanitize(request.getWeibo(), request.getPhotoUrl()));
         card.setDouyin(ProfileLinkSanitizer.sanitize(request.getDouyin(), request.getPhotoUrl()));
         card.setXiaohongshu(ProfileLinkSanitizer.sanitize(request.getXiaohongshu(), request.getPhotoUrl()));
+        card.setCategories(CardProfileValidator.normalizeCategories(request.getCategories()));
+        card.setResearcherData(CardProfileValidator.validateResearcherData(request.getResearcherData()));
+        card.setBankerData(CardProfileValidator.validateBankerData(request.getBankerData()));
         card.setActive(request.isActive());
 
         if (request.getTheme() != null) {

@@ -21,11 +21,13 @@ public interface NfcCardRequestRepository extends JpaRepository<NfcCardRequest, 
     @Query("""
         SELECT r FROM NfcCardRequest r
         WHERE (:status IS NULL OR r.status = :status)
+          AND (:pendingOnly = false OR (r.status <> 'FULFILLED' AND r.status <> 'CANCELLED'))
           AND (
             :q IS NULL OR :q = '' OR
             LOWER(COALESCE(r.productName, '')) LIKE LOWER(CONCAT('%', :q, '%')) OR
             LOWER(COALESCE(r.paymentOrderId, '')) LIKE LOWER(CONCAT('%', :q, '%')) OR
             LOWER(COALESCE(r.phone, '')) LIKE LOWER(CONCAT('%', :q, '%')) OR
+            LOWER(COALESCE(r.deliveryNotes, '')) LIKE LOWER(CONCAT('%', :q, '%')) OR
             LOWER(COALESCE(r.owner.fullName, '')) LIKE LOWER(CONCAT('%', :q, '%')) OR
             LOWER(COALESCE(r.owner.email, '')) LIKE LOWER(CONCAT('%', :q, '%'))
           )
@@ -33,6 +35,7 @@ public interface NfcCardRequestRepository extends JpaRepository<NfcCardRequest, 
     Page<NfcCardRequest> search(
         @Param("q") String q,
         @Param("status") String status,
+        @Param("pendingOnly") boolean pendingOnly,
         Pageable pageable
     );
 }

@@ -28,7 +28,7 @@ public class NfcCardRequest {
     @Column(nullable = false, length = 8)
     private String currency = "TZS";
 
-    /** PENDING_PAYMENT | PAID | FULFILLING | FULFILLED | CANCELLED */
+    /** PENDING | PENDING_PAYMENT | PAID | FULFILLING | FULFILLED | CANCELLED */
     @Column(nullable = false, length = 32)
     private String status = "PENDING_PAYMENT";
 

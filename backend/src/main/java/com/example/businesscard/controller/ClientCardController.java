@@ -8,6 +8,8 @@ import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.TapLogRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.PhotoUploadService;
+import com.example.businesscard.service.ScholarImportService;
+import com.example.businesscard.util.CardProfileValidator;
 import com.example.businesscard.util.ProfileLinkSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,15 +31,18 @@ public class ClientCardController {
     private final ClientAuthService clientAuthService;
     private final CardRepository cardRepository;
     private final PhotoUploadService photoUploadService;
+    private final ScholarImportService scholarImportService;
     private final TapLogRepository tapLogRepository;
 
     public ClientCardController(ClientAuthService clientAuthService,
                                 CardRepository cardRepository,
                                 PhotoUploadService photoUploadService,
+                                ScholarImportService scholarImportService,
                                 TapLogRepository tapLogRepository) {
         this.clientAuthService = clientAuthService;
         this.cardRepository = cardRepository;
         this.photoUploadService = photoUploadService;
+        this.scholarImportService = scholarImportService;
         this.tapLogRepository = tapLogRepository;
     }
 
@@ -90,6 +96,17 @@ public class ClientCardController {
         card.setWeibo(ProfileLinkSanitizer.sanitize(body.getWeibo(), body.getPhotoUrl()));
         card.setDouyin(ProfileLinkSanitizer.sanitize(body.getDouyin(), body.getPhotoUrl()));
         card.setXiaohongshu(ProfileLinkSanitizer.sanitize(body.getXiaohongshu(), body.getPhotoUrl()));
+        // Categories are assigned by admins only; clients can fill in the details of the
+        // categories they already have but never change the category list itself.
+        List<String> categories = card.getCategories() == null
+            ? List.of()
+            : List.of(card.getCategories().split(","));
+        if (categories.contains("researcher") && body.getResearcherData() != null) {
+            card.setResearcherData(CardProfileValidator.validateResearcherData(body.getResearcherData()));
+        }
+        if (categories.contains("banker") && body.getBankerData() != null) {
+            card.setBankerData(CardProfileValidator.validateBankerData(body.getBankerData()));
+        }
         card.setActive(body.isActive());
 
         if (body.getTheme() != null) {
@@ -134,6 +151,26 @@ public class ClientCardController {
         Card card = clientAuthService.ensureCard(user, false);
         card.setPhotoUrl(null);
         return ApiResponse.ok(cardRepository.save(card));
+    }
+
+    // Stores a banner image and returns its URL only; the URL is saved with the card's banker data.
+    // Imports researcher details from a Google Scholar profile link. Returns the data only;
+    // the client reviews it and saves through the normal card update.
+    @PostMapping("/me/import/scholar")
+    public ApiResponse<Map<String, Object>> importScholar(HttpServletRequest request,
+                                                          @RequestBody Map<String, String> body) {
+        ClientUser user = currentUser(request);
+        Card card = clientAuthService.ensureCard(user, false);
+        if (card.getCategories() == null || !List.of(card.getCategories().split(",")).contains("researcher")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Researcher category isn't enabled for your card.");
+        }
+        return ApiResponse.ok(scholarImportService.importProfile(body.get("url")));
+    }
+
+    @PostMapping(value = "/me/uploads/banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<Map<String, String>> uploadBanner(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+        currentUser(request);
+        return ApiResponse.ok(Map.of("url", photoUploadService.store(file, "banners")));
     }
 
     @PostMapping(value = "/me/card/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

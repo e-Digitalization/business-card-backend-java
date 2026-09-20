@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../../../services/api.js';
+import { notify } from '../../../utils/toast.js';
 
 export function useAdminSetups() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
   const [setups, setSetups] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const res = await api.get('/api/admin/setups');
       setSetups(res.data.data || null);
     } catch {
-      setError('Could not load setups. Restart the backend if you just pulled these changes.');
+      notify.error('Could not load setups. Restart the backend if you just pulled these changes.');
     } finally {
       setLoading(false);
     }
@@ -27,15 +25,13 @@ export function useAdminSetups() {
 
   const save = async (body, successMessage = 'Setups saved.') => {
     setSaving(true);
-    setError('');
-    setMessage('');
     try {
       const res = await api.put('/api/admin/setups', body);
       setSetups(res.data.data || null);
-      setMessage(successMessage);
+      notify.success(successMessage);
       return res.data.data || null;
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.detail || 'Could not save setups.');
+      notify.error(err.response?.data?.message || err.response?.data?.detail || 'Could not save setups.');
       return null;
     } finally {
       setSaving(false);
@@ -49,10 +45,6 @@ export function useAdminSetups() {
   return {
     loading,
     saving,
-    error,
-    message,
-    setMessage,
-    setError,
     setups,
     load,
     save,

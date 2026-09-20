@@ -33,6 +33,10 @@ public class CardRequest {
     private String theme;
     private String primaryColor;
     private String accentColor;
+    // Comma-separated category ids, matching how Card returns them.
+    private String categories;
+    private String researcherData;
+    private String bankerData;
     private boolean active = true;
 
     public String getSlug() {
@@ -241,6 +245,30 @@ public class CardRequest {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
+    public String getBankerData() {
+        return bankerData;
+    }
+
+    public void setBankerData(String bankerData) {
+        this.bankerData = bankerData;
+    }
+
+    public String getResearcherData() {
+        return researcherData;
+    }
+
+    public void setResearcherData(String researcherData) {
+        this.researcherData = researcherData;
     }
 
     public String getTheme() {

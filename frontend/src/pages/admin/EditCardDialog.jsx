@@ -3,6 +3,10 @@ import api from '../../services/api.js';
 import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js';
 import { resolveMediaUrl } from '../../utils/media.js';
 import VideoListEditor from '../../components/VideoListEditor.jsx';
+import CategoryPicker from '../../components/CategoryPicker.jsx';
+import BankerEditor from '../../components/BankerEditor.jsx';
+import ResearcherEditor from '../../components/ResearcherEditor.jsx';
+import { hasCategory } from '../../utils/cardCategories.js';
 
 const fieldDefs = [
   ['fullName', 'Full Name'],
@@ -193,6 +197,8 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
         <div className="flex gap-2 border-b border-black/5 px-6 pt-3">
           {[
             ['details', 'Details'],
+            ...(hasCategory(card, 'banker') ? [['banker', 'Banker']] : []),
+            ...(hasCategory(card, 'researcher') ? [['research', 'Researcher']] : []),
             ['look', 'Card look'],
             ['nfc', 'NFC Tags']
           ].map(([key, label]) => (
@@ -237,6 +243,13 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                   Regenerate
                 </button>
               </div>
+              <div className="sm:col-span-2">
+                <CategoryPicker
+                  value={card.categories || ''}
+                  onChange={(next) => setCardField('categories', next)}
+                />
+              </div>
+
               {fieldDefs.map(([key, label]) => (
                 <label key={key} className="block">
                   <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">{label}</span>
@@ -255,6 +268,28 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                   onChange={(next) => setCardField('youtubeVideos', next)}
                 />
               </div>
+            </form>
+          )}
+
+          {!loading && card && tab === 'banker' && (
+            <form id="edit-card-form" onSubmit={onUpdate}>
+              <BankerEditor
+                value={card.bankerData || ''}
+                onChange={(next) => setCardField('bankerData', next)}
+                uploadUrl="/api/admin/uploads/banner"
+                accent="#9a6b45"
+              />
+            </form>
+          )}
+
+          {!loading && card && tab === 'research' && (
+            <form id="edit-card-form" onSubmit={onUpdate}>
+              <ResearcherEditor
+                value={card.researcherData || ''}
+                onChange={(next) => setCardField('researcherData', next)}
+                importUrl="/api/admin/import/scholar"
+                accent="#9a6b45"
+              />
             </form>
           )}
 
@@ -412,7 +447,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           )}
         </div>
 
-        {(tab === 'details' || tab === 'look') && card && (
+        {(tab === 'details' || tab === 'banker' || tab === 'research' || tab === 'look') && card && (
           <div className="flex justify-end gap-2 border-t border-black/5 px-6 py-4">
             <button
               type="button"

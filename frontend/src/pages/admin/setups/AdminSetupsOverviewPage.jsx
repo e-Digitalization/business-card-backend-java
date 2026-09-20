@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { StatusPill, useAdminSetups } from './useAdminSetups.jsx';
 
 const AdminSetupsOverviewPage = () => {
-  const { loading, error, setups, load } = useAdminSetups();
+  const { loading, setups, load } = useAdminSetups();
 
   if (loading) {
     return <p className="text-sm text-[#1a3d42]/50">Loading setups…</p>;
@@ -41,15 +41,11 @@ const AdminSetupsOverviewPage = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="space-y-5">
       <p className="text-sm text-[#1a3d42]/55">
         Manage API keys and payment providers. Values saved here override <code>.env</code> until cleared. Secrets stay
         masked.
       </p>
-
-      {error && (
-        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
-      )}
 
       <section className="admin-panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -82,7 +78,7 @@ const AdminSetupsOverviewPage = () => {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-1">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <Link
             key={card.to}

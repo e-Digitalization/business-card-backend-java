@@ -6,6 +6,9 @@ import com.example.businesscard.entity.ClientUser;
 import com.example.businesscard.repository.AccountInviteRepository;
 import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.ClientUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,22 +24,29 @@ import java.util.Map;
 
 @Service
 public class CardInviteService {
+    private static final Logger log = LoggerFactory.getLogger(CardInviteService.class);
     private final CardRepository cardRepository;
     private final ClientUserRepository clientUserRepository;
     private final AccountInviteRepository accountInviteRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final String frontendBaseUrl;
     private final SecureRandom random = new SecureRandom();
 
     public CardInviteService(
         CardRepository cardRepository,
         ClientUserRepository clientUserRepository,
         AccountInviteRepository accountInviteRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        EmailService emailService,
+        @Value("${app.frontend.base-url:http://localhost:5173}") String frontendBaseUrl
     ) {
         this.cardRepository = cardRepository;
         this.clientUserRepository = clientUserRepository;
         this.accountInviteRepository = accountInviteRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.frontendBaseUrl = frontendBaseUrl;
     }
 
     @Transactional(readOnly = true)
@@ -119,12 +129,23 @@ public class CardInviteService {
         invite.setCreatedAt(Instant.now());
         accountInviteRepository.save(invite);
 
+        String claimPath = "/claim?email=" + email;
+        boolean delivered = emailService.sendInviteOtp(email, otp, frontendBaseUrl + claimPath);
+        if (!delivered) {
+            log.warn("Invite OTP for {} (email delivery unavailable): {}", email, otp);
+        }
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("email", email);
-        result.put("otp", otp);
+        result.put("delivered", delivered);
         result.put("expiresAt", invite.getExpiresAt().toString());
-        result.put("claimPath", "/claim?email=" + email);
-        result.put("message", "Share the OTP with the card owner (WhatsApp/SMS/email). They set a password at /claim.");
+        result.put("claimPath", claimPath);
+        result.put("message", delivered
+            ? "OTP emailed to the card owner. They set a password at /claim."
+            : "Email delivery is not configured — share the OTP with the card owner manually.");
+        // Only surface the raw code when real email delivery is not configured,
+        // so the flow stays testable before SMTP credentials are in place.
+        result.put("otpPreview", (!delivered && !emailService.isEnabled()) ? otp : null);
         result.putAll(accountStatus(card));
         return result;
     }

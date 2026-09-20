@@ -83,14 +83,16 @@ public class NmbCheckoutService {
     }
 
     @Transactional
-    public Map<String, Object> startNfcCardCheckout(ClientUser user, String phone, String deliveryNotes) {
-        Map<String, Object> product = productCatalogService.requireActiveProduct(ProductCatalogService.NFC_CARD);
+    public Map<String, Object> startNfcCardCheckout(ClientUser user, String phone, String deliveryNotes, String productCode) {
+        String code = productCode == null || productCode.isBlank() ? ProductCatalogService.NFC_CARD : productCode.trim();
+        Map<String, Object> product = productCatalogService.requireActiveProduct(code);
         int price = ((Number) product.get("priceTzs")).intValue();
+        String productName = String.valueOf(product.get("name"));
 
         NfcCardRequest request = new NfcCardRequest();
         request.setOwner(user);
-        request.setProductCode(ProductCatalogService.NFC_CARD);
-        request.setProductName(String.valueOf(product.get("name")));
+        request.setProductCode(code);
+        request.setProductName(productName);
         request.setAmount(price);
         request.setCurrency(appSettingsService.selcomCurrency());
         request.setStatus("PENDING_PAYMENT");
@@ -101,9 +103,9 @@ public class NmbCheckoutService {
         Map<String, Object> checkout = createControlNumberOrder(
             user,
             phone,
-            ProductCatalogService.NFC_CARD,
+            code,
             price,
-            "Kadi Moja NFC card",
+            productName,
             "/me/looks",
             request.getId()
         );

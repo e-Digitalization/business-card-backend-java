@@ -88,7 +88,7 @@ const AdminLayout = () => {
     if (location.pathname.startsWith('/admin/cards/new')) return 'Create Digital Card';
     if (/^\/admin\/cards\/\d+/.test(location.pathname)) return 'Card profile';
     if (location.pathname.startsWith('/admin/cards')) return 'Digital Business Cards';
-    if (location.pathname.startsWith('/admin/nfc-requests')) return 'NFC Card Requests';
+    if (location.pathname.startsWith('/admin/nfc-requests')) return 'Pending card requests';
     if (location.pathname.startsWith('/admin/tags')) return 'NFC Cards';
     if (location.pathname.startsWith('/admin/setups/ai')) return 'Setups · AI & Google';
     if (location.pathname.startsWith('/admin/setups/selcom')) return 'Setups · Selcom';
@@ -198,7 +198,7 @@ const AdminLayout = () => {
                   className={({ isActive }) => `snav-subitem ${isActive ? 'is-active' : ''}`}
                 >
                   <span className="snav-bullet" />
-                  Card Requests
+                  Pending
                 </NavLink>
                 <NavLink
                   to="/admin/tags"

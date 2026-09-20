@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api.js';
 import { ClientWorkspaceContext } from './ClientLayout.jsx';
 import VideoListEditor from '../../components/VideoListEditor.jsx';
+import CategoryPicker from '../../components/CategoryPicker.jsx';
+import BankerEditor from '../../components/BankerEditor.jsx';
+import ResearcherEditor from '../../components/ResearcherEditor.jsx';
+import { hasCategory } from '../../utils/cardCategories.js';
 
 const fields = [
   ['fullName', 'Full name'],
@@ -155,6 +159,30 @@ const ClientCardPage = () => {
               />
             </label>
           ))}
+
+          <div className="sm:col-span-2">
+            <CategoryPicker value={form.categories || ''} readOnly />
+          </div>
+
+          {hasCategory(form, 'banker') && (
+            <div className="sm:col-span-2">
+              <BankerEditor
+                value={form.bankerData || ''}
+                onChange={(next) => setForm((p) => ({ ...p, bankerData: next }))}
+                uploadUrl="/api/client/me/uploads/banner"
+              />
+            </div>
+          )}
+
+          {hasCategory(form, 'researcher') && (
+            <div className="sm:col-span-2">
+              <ResearcherEditor
+                value={form.researcherData || ''}
+                onChange={(next) => setForm((p) => ({ ...p, researcherData: next }))}
+                importUrl="/api/client/me/import/scholar"
+              />
+            </div>
+          )}
 
           <div className="sm:col-span-2">
             <VideoListEditor

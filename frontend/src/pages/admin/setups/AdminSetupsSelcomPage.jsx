@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusPill, useAdminSetups } from './useAdminSetups.jsx';
 
 const AdminSetupsSelcomPage = () => {
-  const { loading, saving, error, message, setups, load, save, clearKey } = useAdminSetups();
+  const { loading, saving, setups, load, save, clearKey } = useAdminSetups();
 
   const [baseUrl, setBaseUrl] = useState('https://apigw.selcommobile.com');
   const [apiKey, setApiKey] = useState('');
@@ -48,20 +48,11 @@ const AdminSetupsSelcomPage = () => {
   const selcom = setups?.selcom || {};
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="space-y-5">
       <p className="text-sm text-[#1a3d42]/55">
         Selcom powers AI scan subscriptions and NFC card payments (M-Pesa, Tigo Pesa, Airtel Money). Leave API key /
         secret blank to keep the current value.
       </p>
-
-      {error && (
-        <p className="rounded-md border border-rose-100 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
-      )}
-      {message && (
-        <p className="rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {message}
-        </p>
-      )}
 
       <section className="admin-panel p-5">
         <div className="flex flex-wrap gap-3">
@@ -86,34 +77,40 @@ const AdminSetupsSelcomPage = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Credentials</p>
             <h2 className="mt-1 font-display text-lg font-semibold text-[#1a3d42]">Selcom gateway</h2>
           </div>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Base URL</span>
-            <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} className="admin-input" />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Vendor</span>
-            <input value={vendor} onChange={(e) => setVendor(e.target.value)} className="admin-input" />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API key (leave blank to keep)</span>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="admin-input"
-              autoComplete="off"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">API secret (leave blank to keep)</span>
-            <input
-              type="password"
-              value={apiSecret}
-              onChange={(e) => setApiSecret(e.target.value)}
-              className="admin-input"
-              autoComplete="off"
-            />
-          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Base URL</span>
+              <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} className="admin-input" />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">Vendor</span>
+              <input value={vendor} onChange={(e) => setVendor(e.target.value)} className="admin-input" />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
+                API key (leave blank to keep)
+              </span>
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="admin-input"
+                autoComplete="off"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">
+                API secret (leave blank to keep)
+              </span>
+              <input
+                type="password"
+                value={apiSecret}
+                onChange={(e) => setApiSecret(e.target.value)}
+                className="admin-input"
+                autoComplete="off"
+              />
+            </label>
+          </div>
           <div className="flex flex-wrap gap-4">
             {selcom.apiKeySource === 'database' && (
               <button

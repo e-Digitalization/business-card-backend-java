@@ -30,6 +30,7 @@ public class AdminNfcRequestController {
     public ResponseEntity<ApiResponse<PageResponse<NfcCardRequestResponse>>> list(
         @RequestParam(required = false) String q,
         @RequestParam(required = false) String status,
+        @RequestParam(defaultValue = "true") boolean pendingOnly,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
@@ -38,7 +39,7 @@ public class AdminNfcRequestController {
         PageRequest pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         String query = q == null || q.isBlank() ? null : q.trim();
         String statusFilter = status == null || status.isBlank() ? null : status.trim();
-        Page<NfcCardRequest> result = nfcCardRequestRepository.search(query, statusFilter, pageable);
+        Page<NfcCardRequest> result = nfcCardRequestRepository.search(query, statusFilter, pendingOnly, pageable);
         Page<NfcCardRequestResponse> mapped = result.map(NfcCardRequestResponse::new);
         return ResponseEntity.ok(new ApiResponse<>(true, 200, "NFC requests fetched", PageResponse.from(mapped)));
     }
@@ -62,7 +63,7 @@ public class AdminNfcRequestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is required.");
         }
         String normalized = next.trim().toUpperCase();
-        if (!normalized.equals("PAID") && !normalized.equals("FULFILLING")
+        if (!normalized.equals("PENDING") && !normalized.equals("PAID") && !normalized.equals("FULFILLING")
             && !normalized.equals("FULFILLED") && !normalized.equals("CANCELLED")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status.");
         }

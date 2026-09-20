@@ -3,6 +3,7 @@ package com.example.businesscard.controller;
 import com.example.businesscard.dto.ApiResponse;
 import com.example.businesscard.dto.NfcCardRequestResponse;
 import com.example.businesscard.entity.ClientUser;
+import com.example.businesscard.entity.NfcCardRequest;
 import com.example.businesscard.repository.NfcCardRequestRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.ProductCatalogService;
@@ -65,12 +66,55 @@ public class ClientNfcOrderController {
     ) {
         ClientUser user = currentUser(request);
         String productCode = body == null ? ProductCatalogService.NFC_CARD : body.getOrDefault("productCode", ProductCatalogService.NFC_CARD);
-        if (!ProductCatalogService.NFC_CARD.equals(productCode)) {
-            productCatalogService.requireActiveProduct(productCode);
+        productCatalogService.requireActiveProduct(productCode);
+        if (!productCatalogService.isNfcCardProduct(productCode)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid card product.");
         }
         String phone = body == null ? null : body.get("phone");
         String notes = body == null ? null : body.get("deliveryNotes");
-        return ApiResponse.ok(paymentCheckoutService.startNfcCheckout(user, phone, notes));
+        return ApiResponse.ok(paymentCheckoutService.startNfcCheckout(user, phone, notes, productCode));
+    }
+
+    @PostMapping("/submit")
+    public ApiResponse<NfcCardRequestResponse> submitCardRequest(
+        HttpServletRequest request,
+        @RequestBody Map<String, String> body
+    ) {
+        ClientUser user = currentUser(request);
+        if (body == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required.");
+        }
+        String productCode = body.get("productCode");
+        if (productCode == null || productCode.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose a card type.");
+        }
+        if (!productCatalogService.isNfcCardProduct(productCode)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid card product.");
+        }
+        Map<String, Object> product = productCatalogService.requireActiveProduct(productCode.trim());
+        String phone = body.get("phone");
+        if (phone == null || phone.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone number is required.");
+        }
+        String deliveryLocation = body.get("deliveryLocation");
+        if (deliveryLocation == null) {
+            deliveryLocation = body.get("deliveryNotes");
+        }
+        if (deliveryLocation == null || deliveryLocation.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery location is required.");
+        }
+
+        NfcCardRequest cardRequest = new NfcCardRequest();
+        cardRequest.setOwner(user);
+        cardRequest.setProductCode(productCode.trim());
+        cardRequest.setProductName(String.valueOf(product.get("name")));
+        cardRequest.setAmount(((Number) product.get("priceTzs")).intValue());
+        cardRequest.setCurrency(productCatalogService.currency());
+        cardRequest.setStatus("PENDING");
+        cardRequest.setPhone(phone.trim());
+        cardRequest.setDeliveryNotes(deliveryLocation.trim());
+        cardRequest = nfcCardRequestRepository.save(cardRequest);
+        return ApiResponse.ok(new NfcCardRequestResponse(cardRequest));
     }
 
     private ClientUser currentUser(HttpServletRequest request) {

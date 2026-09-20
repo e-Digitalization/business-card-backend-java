@@ -13,6 +13,9 @@ import java.util.Map;
 @Service
 public class ProductCatalogService {
     public static final String NFC_CARD = "NFC_CARD";
+    public static final String NFC_CARD_GOLD = "NFC_CARD_GOLD";
+    public static final String NFC_CARD_BLACK = "NFC_CARD_BLACK";
+    public static final String NFC_CARD_SILVER = "NFC_CARD_SILVER";
     public static final String AI_SCAN = "AI_SCAN_SUBSCRIPTION";
 
     private final int nfcCardPriceTzs;
@@ -20,7 +23,7 @@ public class ProductCatalogService {
     private final String currency;
 
     public ProductCatalogService(
-        @Value("${app.products.nfc-card.price-tzs:100000}") int nfcCardPriceTzs,
+        @Value("${app.products.nfc-card.price-tzs:50000}") int nfcCardPriceTzs,
         @Value("${app.selcom.amount-tzs:10000}") int aiScanPriceTzs,
         @Value("${app.selcom.currency:TZS}") String currency
     ) {
@@ -32,25 +35,32 @@ public class ProductCatalogService {
     public List<Map<String, Object>> listProducts() {
         List<Map<String, Object>> products = new ArrayList<>();
         products.add(product(
-            NFC_CARD,
-            "Kadi Moja NFC Card",
-            "Physical PVC NFC card linked to your private profile.",
-            nfcCardPriceTzs,
+            NFC_CARD_GOLD,
+            "Kadi Moja Gold",
+            "Premium gold-finish NFC card linked to your digital profile.",
+            200_000,
             true
         ));
         products.add(product(
-            "NFC_CARD_PRO",
-            "Kadi Moja Pro",
-            "Custom logo & brand colours — coming soon.",
-            75000,
-            false
+            NFC_CARD_BLACK,
+            "Kadi Moja Black",
+            "Matte black NFC card with your branding.",
+            150_000,
+            true
         ));
         products.add(product(
-            "NFC_CARD_METAL",
-            "Kadi Moja Metal",
-            "Premium metal finish — coming soon.",
-            145000,
-            false
+            NFC_CARD_SILVER,
+            "Kadi Moja Silver",
+            "Classic silver NFC card for everyday networking.",
+            100_000,
+            true
+        ));
+        products.add(product(
+            NFC_CARD,
+            "Kadi Moja NFC",
+            "Standard PVC NFC card linked to your profile.",
+            nfcCardPriceTzs,
+            true
         ));
         products.add(product(
             AI_SCAN,
@@ -60,6 +70,10 @@ public class ProductCatalogService {
             true
         ));
         return products;
+    }
+
+    public boolean isNfcCardProduct(String code) {
+        return code != null && code.startsWith("NFC_CARD");
     }
 
     public Map<String, Object> requireActiveProduct(String code) {

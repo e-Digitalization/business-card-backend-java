@@ -1,0 +1,4 @@
+Mode: built-in image_gen
+Asset: frontend/public/illustrations/ai-scan-daniel-mushi.png
+
+Use case: photorealistic-natural. Create a square professional headshot photograph of a fictional adult Tanzanian male architect in his early thirties, deep brown skin, short neatly trimmed natural black hair, subtle neatly trimmed beard, friendly warm smile, wearing a charcoal blazer over an ivory open-collar shirt. Head and shoulders centered, full head visible with generous margin, face large and recognizable when cropped into a tiny circular profile avatar. Soft warm ivory studio background, natural diffused daylight, realistic skin texture, polished but authentic editorial portrait. No text, no logos, no objects, no phone, no business card. This is a new distinct person for a Kadi Moja sample business profile named Daniel Mushi.

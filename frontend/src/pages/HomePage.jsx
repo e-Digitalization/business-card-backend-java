@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo.jsx';
+import CardComparison from '../components/CardComparison.jsx';
+import HowItWorks from '../components/HowItWorks.jsx';
+import '../components/AiScanShowcase.css';
 import HeroSlider from '../components/HeroSlider.jsx';
 import MobileMenu from '../components/MobileMenu.jsx';
 import ContactCardVisual from './client/ContactCardVisual';
@@ -34,27 +37,6 @@ const products = [
   }
 ];
 
-const steps = [
-  {
-    n: '01',
-    title: 'Tap',
-    body: 'Hold the card to any modern phone. No app required.',
-    image: '/illustrations/how-tap-cutout.png'
-  },
-  {
-    n: '02',
-    title: 'Open',
-    body: 'Your private profile appears with contacts, links, and socials.',
-    image: '/illustrations/how-share-cutout.png'
-  },
-  {
-    n: '03',
-    title: 'Saved',
-    body: 'They save you instantly. QR is there when NFC isn’t.',
-    image: '/illustrations/how-saved-cutout.png'
-  }
-];
-
 const aiScanSteps = [
   {
     n: '01',
@@ -63,8 +45,8 @@ const aiScanSteps = [
   },
   {
     n: '02',
-    title: 'AI reads everything',
-    body: 'Name, title, company, phone, email, WhatsApp, and website are extracted automatically.'
+    title: 'Review the details',
+    body: 'AI picks out the contact details. Give them a quick check before saving.'
   },
   {
     n: '03',
@@ -74,17 +56,16 @@ const aiScanSteps = [
 ];
 
 const aiScanPerson = {
-  tag: 'TAG-GRACE',
-  name: 'Grace Kimaro',
-  title: 'Creative Director',
-  company: 'Studio Bahari',
-  location: 'Zanzibar, Tanzania',
-  phone: '+255 777 889 900',
-  email: 'grace@studiobahari.co.tz',
-  whatsapp: '+255 777 889 900',
-  website: 'www.studiobahari.co.tz',
-  photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
-  logo: '/logos/studio-bahari.svg',
+  tag: 'TAG-DANIEL',
+  name: 'Daniel Mushi',
+  title: 'Lead Architect',
+  company: 'Mushi Studio',
+  location: 'Dar es Salaam, Tanzania',
+  phone: '+255 712 345 678',
+  email: 'daniel@mushistudio.example',
+  whatsapp: '+255 712 345 678',
+  website: 'mushistudio.example',
+  photo: '/illustrations/ai-scan-daniel-mushi.png',
   accent: '#c46a4a',
   tint: '#f6e4dc'
 };
@@ -231,6 +212,23 @@ const DigitalCardSample = ({ person, className = '' }) => (
 );
 
 const HomePage = () => {
+  const scanStageRef = useRef(null);
+  const [scanVisible, setScanVisible] = useState(false);
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) {
+      setScanVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setScanVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.2 });
+    if (scanStageRef.current) observer.observe(scanStageRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -397,24 +395,24 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="ai-scan" className="km-ai-scan relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+      <section id="ai-scan" aria-labelledby="ai-scan-title" className="km-ai-scan km-ai-refined relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-copper">AI Scan</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
-              Snap a paper card.
+            <p className="km-ai-eyebrow"><span aria-hidden="true">✦</span> Meet your new contact assistant</p>
+            <h2 id="ai-scan-title" className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              From paper card
               <br />
-              Every detail is saved.
+              <span className="text-km-lagoon">to your next connection.</span>
             </h2>
             <p className="mt-5 text-base leading-relaxed text-km-ink/65">
-              Still collecting paper cards in meetings? Photograph one with Kadi Moja — AI reads the name, phone,
-              email, company, and more, then opens your Kadi Moja digital card. No retyping.
+              Snap a card. Let AI pick out the details. Review and save them
+              in seconds, ready for your next conversation.
             </p>
           </div>
 
-          <div className="km-ai-scan-stage mt-12" aria-hidden="true">
+          <div ref={scanStageRef} className={`km-ai-scan-stage mt-12 ${scanVisible ? 'is-visible' : ''}`} aria-hidden="true">
             <div className="km-ai-scan-col">
-              <p className="km-ai-scan-label">Paper business card</p>
+              <p className="km-ai-scan-label"><span>01</span> Capture the card</p>
               <div className="km-ai-paper">
                 <div className="km-ai-paper-texture" />
                 <div className="km-ai-paper-inner">
@@ -446,6 +444,11 @@ const HomePage = () => {
                   <i />
                 </div>
               </div>
+              <div className="km-ai-extracted">
+                <p><span aria-hidden="true">✦</span> The details, without the typing</p>
+                <div>{['Name', 'Company', 'Phone', 'Email'].map((field, index) => <span key={field} style={{ '--field-delay': `${index * 180 + 500}ms` }}><b>✓</b> {field}</span>)}</div>
+                <small>Illustrative preview · Always review before saving</small>
+              </div>
             </div>
 
             <div className="km-ai-scan-bridge">
@@ -454,19 +457,20 @@ const HomePage = () => {
                 <span className="km-ai-scan-pulse-ring" />
                 <span className="km-ai-scan-pulse-core">AI</span>
               </div>
-              <p className="km-ai-scan-bridge-caption">Scanning…</p>
+              <p className="km-ai-scan-bridge-caption">Read & organise</p>
+              <span className="km-ai-flow-arrow">→</span>
             </div>
 
             <div className="km-ai-scan-col km-ai-scan-col--out">
-              <p className="km-ai-scan-label">Kadi Moja digital card</p>
+              <p className="km-ai-scan-label"><span>02</span> Ready to review</p>
               <div className="km-ai-digital">
-                <span className="km-ai-digital-badge">Auto-filled</span>
+                <span className="km-ai-digital-badge">✓ Details captured</span>
                 <DigitalCardSample person={aiScanPerson} className="km-ai-digital-phone" />
               </div>
             </div>
           </div>
 
-          <ol className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-3">
+          <ol className="km-ai-process mx-auto mt-8 grid gap-4 sm:grid-cols-3">
             {aiScanSteps.map((step) => (
               <li key={step.n} className="text-center sm:text-left">
                 <span className="km-ai-scan-step-n mx-auto sm:mx-0">{step.n}</span>
@@ -476,7 +480,7 @@ const HomePage = () => {
             ))}
           </ol>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div className="km-ai-cta mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link to="/login" className="km-btn-primary">
               Try AI Scan →
             </Link>
@@ -485,83 +489,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="how" className="bg-white px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-sea">How it works</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">Three steps. Zero friction.</h2>
-            <p className="mt-4 text-km-ink/60 leading-relaxed">
-              No apps to install. No numbers to type. Tap, open, save.
-            </p>
-          </div>
+      <HowItWorks person={aiScanPerson} />
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {steps.map((step) => (
-              <article key={step.title} className="km-how-card overflow-hidden bg-km-sand/40">
-                <div className="km-how-image">
-                  <img
-                    src={step.image}
-                    alt=""
-                    width={600}
-                    height={900}
-                    className="mx-auto max-w-full"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="px-6 py-6 text-center">
-                  <p className="text-xs font-semibold tracking-[0.16em] text-km-copper">{step.n}</p>
-                  <h3 className="mt-2 font-display text-2xl font-semibold">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-km-ink/60">{step.body}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-4xl font-semibold sm:text-5xl">Paper vs Kadi Moja</h2>
-            <p className="mt-4 text-km-ink/60">Handing out cards vs capturing connections.</p>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            <article className="overflow-hidden bg-[#eceff3]">
-              <img
-                src="/illustrations/compare-paper.jpg?v=3"
-                alt="Scattered paper business cards"
-                className="aspect-[4/3] w-full object-cover grayscale"
-                loading="lazy"
-              />
-              <div className="px-6 py-5">
-                <h3 className="font-display text-xl font-semibold">Paper</h3>
-                <ul className="mt-4 space-y-2 text-sm text-km-ink/55">
-                  <li>Hope they keep it</li>
-                  <li>Manual typing later</li>
-                  <li>Reprint when details change</li>
-                </ul>
-              </div>
-            </article>
-            <article className="overflow-hidden bg-km-lagoon">
-              <img
-                src="/illustrations/compare-nfc.jpg?v=3"
-                alt="NFC card saving a contact on a phone"
-                className="aspect-[4/3] w-full object-cover"
-                loading="lazy"
-              />
-              <div className="px-6 py-5 text-white">
-                <h3 className="font-display text-xl font-semibold">Kadi Moja</h3>
-                <ul className="mt-4 space-y-2 text-sm text-white/80">
-                  <li>Tap once—details appear</li>
-                  <li>Save to contacts in seconds</li>
-                  <li>Update anytime from dashboard</li>
-                </ul>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+      <CardComparison />
 
       <section className="bg-white px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">

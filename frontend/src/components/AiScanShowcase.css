@@ -1,0 +1,58 @@
+/* Scoped to the landing-page scan demonstration. */
+#ai-scan.km-ai-refined { background: #faf8f3; }
+.km-ai-refined .km-ai-eyebrow { display: inline-flex; align-items: center; gap: .55rem; font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #0d7377; }
+.km-ai-refined .km-ai-eyebrow > span { font-size: 1rem; }
+.km-ai-refined .km-ai-scan-stage { position: relative; gap: 2rem; padding: 2.25rem; border: 1px solid #1a3d4212; border-radius: 28px; background: radial-gradient(ellipse at 85% 35%, #d6e9e0, transparent 65%), linear-gradient(125deg, #f2eee5, #f0f7f3); box-shadow: 0 20px 65px #1a3d4208; }
+.km-ai-refined .km-ai-scan-col { max-width: 360px; min-width: 0; }
+.km-ai-refined .km-ai-scan-col--out { max-width: 250px; }
+.km-ai-refined .km-ai-scan-label { display: flex; align-items: center; justify-content: center; gap: .55rem; margin-bottom: 1.5rem; color: #486560; font-size: .65rem; letter-spacing: .1em; }
+.km-ai-refined .km-ai-scan-label > span { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid #1a3d4220; border-radius: 50%; background: #ffffff80; font-size: .6rem; letter-spacing: 0; }
+.km-ai-refined .km-ai-paper { transform: rotate(-3deg); animation: none; border: 1px solid #ffffff; border-radius: 12px; box-shadow: 0 16px 30px #344b3f20; }
+.km-ai-refined .km-ai-paper-inner { padding: 1.3rem; }
+.km-ai-refined .km-ai-paper-details { overflow-wrap: anywhere; }
+.km-ai-refined .km-ai-extracted { margin-top: 2rem; padding: 1.2rem; border: 1px solid #ffffffbd; border-radius: 16px; background: #ffffffb8; }
+.km-ai-refined .km-ai-extracted > p { font-size: .75rem; font-weight: 600; color: #234c48; }
+.km-ai-refined .km-ai-extracted > p > span { color: #bf713a; margin-right: .35rem; }
+.km-ai-refined .km-ai-extracted > div { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.km-ai-refined .km-ai-extracted > div > span { border: 1px solid #23634f16; border-radius: 7px; background: #edf5ed; padding: .35rem .55rem; font-size: .65rem; color: #315a4b; }
+.km-ai-refined .km-ai-extracted b { margin-right: .2rem; font-weight: 500; }
+.km-ai-refined .km-ai-extracted small { display: block; margin-top: .9rem; font-size: .6rem; line-height: 1.6; color: #687a73; }
+.km-ai-refined .km-ai-scan-bridge { padding: 0; gap: .7rem; }
+.km-ai-refined .km-ai-scan-pulse-core { color: #fff; background: #0d7377; box-shadow: 0 7px 25px #0d737725; }
+.km-ai-refined .km-ai-scan-pulse-ring { border-color: #0d737738; }
+.km-ai-refined .km-ai-scan-bridge-caption { color: #46645c; font-size: .58rem; letter-spacing: .08em; animation: none; white-space: nowrap; }
+.km-ai-refined .km-ai-flow-arrow { color: #0d7377; font-size: 1.5rem; }
+.km-ai-refined .km-ai-digital { animation: none; }
+.km-ai-refined .km-ai-digital-phone { width: 100%; transform: none; box-shadow: 0 18px 40px #1a3d4224; }
+.km-ai-refined .km-ai-digital-badge { right: -.5rem; top: .85rem; padding: .5rem .75rem; font-size: .55rem; border: 1px solid #cee6d6; animation: none; }
+.km-ai-refined .km-ai-process > li { position: relative; padding: 1.4rem; border: 1px solid #1a3d4210; border-radius: 16px; background: #fffdfa; }
+.km-ai-refined .km-ai-scan-step-n { width: 1.65rem; height: 1.65rem; background: #edf3eb; color: #0d7377; font-size: .65rem; }
+.km-ai-refined .km-ai-cta .km-btn-primary { border-radius: 999px; padding-left: 1.6rem; padding-right: 1.6rem; }
+@media (min-width: 768px) {
+  .km-ai-refined .km-ai-scan-stage { grid-template-columns: minmax(0, 1.1fr) 95px minmax(0, .9fr); padding: 2.5rem 3rem; gap: 1.5rem; }
+}
+@media (max-width: 767px) {
+  .km-ai-refined .km-ai-scan-stage { grid-template-columns: 1fr; padding: 1.5rem 1rem; gap: 1.5rem; }
+  .km-ai-refined .km-ai-scan-bridge { flex-direction: row; gap: .8rem; }
+  .km-ai-refined .km-ai-flow-arrow { transform: rotate(90deg); }
+  .km-ai-refined .km-ai-scan-col--out { width: min(100%, 250px); }
+  .km-ai-refined .km-ai-paper { max-width: 320px; margin-inline: auto; }
+  .km-ai-refined .km-ai-paper-inner { padding: 1rem; }
+  .km-ai-refined .km-ai-digital-badge { right: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .km-ai-refined .km-ai-scan-beam-line,
+  .km-ai-refined .km-ai-scan-particles i,
+  .km-ai-refined .km-ai-scan-pulse-core,
+  .km-ai-refined .km-ai-scan-pulse-ring { animation-iteration-count: 3; }
+  .km-ai-refined .km-ai-extracted > div > span { animation: kmScanFieldAppear .65s ease both; animation-delay: var(--field-delay); }
+  @keyframes kmScanFieldAppear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .km-ai-refined .km-ai-scan-stage:not(.is-visible) .km-ai-scan-beam-line,
+  .km-ai-refined .km-ai-scan-stage:not(.is-visible) .km-ai-scan-particles i,
+  .km-ai-refined .km-ai-scan-stage:not(.is-visible) .km-ai-scan-pulse-core,
+  .km-ai-refined .km-ai-scan-stage:not(.is-visible) .km-ai-scan-pulse-ring,
+  .km-ai-refined .km-ai-scan-stage:not(.is-visible) .km-ai-extracted > div > span { animation-play-state: paused; }
+}

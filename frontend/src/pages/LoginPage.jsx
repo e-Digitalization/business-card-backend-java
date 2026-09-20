@@ -269,6 +269,16 @@ const LoginPage = () => {
 
       <main className="km-login-main relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8">
         <div className="km-login-main-glow" aria-hidden="true" />
+        <Link
+          to="/"
+          aria-label="Back to home"
+          className="group absolute left-5 top-5 z-20 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 py-2 pl-3 pr-4 text-sm font-medium text-[#1a3d42] shadow-sm backdrop-blur transition hover:border-[#0d7377]/40 hover:text-[#0d7377] sm:left-8 sm:top-7"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" />
+          </svg>
+          Home
+        </Link>
         <div className="relative z-10 w-full max-w-[29rem]">
           <div className="mb-8 flex items-center justify-between lg:hidden">
             <BrandLogo to="/" tone="color" textClassName="text-2xl" markClassName="h-9 w-9" />

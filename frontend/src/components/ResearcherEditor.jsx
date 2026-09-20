@@ -26,13 +26,15 @@ const ResearcherEditor = ({ value, onChange, importUrl, accent = '#0d7377' }) =>
   const addBtn = { color: accent, borderColor: `${accent}55` };
 
   const runImport = async () => {
-    const hasData = data.publications.length || data.metrics.citations;
-    if (hasData && !window.confirm('Replace your current researcher details with the imported ones?')) return;
     setBusy(true);
     setStatus({ type: '', text: '' });
     try {
       const res = await api.post(importUrl, { url: link.trim() });
       const { name, researcher } = res.data.data;
+      const hasData = data.publications.length || data.metrics.citations;
+      if (hasData && !window.confirm(`Replace your current researcher details with ${researcher.publications.length} papers imported for ${name}?`)) {
+        return;
+      }
       onChange(serializeResearcher({ ...data, ...researcher }));
       setStatus({
         type: 'ok',
@@ -58,18 +60,19 @@ const ResearcherEditor = ({ value, onChange, importUrl, accent = '#0d7377' }) =>
 
       {importUrl && (
         <div className="rounded-lg border border-black/10 bg-white p-3">
-          <p className="text-sm font-semibold text-[#1a3d42]">Import from Google Scholar</p>
+          <p className="text-sm font-semibold text-[#1a3d42]">Import your profile</p>
           <p className="mt-0.5 text-xs text-[#1a3d42]/55">
-            Paste your Scholar profile link to fill in metrics, citations per year and papers. You can edit
-            everything afterwards.
+            Paste a Google Scholar link, your ORCID iD or an OpenAlex author link to fill in metrics, citations
+            per year and papers. ORCID / OpenAlex are official and more reliable; Scholar can occasionally block
+            imports. You can edit everything afterwards.
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <input
               className="admin-input min-w-0 flex-1"
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              placeholder="https://scholar.google.com/citations?user=…"
-              aria-label="Google Scholar profile link"
+              placeholder="Scholar link, ORCID (0000-0000-0000-0000) or OpenAlex link"
+              aria-label="Profile link or ORCID"
             />
             <button type="button" className="km-video-add" style={addBtn} disabled={busy || !link.trim()} onClick={runImport}>
               {busy ? 'Importing…' : 'Import'}

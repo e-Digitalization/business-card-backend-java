@@ -3,7 +3,7 @@
 export const CARD_CATEGORIES = [
   { id: 'researcher', label: 'Researcher', hint: 'Publications, citations and h-index' },
   { id: 'banker', label: 'Banker', hint: 'Banner, services and institution details' },
-  { id: 'government', label: 'Government', hint: 'Coming soon' }
+  { id: 'government', label: 'Government', hint: 'Banners, mandate and initiatives' }
 ];
 
 export const categoryLabel = (id) => CARD_CATEGORIES.find((c) => c.id === id)?.label || id;
@@ -199,31 +199,68 @@ export const SAMPLE_PROFILE = {
   researcherData: JSON.stringify(SAMPLE_RESEARCHER)
 };
 
+// --- Shared helpers for banner / event / ad lists -------------------------
+
+const text = (v) => String(v || '').trim();
+
+const demoAsset = (name) => `${typeof window !== 'undefined' ? window.location.origin : ''}/demo/${name}`;
+
+// Event dates are stored as ISO "YYYY-MM-DD" (from a date input) but free text is tolerated.
+export const parseEventDate = (value) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text(value));
+  if (!m) return null;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12));
+  return Number.isNaN(d.getTime()) ? null : d;
+};
+
+export const formatEventDate = (value) => {
+  const d = parseEventDate(value);
+  if (!d) return text(value);
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(d);
+};
+
+export const isUpcomingEvent = (value) => {
+  const d = parseEventDate(value);
+  if (!d) return false;
+  const now = new Date();
+  return d.getTime() >= Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+};
+
+const parseJsonObject = (json) => {
+  if (!json) return null;
+  try {
+    const data = typeof json === 'string' ? JSON.parse(json) : json;
+    return data && typeof data === 'object' ? data : null;
+  } catch {
+    return null;
+  }
+};
+
+const asArray = (v) => (Array.isArray(v) ? v : []);
+
 // --- Banker data -----------------------------------------------------------
 // Stored on the card as one JSON string (bankerData):
-// { bannerUrl, institution, branch, department, specialties, regulator,
+// { institution, branch, department, specialties, regulator,
+//   banners: [{ imageUrl, title, linkUrl }]      // featured poster ads (portrait), auto-sliding
+//   smallAds: [{ imageUrl, title, description, linkUrl }]
 //   services: [{ title, description }] }
 
 export const emptyBanker = () => ({
-  bannerUrl: '',
   institution: '',
   branch: '',
   department: '',
   specialties: '',
   regulator: '',
+  banners: [],
+  smallAds: [],
   services: []
 });
 
 export const parseBanker = (json) => {
   const base = emptyBanker();
-  if (!json) return base;
-  try {
-    const data = typeof json === 'string' ? JSON.parse(json) : json;
-    if (!data || typeof data !== 'object') return base;
-    return { ...base, ...data, services: Array.isArray(data.services) ? data.services : [] };
-  } catch {
-    return base;
-  }
+  const data = parseJsonObject(json);
+  if (!data) return base;
+  return { ...base, ...data, banners: asArray(data.banners), smallAds: asArray(data.smallAds), services: asArray(data.services) };
 };
 
 export const serializeBanker = (data) => JSON.stringify(data);
@@ -231,37 +268,55 @@ export const serializeBanker = (data) => JSON.stringify(data);
 // Drops blank rows so the public card only renders real content.
 export const cleanBanker = (json) => {
   const data = parseBanker(json);
-  const text = (v) => String(v || '').trim();
+  let posters = data.banners
+    .map((b) => ({ imageUrl: text(b?.imageUrl), title: text(b?.title || b?.caption), linkUrl: text(b?.linkUrl) }))
+    .filter((b) => b.imageUrl);
+  // A single legacy bannerUrl becomes one poster when no list was saved.
+  if (!posters.length && text(data.bannerUrl)) posters = [{ imageUrl: text(data.bannerUrl), title: '', linkUrl: '' }];
+  const smallAds = data.smallAds
+    .map((a) => ({ imageUrl: text(a?.imageUrl), title: text(a?.title), description: text(a?.description), linkUrl: text(a?.linkUrl) }))
+    .filter((a) => a.title || a.imageUrl);
   const services = data.services
-    .map((s) => ({ title: text(s.title), description: text(s.description) }))
-    .filter((s) => s.title);
+    .map((x) => ({ title: text(x?.title), description: text(x?.description) }))
+    .filter((x) => x.title);
   const specialties = text(data.specialties)
     .split(/[|,\n]+/)
     .map((t) => t.trim())
     .filter(Boolean);
   const out = {
-    bannerUrl: text(data.bannerUrl),
     institution: text(data.institution),
     branch: text(data.branch),
     department: text(data.department),
     regulator: text(data.regulator),
     specialties,
+    posters,
+    smallAds,
     services
   };
-  out.hasProfile = Boolean(
-    out.bannerUrl || out.institution || out.branch || out.department || specialties.length
-  );
-  out.isEmpty = !out.hasProfile && !services.length && !out.regulator;
+  out.hasFacts = Boolean(out.institution || out.branch || out.department || specialties.length);
+  out.hasInfo = Boolean(out.hasFacts || services.length || out.regulator);
+  out.hasAds = Boolean(posters.length || smallAds.length);
+  out.isEmpty = !out.hasFacts && !out.hasAds && !services.length && !out.regulator;
   return out;
 };
 
 export const SAMPLE_BANKER = {
-  bannerUrl: '',
-  institution: 'Tanzania Commercial Bank',
+  institution: 'Sample Commercial Bank',
   branch: 'Dar es Salaam, Corporate Branch',
   department: 'SME & Corporate Banking',
   specialties: 'Strategy | Partnerships | SME Growth',
   regulator: 'Regulated by the Bank of Tanzania',
+  banners: [
+    { imageUrl: demoAsset('ad-1.svg'), title: 'Instant payments on internet banking and mobile app', linkUrl: '' },
+    { imageUrl: demoAsset('ad-2.svg'), title: 'Book flights with our card and save up to $200', linkUrl: '' },
+    { imageUrl: demoAsset('ad-3.svg'), title: 'SME business loans — approval in 48 hours', linkUrl: '' }
+  ],
+  smallAds: [
+    { imageUrl: demoAsset('ad-s1.svg'), title: 'Fixed deposit 12%', description: 'Earn more on 12-month deposits.', linkUrl: '' },
+    { imageUrl: demoAsset('ad-s2.svg'), title: 'Corporate cards', description: 'Zero fees for the first year.', linkUrl: '' },
+    { imageUrl: demoAsset('ad-s3.svg'), title: 'Mobile banking', description: 'Bank from any phone, 24/7.', linkUrl: '' },
+    { imageUrl: demoAsset('ad-s4.svg'), title: 'Home loans', description: 'Flexible terms up to 20 years.', linkUrl: '' }
+  ],
   services: [
     { title: 'SME Business Loans', description: 'Working capital and asset finance tailored to growing businesses.' },
     { title: 'Corporate Accounts', description: 'Multi-currency accounts, payroll and trade finance.' },
@@ -273,10 +328,119 @@ export const SAMPLE_BANKER = {
 export const SAMPLE_BANKER_PROFILE = {
   fullName: 'Neema Kileo',
   title: 'Director, SME Banking',
-  company: 'Tanzania Commercial Bank',
+  company: 'Sample Commercial Bank',
   location: 'Dar es Salaam, Tanzania',
   email: 'neema.kileo@example.co.tz',
   phone: '+255 700 111 222',
   categories: 'banker',
+  theme: 'midnight',
   bankerData: JSON.stringify(SAMPLE_BANKER)
+};
+
+// --- Government data -------------------------------------------------------
+// Stored on the card as one JSON string (governmentData):
+// { institution, department, mandate,
+//   events: [{ imageUrl, title, date, venue, description, linkUrl }],
+//   initiatives: [{ title, description }] }
+
+export const emptyGovernment = () => ({ institution: '', department: '', mandate: '', events: [], initiatives: [] });
+
+export const parseGovernment = (json) => {
+  const base = emptyGovernment();
+  const data = parseJsonObject(json);
+  if (!data) return base;
+  return { ...base, ...data, events: asArray(data.events), initiatives: asArray(data.initiatives) };
+};
+
+export const serializeGovernment = (data) => JSON.stringify(data);
+
+export const cleanGovernment = (json) => {
+  const data = parseGovernment(json);
+  // Early drafts stored plain banners ({ imageUrl, caption }); show them as events.
+  const legacy = asArray(data.banners).map((b) => ({ imageUrl: b?.imageUrl, description: b?.caption, linkUrl: b?.linkUrl }));
+  const events = [...data.events, ...(data.events.length ? [] : legacy)]
+    .map((e) => ({
+      imageUrl: text(e?.imageUrl),
+      title: text(e?.title),
+      date: text(e?.date),
+      venue: text(e?.venue),
+      description: text(e?.description),
+      linkUrl: text(e?.linkUrl)
+    }))
+    .filter((e) => e.title || e.imageUrl);
+  const out = {
+    institution: text(data.institution),
+    department: text(data.department),
+    mandate: text(data.mandate),
+    events,
+    initiatives: data.initiatives
+      .map((i) => ({ title: text(i?.title), description: text(i?.description) }))
+      .filter((i) => i.title)
+  };
+  out.hasFacts = Boolean(out.institution || out.department);
+  out.hasEvents = events.length > 0;
+  out.hasOffice = Boolean(out.hasFacts || out.mandate || out.initiatives.length);
+  out.isEmpty = !out.hasFacts && !out.hasEvents && !out.hasOffice;
+  return out;
+};
+
+export const SAMPLE_GOVERNMENT = {
+  institution: 'Ministry of Finance',
+  department: 'Office of the Permanent Secretary',
+  mandate:
+    'Formulates and oversees national fiscal, monetary and investment policy to drive inclusive economic growth and attract strategic partnerships.',
+  events: [
+    {
+      imageUrl: demoAsset('gov-1.svg'),
+      title: 'Tanzania Strategic Investment & Partnership Forum',
+      date: '2026-11-05',
+      venue: 'London, United Kingdom',
+      description:
+        'Waziri wa Fedha akizungumza wakati wa Mkutano wa Kimkakati wa Uwekezaji na Ushirikiano wa Tanzania uliowakutanisha viongozi wakuu wa taasisi kubwa za kifedha duniani, sekta ya bima na vihatarishi, ulioandaliwa na Wizara ya Fedha kwa kushirikiana na Standard Bank, Jijini London nchini Uingereza.',
+      linkUrl: ''
+    },
+    {
+      imageUrl: demoAsset('gov-2.svg'),
+      title: 'National Budget 2026/27 briefing',
+      date: '2026-09-12',
+      venue: 'Dodoma',
+      description: 'Priorities for infrastructure, agriculture and digital services, with a Q&A for development partners.',
+      linkUrl: ''
+    },
+    {
+      imageUrl: demoAsset('gov-3.svg'),
+      title: 'Public–private partnership pipeline launch',
+      date: '2026-08-20',
+      venue: 'Dar es Salaam',
+      description: 'Investors were briefed on the new PPP project pipeline, procurement steps and incentives.',
+      linkUrl: ''
+    }
+  ],
+  initiatives: [
+    { title: 'Investment & Partnerships', description: 'Facilitating PPP projects and foreign direct investment.' },
+    { title: 'Public Finance Management', description: 'Transparent budgeting, revenue and expenditure oversight.' },
+    { title: 'Financial Inclusion', description: 'Expanding access to banking, insurance and capital markets.' }
+  ]
+};
+
+export const SAMPLE_GOVERNMENT_PROFILE = {
+  fullName: 'Hon. Amani Mwakyusa',
+  title: 'Permanent Secretary',
+  company: 'Ministry of Finance',
+  location: 'Dodoma, Tanzania',
+  email: 'ps@example.go.tz',
+  phone: '+255 700 333 444',
+  categories: 'government',
+  youtubeVideos: 'aqz-KE-bpKQ\nYE7VzlLtp-4',
+  governmentData: JSON.stringify(SAMPLE_GOVERNMENT)
+};
+
+// Card with every category, to show that the bottom bar stays at 3 tabs.
+export const SAMPLE_MULTI_PROFILE = {
+  ...SAMPLE_GOVERNMENT_PROFILE,
+  fullName: 'Dr. Neema Mushi',
+  title: 'Director, Policy & Research',
+  categories: 'government,banker,researcher',
+  bankerData: JSON.stringify(SAMPLE_BANKER),
+  researcherData: JSON.stringify(SAMPLE_RESEARCHER)
 };

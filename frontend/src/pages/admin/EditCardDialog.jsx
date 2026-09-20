@@ -4,6 +4,7 @@ import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js
 import { resolveMediaUrl } from '../../utils/media.js';
 import VideoListEditor from '../../components/VideoListEditor.jsx';
 import CategoryPicker from '../../components/CategoryPicker.jsx';
+import GovernmentEditor from '../../components/GovernmentEditor.jsx';
 import BankerEditor from '../../components/BankerEditor.jsx';
 import ResearcherEditor from '../../components/ResearcherEditor.jsx';
 import { hasCategory } from '../../utils/cardCategories.js';
@@ -197,6 +198,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
         <div className="flex gap-2 border-b border-black/5 px-6 pt-3">
           {[
             ['details', 'Details'],
+            ...(hasCategory(card, 'government') ? [['government', 'Government']] : []),
             ...(hasCategory(card, 'banker') ? [['banker', 'Banker']] : []),
             ...(hasCategory(card, 'researcher') ? [['research', 'Researcher']] : []),
             ['look', 'Card look'],
@@ -271,6 +273,17 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
             </form>
           )}
 
+          {!loading && card && tab === 'government' && (
+            <form id="edit-card-form" onSubmit={onUpdate}>
+              <GovernmentEditor
+                value={card.governmentData || ''}
+                onChange={(next) => setCardField('governmentData', next)}
+                uploadUrl="/api/admin/uploads/banner"
+                accent="#9a6b45"
+              />
+            </form>
+          )}
+
           {!loading && card && tab === 'banker' && (
             <form id="edit-card-form" onSubmit={onUpdate}>
               <BankerEditor
@@ -287,7 +300,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
               <ResearcherEditor
                 value={card.researcherData || ''}
                 onChange={(next) => setCardField('researcherData', next)}
-                importUrl="/api/admin/import/scholar"
+                importUrl="/api/admin/import/researcher"
                 accent="#9a6b45"
               />
             </form>
@@ -447,7 +460,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
           )}
         </div>
 
-        {(tab === 'details' || tab === 'banker' || tab === 'research' || tab === 'look') && card && (
+        {(tab === 'details' || tab === 'government' || tab === 'banker' || tab === 'research' || tab === 'look') && card && (
           <div className="flex justify-end gap-2 border-t border-black/5 px-6 py-4">
             <button
               type="button"

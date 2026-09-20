@@ -32,6 +32,8 @@ public class ScholarImportService {
     private static final Pattern USER_ID = Pattern.compile("^[A-Za-z0-9_-]{8,20}$");
     private static final Pattern TRAILING_YEAR = Pattern.compile(",?\\s*\\d{4}$");
     private static final Pattern SINCE_YEAR = Pattern.compile("(?i)since\\s*(\\d{4})");
+    private static final Pattern RIGHT_PX = Pattern.compile("right:\\s*(\\d+)px");
+    private static final int BAR_OFFSET_PX = 5;
     private static final int MAX_PAPERS = 100;
 
     private final HttpClient client = HttpClient.newBuilder()
@@ -72,7 +74,12 @@ public class ScholarImportService {
     public Map<String, Object> importProfile(String rawUrl) {
         String userId = extractUserId(rawUrl);
         String profileUrl = "https://" + HOST + "/citations?user=" + userId + "&hl=en";
-        Document doc = Jsoup.parse(fetch(profileUrl + "&cstart=0&pagesize=" + MAX_PAPERS), "https://" + HOST);
+        return parseProfile(fetch(profileUrl + "&cstart=0&pagesize=" + MAX_PAPERS), profileUrl);
+    }
+
+    /** Maps a fetched Scholar profile page to the researcher data structure. */
+    Map<String, Object> parseProfile(String html, String profileUrl) {
+        Document doc = Jsoup.parse(html, "https://" + HOST);
 
         Element nameEl = doc.selectFirst("#gsc_prf_in");
         if (nameEl == null) {
@@ -103,16 +110,7 @@ public class ScholarImportService {
         }
         researcher.put("metrics", metrics);
 
-        Elements years = doc.select(".gsc_md_hist_b .gsc_g_t");
-        Elements counts = doc.select(".gsc_md_hist_b .gsc_g_al");
-        List<Map<String, Object>> byYear = new ArrayList<>();
-        for (int i = 0; i < Math.min(years.size(), counts.size()); i++) {
-            Map<String, Object> row = new LinkedHashMap<>();
-            row.put("year", years.get(i).text().trim());
-            row.put("count", parseInt(counts.get(i).text()));
-            byYear.add(row);
-        }
-        researcher.put("citationsByYear", byYear);
+        researcher.put("citationsByYear", citationsByYear(doc));
 
         List<Map<String, String>> papers = new ArrayList<>();
         for (Element row : doc.select("tr.gsc_a_tr")) {
@@ -140,6 +138,38 @@ public class ScholarImportService {
         result.put("affiliation", aff == null ? "" : aff.text().trim());
         result.put("researcher", researcher);
         return result;
+    }
+
+    /**
+     * Scholar only renders a bar for years that have citations and positions each one with a
+     * CSS "right:" offset (the bar sits BAR_OFFSET_PX right of its year label), so bars must be
+     * matched to years by position, not by order. Years without a bar have zero citations.
+     */
+    private static List<Map<String, Object>> citationsByYear(Document doc) {
+        Elements labels = doc.select(".gsc_md_hist_b .gsc_g_t");
+        Elements bars = doc.select(".gsc_md_hist_b .gsc_g_a");
+        List<Map<String, Object>> byYear = new ArrayList<>();
+        for (Element label : labels) {
+            int labelRight = rightPx(label);
+            int count = 0;
+            for (Element bar : bars) {
+                if (Math.abs(rightPx(bar) - labelRight - BAR_OFFSET_PX) <= 3) {
+                    Element value = bar.selectFirst(".gsc_g_al");
+                    count = value == null ? 0 : parseInt(value.text());
+                    break;
+                }
+            }
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("year", label.text().trim());
+            row.put("count", count);
+            byYear.add(row);
+        }
+        return byYear;
+    }
+
+    private static int rightPx(Element el) {
+        Matcher m = RIGHT_PX.matcher(el.attr("style"));
+        return m.find() ? Integer.parseInt(m.group(1)) : Integer.MIN_VALUE / 2;
     }
 
     private String fetch(String url) {

@@ -46,6 +46,10 @@ public final class CardProfileValidator {
         return validateJsonObject(json, "Banker data");
     }
 
+    public static String validateGovernmentData(String json) {
+        return validateJsonObject(json, "Government data");
+    }
+
     private static String validateJsonObject(String json, String label) {
         if (json == null || json.isBlank()) {
             return null;

@@ -8,7 +8,7 @@ import com.example.businesscard.repository.CardRepository;
 import com.example.businesscard.repository.TapLogRepository;
 import com.example.businesscard.service.ClientAuthService;
 import com.example.businesscard.service.PhotoUploadService;
-import com.example.businesscard.service.ScholarImportService;
+import com.example.businesscard.service.ResearcherImportService;
 import com.example.businesscard.util.CardProfileValidator;
 import com.example.businesscard.util.ProfileLinkSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,18 +31,18 @@ public class ClientCardController {
     private final ClientAuthService clientAuthService;
     private final CardRepository cardRepository;
     private final PhotoUploadService photoUploadService;
-    private final ScholarImportService scholarImportService;
+    private final ResearcherImportService researcherImportService;
     private final TapLogRepository tapLogRepository;
 
     public ClientCardController(ClientAuthService clientAuthService,
                                 CardRepository cardRepository,
                                 PhotoUploadService photoUploadService,
-                                ScholarImportService scholarImportService,
+                                ResearcherImportService researcherImportService,
                                 TapLogRepository tapLogRepository) {
         this.clientAuthService = clientAuthService;
         this.cardRepository = cardRepository;
         this.photoUploadService = photoUploadService;
-        this.scholarImportService = scholarImportService;
+        this.researcherImportService = researcherImportService;
         this.tapLogRepository = tapLogRepository;
     }
 
@@ -104,6 +104,9 @@ public class ClientCardController {
         if (categories.contains("researcher") && body.getResearcherData() != null) {
             card.setResearcherData(CardProfileValidator.validateResearcherData(body.getResearcherData()));
         }
+        if (categories.contains("government") && body.getGovernmentData() != null) {
+            card.setGovernmentData(CardProfileValidator.validateGovernmentData(body.getGovernmentData()));
+        }
         if (categories.contains("banker") && body.getBankerData() != null) {
             card.setBankerData(CardProfileValidator.validateBankerData(body.getBankerData()));
         }
@@ -154,9 +157,9 @@ public class ClientCardController {
     }
 
     // Stores a banner image and returns its URL only; the URL is saved with the card's banker data.
-    // Imports researcher details from a Google Scholar profile link. Returns the data only;
+    // Imports researcher details from a Google Scholar / ORCID / OpenAlex link. Returns the data only;
     // the client reviews it and saves through the normal card update.
-    @PostMapping("/me/import/scholar")
+    @PostMapping("/me/import/researcher")
     public ApiResponse<Map<String, Object>> importScholar(HttpServletRequest request,
                                                           @RequestBody Map<String, String> body) {
         ClientUser user = currentUser(request);
@@ -164,7 +167,7 @@ public class ClientCardController {
         if (card.getCategories() == null || !List.of(card.getCategories().split(",")).contains("researcher")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Researcher category isn't enabled for your card.");
         }
-        return ApiResponse.ok(scholarImportService.importProfile(body.get("url")));
+        return ApiResponse.ok(researcherImportService.importProfile(body.get("url")));
     }
 
     @PostMapping(value = "/me/uploads/banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

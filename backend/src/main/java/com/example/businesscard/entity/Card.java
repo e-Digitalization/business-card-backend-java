@@ -78,6 +78,10 @@ public class Card {
     @Column(name = "banker_data", columnDefinition = "TEXT")
     private String bankerData;
 
+    // JSON document with government details (only used when the "government" category is selected).
+    @Column(name = "government_data", columnDefinition = "TEXT")
+    private String governmentData;
+
     private boolean active = true;
 
     // Populated on demand from TapLogRepository — not persisted on the card itself.
@@ -314,6 +318,14 @@ public class Card {
 
     public void setCategories(String categories) {
         this.categories = categories;
+    }
+
+    public String getGovernmentData() {
+        return governmentData;
+    }
+
+    public void setGovernmentData(String governmentData) {
+        this.governmentData = governmentData;
     }
 
     public String getBankerData() {

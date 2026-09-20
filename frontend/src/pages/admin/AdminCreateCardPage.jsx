@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createWorker } from 'tesseract.js';
 import api from '../../services/api.js';
 import CategoryPicker from '../../components/CategoryPicker.jsx';
+import GovernmentEditor from '../../components/GovernmentEditor.jsx';
 import BankerEditor from '../../components/BankerEditor.jsx';
 import ResearcherEditor from '../../components/ResearcherEditor.jsx';
 import { hasCategory } from '../../utils/cardCategories.js';
@@ -26,6 +27,7 @@ const empty = {
   categories: '',
   researcherData: '',
   bankerData: '',
+  governmentData: '',
   active: true
 };
 
@@ -230,6 +232,16 @@ const AdminCreateCardPage = () => {
               onChange={(next) => setForm((p) => ({ ...p, categories: next }))}
             />
           </div>
+          {hasCategory(form, 'government') && (
+            <div className="sm:col-span-2 lg:col-span-3">
+              <GovernmentEditor
+                value={form.governmentData}
+                onChange={(next) => setForm((p) => ({ ...p, governmentData: next }))}
+                uploadUrl="/api/admin/uploads/banner"
+                accent="#9a6b45"
+              />
+            </div>
+          )}
           {hasCategory(form, 'banker') && (
             <div className="sm:col-span-2 lg:col-span-3">
               <BankerEditor
@@ -245,7 +257,7 @@ const AdminCreateCardPage = () => {
               <ResearcherEditor
                 value={form.researcherData}
                 onChange={(next) => setForm((p) => ({ ...p, researcherData: next }))}
-                importUrl="/api/admin/import/scholar"
+                importUrl="/api/admin/import/researcher"
                 accent="#9a6b45"
               />
             </div>

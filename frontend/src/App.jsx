@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { SAMPLE_BANKER_PROFILE, SAMPLE_PROFILE } from './utils/cardCategories.js';
+import { SAMPLE_BANKER_PROFILE, SAMPLE_GOVERNMENT_PROFILE, SAMPLE_MULTI_PROFILE, SAMPLE_PROFILE } from './utils/cardCategories.js';
 import ProfilePage from './pages/ProfilePage.jsx';
 import RedirectPage from './pages/RedirectPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -48,6 +48,8 @@ const AppShell = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/u/:slug" element={<ProfilePage />} />
+        <Route path="/demo/multi" element={<ProfilePage demoProfile={SAMPLE_MULTI_PROFILE} />} />
+        <Route path="/demo/government" element={<ProfilePage demoProfile={SAMPLE_GOVERNMENT_PROFILE} />} />
         <Route path="/demo/banker" element={<ProfilePage demoProfile={SAMPLE_BANKER_PROFILE} />} />
         <Route path="/demo/researcher" element={<ProfilePage demoProfile={SAMPLE_PROFILE} />} />
         <Route path="/c/:tagCode" element={<RedirectPage />} />

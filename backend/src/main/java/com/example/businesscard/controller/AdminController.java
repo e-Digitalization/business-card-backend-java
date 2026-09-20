@@ -12,7 +12,7 @@ import com.example.businesscard.repository.CardTagRepository;
 import com.example.businesscard.service.AiCardScanService;
 import com.example.businesscard.service.CardInviteService;
 import com.example.businesscard.service.PhotoUploadService;
-import com.example.businesscard.service.ScholarImportService;
+import com.example.businesscard.service.ResearcherImportService;
 import com.example.businesscard.service.PrivateSlugService;
 import com.example.businesscard.util.CardProfileValidator;
 import com.example.businesscard.util.ProfileLinkSanitizer;
@@ -46,7 +46,7 @@ public class AdminController {
     private final AiCardScanService aiCardScanService;
     private final CardInviteService cardInviteService;
     private final PhotoUploadService photoUploadService;
-    private final ScholarImportService scholarImportService;
+    private final ResearcherImportService researcherImportService;
 
     public AdminController(CardRepository cardRepository,
                            CardTagRepository cardTagRepository,
@@ -54,14 +54,14 @@ public class AdminController {
                            AiCardScanService aiCardScanService,
                            CardInviteService cardInviteService,
                            PhotoUploadService photoUploadService,
-                           ScholarImportService scholarImportService) {
+                           ResearcherImportService researcherImportService) {
         this.cardRepository = cardRepository;
         this.cardTagRepository = cardTagRepository;
         this.privateSlugService = privateSlugService;
         this.aiCardScanService = aiCardScanService;
         this.cardInviteService = cardInviteService;
         this.photoUploadService = photoUploadService;
-        this.scholarImportService = scholarImportService;
+        this.researcherImportService = researcherImportService;
     }
 
     @PostMapping("/cards")
@@ -116,10 +116,10 @@ public class AdminController {
         return ResponseEntity.ok(ok("Private link regenerated", cardRepository.save(card)));
     }
 
-    // Imports researcher details from a Google Scholar profile link (data only; saved with the card).
-    @PostMapping("/import/scholar")
+    // Imports researcher details from a Google Scholar / ORCID / OpenAlex link (data only; saved with the card).
+    @PostMapping("/import/researcher")
     public ResponseEntity<ApiResponse<Map<String, Object>>> importScholar(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(ok("Scholar profile imported", scholarImportService.importProfile(body.get("url"))));
+        return ResponseEntity.ok(ok("Researcher profile imported", researcherImportService.importProfile(body.get("url"))));
     }
 
     // Stores a banner image and returns its URL only; the URL is saved with the card's banker data.
@@ -280,6 +280,7 @@ public class AdminController {
         card.setCategories(CardProfileValidator.normalizeCategories(request.getCategories()));
         card.setResearcherData(CardProfileValidator.validateResearcherData(request.getResearcherData()));
         card.setBankerData(CardProfileValidator.validateBankerData(request.getBankerData()));
+        card.setGovernmentData(CardProfileValidator.validateGovernmentData(request.getGovernmentData()));
         card.setActive(request.isActive());
 
         if (request.getTheme() != null) {

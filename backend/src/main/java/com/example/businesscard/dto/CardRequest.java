@@ -37,6 +37,7 @@ public class CardRequest {
     private String categories;
     private String researcherData;
     private String bankerData;
+    private String governmentData;
     private boolean active = true;
 
     public String getSlug() {
@@ -253,6 +254,14 @@ public class CardRequest {
 
     public void setCategories(String categories) {
         this.categories = categories;
+    }
+
+    public String getGovernmentData() {
+        return governmentData;
+    }
+
+    public void setGovernmentData(String governmentData) {
+        this.governmentData = governmentData;
     }
 
     public String getBankerData() {

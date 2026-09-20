@@ -1,78 +1,64 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import api from '../services/api.js';
-import { resolveMediaUrl } from '../utils/media.js';
+import MediaItemListEditor from './MediaItemListEditor.jsx';
 import { parseBanker, serializeBanker } from '../utils/cardCategories.js';
 
 // Edits the banker JSON document. `value` is the stored string and `onChange`
 // receives the updated string. `uploadUrl` is the role-specific banner upload endpoint.
 const BankerEditor = ({ value, onChange, uploadUrl, accent = '#0d7377' }) => {
   const data = parseBanker(value);
-  const fileRef = useRef(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
   const update = (patch) => onChange(serializeBanker({ ...data, ...patch }));
   const setService = (i, patch) =>
     update({ services: data.services.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) });
   const addBtn = { color: accent, borderColor: `${accent}55` };
-  const banner = resolveMediaUrl(data.bannerUrl);
-
-  const upload = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file || !uploadUrl) return;
-    setBusy(true);
-    setError('');
-    try {
-      const body = new FormData();
-      body.append('file', file);
-      const res = await api.post(uploadUrl, body, { headers: { 'Content-Type': 'multipart/form-data' } });
-      update({ bannerUrl: res.data.data.url });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not upload the banner.');
-    } finally {
-      setBusy(false);
-    }
-  };
+  // A single legacy bannerUrl shows up as one poster; the first edit stores it in `banners`.
+  const posters = data.banners.length
+    ? data.banners
+    : data.bannerUrl
+      ? [{ imageUrl: data.bannerUrl, title: '', linkUrl: '' }]
+      : [];
 
   return (
     <div className="km-video-editor space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="km-video-editor-title">Banker profile</p>
-          <p className="km-video-editor-hint">A banner picture, your institution and the services you offer.</p>
+          <p className="km-video-editor-hint">Featured and small ads, your institution and the services you offer.</p>
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-semibold text-[#1a3d42]">Banner picture</p>
-        <div className="km-banker-banner km-banker-banner--editor" style={banner ? { backgroundImage: `url(${banner})` } : undefined}>
-          {!banner && <span>No banner</span>}
-        </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {uploadUrl && (
-            <>
-              <button type="button" className="km-video-add" style={addBtn} disabled={busy} onClick={() => fileRef.current?.click()}>
-                {busy ? 'Uploading…' : data.bannerUrl ? 'Replace banner' : 'Upload banner'}
-              </button>
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={upload} />
-            </>
-          )}
-          {data.bannerUrl && (
-            <button type="button" className="text-xs font-medium text-rose-600" onClick={() => update({ bannerUrl: '' })}>
-              Remove
-            </button>
-          )}
-        </div>
-        <input
-          className="admin-input mt-2"
-          placeholder="…or paste a banner image URL (wide, ~16:7 works best)"
-          value={data.bannerUrl}
-          onChange={(e) => update({ bannerUrl: e.target.value })}
-        />
-        {error && <p className="mt-1 text-xs text-rose-600">{error}</p>}
-      </div>
+      <MediaItemListEditor
+        title="Featured ads (posters)"
+        hint="Portrait ad pictures (about 4:5, e.g. 1080×1350) — the text is part of the picture. They slide automatically."
+        value={posters}
+        onChange={(banners) => update({ banners, bannerUrl: '' })}
+        uploadUrl={uploadUrl}
+        addLabel="Add poster"
+        thumbClass="km-poster-thumb"
+        fields={[
+          { key: 'title', label: 'Short description (for accessibility)', type: 'text' },
+          { key: 'linkUrl', label: 'Link when tapped (optional)', type: 'text' }
+        ]}
+        accent={accent}
+      />
+
+      <MediaItemListEditor
+        title="Small ads"
+        hint="Compact offers shown in a grid under the posters: a square picture, a title and a line of text."
+        value={data.smallAds}
+        onChange={(smallAds) => update({ smallAds })}
+        uploadUrl={uploadUrl}
+        addLabel="Add small ad"
+        max={12}
+        thumbClass="km-small-thumb"
+        fields={[
+          { key: 'title', label: 'Title', type: 'text' },
+          { key: 'description', label: 'Short text', type: 'text' },
+          { key: 'linkUrl', label: 'Link when tapped (optional)', type: 'text' }
+        ]}
+        accent={accent}
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {[

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14324a"/><stop offset="1" stop-color="#3b7ea1"/></linearGradient></defs>
+<rect width="800" height="1000" fill="url(#g)"/>
+<rect x="60" y="60" width="270" height="64" rx="10" fill="#fff" opacity=".95"/><text x="195" y="104" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="700" fill="#14324a" text-anchor="middle">SAMPLE BANK</text>
+<text x="60" y="260" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="700" fill="#fff">Mkopo wa Biashara</text>
+<text x="60" y="330" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="700" fill="#fff">Ndogo &amp; za Kati</text>
+<text x="60" y="395" font-family="Arial,Helvetica,sans-serif" font-size="30" fill="#fff" opacity=".9">Idhini ndani ya saa 48</text>
+<rect x="110" y="760" width="66" height="120" rx="8" fill="#ff9f43" opacity=".88"/><rect x="205" y="700" width="66" height="180" rx="8" fill="#ff9f43" opacity=".88"/><rect x="300" y="640" width="66" height="240" rx="8" fill="#ff9f43" opacity=".88"/><rect x="395" y="580" width="66" height="300" rx="8" fill="#ff9f43" opacity=".88"/><rect x="490" y="520" width="66" height="360" rx="8" fill="#ff9f43" opacity=".88"/><rect x="585" y="460" width="66" height="420" rx="8" fill="#ff9f43" opacity=".88"/><rect x="680" y="400" width="66" height="480" rx="8" fill="#ff9f43" opacity=".88"/>
+<text x="60" y="950" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" fill="#fff">Haraka. Salama. Rahisi.</text></svg>

@@ -4,6 +4,10 @@ import { cleanResearcher, hasCategory } from '../utils/cardCategories.js';
 import { safeExternalUrl } from '../utils/profileLinks.js';
 
 const PREVIEW_COUNT = 5;
+const CHART_YEARS = 10;
+
+const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+const grouped = (value) => (/^\d+$/.test(String(value)) ? Number(value).toLocaleString('en-US') : value);
 
 export const hasResearchContent = (profile) =>
   hasCategory(profile, 'researcher') && !cleanResearcher(profile?.researcherData).isEmpty;
@@ -16,7 +20,9 @@ const ResearcherSection = ({ profile, className = '' }) => {
   if (!hasCategory(profile, 'researcher') || data.isEmpty) return null;
 
   const scholarHref = safeExternalUrl(data.scholarUrl);
-  const maxCount = Math.max(...data.byYear.map((r) => r.count), 1);
+  // Long histories (e.g. OpenAlex returns decades) would be unreadable; chart the latest years.
+  const chartYears = data.byYear.slice(-CHART_YEARS);
+  const maxCount = Math.max(...chartYears.map((r) => r.count), 1);
   const papers = showAll ? data.publications : data.publications.slice(0, PREVIEW_COUNT);
   const sinceLabel = data.sinceYear ? `Since ${data.sinceYear.replace(/^since\s*/i, '')}` : 'Recent';
 
@@ -55,26 +61,26 @@ const ResearcherSection = ({ profile, className = '' }) => {
             {data.metricRows.map(([label, all, since]) => (
               <tr key={label}>
                 <th scope="row">{label}</th>
-                <td>{all || '–'}</td>
-                <td>{since || '–'}</td>
+                <td>{grouped(all) || '–'}</td>
+                <td>{grouped(since) || '–'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
 
-      {data.byYear.length > 0 && (
+      {chartYears.length > 0 && (
         <figure className="km-card-research-chart" aria-label="Citations per year">
           <div className="km-card-research-bars">
-            {data.byYear.map((row, index) => (
+            {chartYears.map((row, index) => (
               <div key={row.year} className="km-card-research-bar" title={`${row.year}: ${row.count}`}>
-                <span className="km-card-research-bar-count">{row.count}</span>
+                <span className="km-card-research-bar-count">{compact.format(row.count)}</span>
                 <span className="km-card-research-bar-fill" style={{ height: `${Math.max((row.count / maxCount) * 100, 3)}%` }} />
                 <span className="km-card-research-bar-year">
                   {/* Many bars: use 'YY and label every other year (always the last) so they don't collide. */}
-                  {data.byYear.length <= 8
+                  {chartYears.length <= 8
                     ? row.year
-                    : (data.byYear.length - 1 - index) % (data.byYear.length > 12 ? 2 : 1) === 0
+                    : (chartYears.length - 1 - index) % (chartYears.length > 12 ? 2 : 1) === 0
                       ? `'${row.year.slice(-2)}`
                       : ''}
                 </span>
@@ -103,7 +109,7 @@ const ResearcherSection = ({ profile, className = '' }) => {
                     {p.venue && <p className="km-card-research-paper-meta">{p.venue}</p>}
                   </div>
                   <div className="km-card-research-paper-side">
-                    {p.citedBy && <span className="km-card-research-cited">{p.citedBy}</span>}
+                    {p.citedBy && <span className="km-card-research-cited">{grouped(p.citedBy)}</span>}
                     {p.year && <span>{p.year}</span>}
                   </div>
                 </li>

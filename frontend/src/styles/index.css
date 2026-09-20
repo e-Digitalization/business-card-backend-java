@@ -3702,8 +3702,8 @@ a.km-card-row:hover {
 }
 
 .km-category-chip.is-active {
-  background: #0d7377;
-  border-color: #0d7377;
+  background: var(--km-card-c2, #0d7377);
+  border-color: var(--km-card-c2, #0d7377);
   color: #fff;
 }
 
@@ -3719,7 +3719,7 @@ a.km-card-row:hover {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
   background: rgba(13, 115, 119, 0.1);
   border-radius: 999px;
   padding: 0.2rem 0.6rem;
@@ -3731,13 +3731,13 @@ a.km-card-row:hover {
 }
 
 .km-card-research-title svg {
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
 }
 
 .km-card-research-link {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
 }
 
 .km-card-research-tags {
@@ -3807,7 +3807,7 @@ a.km-card-row:hover {
 .km-card-research-bar-fill {
   display: block;
   width: 100%;
-  background: #0d7377;
+  background: var(--km-card-c2, #0d7377);
   border-radius: 3px 3px 0 0;
   opacity: 0.85;
 }
@@ -3848,7 +3848,7 @@ a.km-card-row:hover {
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.3;
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
   overflow-wrap: anywhere;
 }
 
@@ -3871,7 +3871,7 @@ a.km-card-row:hover {
 
 .km-card-research-cited {
   font-weight: 700;
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
 }
 
 .km-card-research-more {
@@ -3879,7 +3879,7 @@ a.km-card-row:hover {
   width: 100%;
   border: 1px solid rgba(13, 115, 119, 0.3);
   background: rgba(13, 115, 119, 0.06);
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
   border-radius: 0.5rem;
   padding: 0.5rem;
   font-size: 0.8rem;
@@ -3891,31 +3891,118 @@ a.km-card-row:hover {
   position: sticky;
   bottom: 0;
   z-index: 5;
+  padding: 1.4rem 0.9rem calc(0.7rem + env(safe-area-inset-bottom));
+  pointer-events: none;
+  /* soft fade so content never collides with the floating pill */
+  background: linear-gradient(to top, #fff 40%, rgba(255, 255, 255, 0));
+}
+
+/* Floating pill in the card's own theme colour, with a highlight that slides to the active tab */
+.km-card-tabbar-pill {
+  --pad: 6px;
+  position: relative;
   display: flex;
-  border-top: 1px solid rgba(26, 61, 66, 0.1);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(10px);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: var(--pad);
+  border-radius: 999px;
+  background: var(--km-card-c1, #0a5f63);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 10px 26px -8px rgba(8, 30, 34, 0.55), 0 2px 6px rgba(8, 30, 34, 0.25);
+  pointer-events: auto;
+}
+
+.km-tab-indicator {
+  position: absolute;
+  top: var(--pad);
+  bottom: var(--pad);
+  left: var(--pad);
+  width: calc((100% - 2 * var(--pad)) / var(--tabs, 1));
+  transform: translateX(calc(var(--i, 0) * 100%));
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-tab-indicator {
+    transition: none;
+  }
 }
 
 .km-card-tabbar button {
-  flex: 1;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
-  padding: 0.55rem 0 0.6rem;
-  font-size: 0.7rem;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.3rem;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(26, 61, 66, 0.5);
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .km-card-tabbar button.is-active {
-  color: #0d7377;
+  color: #fff;
 }
 
-.km-card-tabbar svg {
-  font-size: 1.4rem;
+.km-tab-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  transition: background 0.25s ease;
+}
+
+.km-card-tabbar button.is-active .km-tab-icon {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.km-tab-icon svg {
+  font-size: 1.2rem;
+}
+
+.km-tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tab content slides in from the side you moved towards */
+.km-tab-panel {
+  animation: km-tab-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.km-tab-panel--prev {
+  --from: -22px;
+}
+
+.km-tab-panel--next {
+  --from: 22px;
+}
+
+@keyframes km-tab-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--from, 22px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-tab-panel {
+    animation: none;
+  }
 }
 
 /* ---- Banker section ---- */
@@ -3930,7 +4017,7 @@ a.km-card-row:hover {
 }
 
 .km-banker-banner.is-fallback {
-  background-image: linear-gradient(135deg, #0d7377 0%, #14424a 60%, #9a6b45 140%);
+  background-image: linear-gradient(135deg, var(--km-card-c2, #0d7377) 0%, #14424a 60%, #9a6b45 140%);
 }
 
 .km-banker-banner--editor {
@@ -3982,7 +4069,7 @@ a.km-card-row:hover {
 
 .km-banker-facts svg {
   font-size: 1.3rem;
-  color: #0d7377;
+  color: var(--km-card-c2, #0d7377);
 }
 
 .km-banker-services {
@@ -4008,7 +4095,7 @@ a.km-card-row:hover {
   width: 1.7rem;
   height: 1.7rem;
   border-radius: 999px;
-  background: #0d7377;
+  background: var(--km-card-c2, #0d7377);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
@@ -4036,4 +4123,478 @@ a.km-card-row:hover {
   gap: 0.4rem;
   font-size: 0.75rem;
   color: rgba(26, 61, 66, 0.6);
+}
+
+/* ---- Auto-sliding carousel (events, poster ads) ---- */
+.km-slider-viewport {
+  position: relative;
+  touch-action: pan-y;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  container-type: inline-size;
+}
+
+.km-slider-track {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-slider-track {
+    transition: none;
+  }
+}
+
+.km-slider-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+}
+
+.km-slider-slide > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.km-slider-arrow {
+  position: absolute;
+  /* centred on the picture: picture height = --media-ratio × width */
+  top: 26%;
+  top: calc(var(--media-ratio, 0.5625) * 50cqw - 0.95rem);
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 115, 119, 0.85);
+  color: #fff;
+}
+
+.km-slider-arrow--prev {
+  left: 0.5rem;
+}
+
+.km-slider-arrow--next {
+  right: 0.5rem;
+}
+
+.km-slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.km-slider-dots button {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(26, 61, 66, 0.25);
+  padding: 0;
+}
+
+.km-slider-dots button.is-active {
+  background: var(--km-card-c2, #0d7377);
+  width: 1.2rem;
+}
+
+.km-banner-thumb {
+  flex-shrink: 0;
+  width: 5.5rem;
+  height: 3.4rem;
+  border-radius: 0.5rem;
+  background: #f1eee8 center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: rgba(26, 61, 66, 0.4);
+}
+
+/* Sections stacked inside one bottom tab (e.g. Office + Services + Research) */
+.km-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.km-card-stack > * {
+  border-top: 1px solid rgba(26, 61, 66, 0.08);
+  padding-top: 1.25rem;
+}
+
+.km-card-stack > *:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* ---- Event cards ---- */
+.km-event-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(26, 61, 66, 0.1);
+  border-radius: 0.9rem;
+  background: #fff;
+  overflow: hidden;
+}
+
+.km-event-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--km-card-c2, #0d7377), #14424a);
+}
+
+.km-event-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.km-event-date {
+  position: absolute;
+  left: 0.6rem;
+  top: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1a3d42;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.km-event-date.is-upcoming {
+  background: #e8923a;
+  color: #fff;
+}
+
+.km-event-badge {
+  position: absolute;
+  right: 0.6rem;
+  top: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(8, 30, 34, 0.78);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.km-event-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.85rem 0.95rem 0.95rem;
+  text-align: left;
+}
+
+.km-event-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1a3d42;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.km-event-venue {
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  color: rgba(26, 61, 66, 0.6);
+}
+
+.km-event-desc {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: rgba(26, 61, 66, 0.78);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.6em;
+}
+
+.km-event-more {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--km-card-c2, #0d7377);
+}
+
+/* Event dialog ("Read more") */
+.km-event-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(8, 30, 34, 0.55);
+}
+
+@media (min-width: 640px) {
+  .km-event-overlay {
+    align-items: center;
+  }
+}
+
+.km-event-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 1.2rem 1.2rem 0 0;
+  background: #fff;
+}
+
+@media (min-width: 640px) {
+  .km-event-dialog {
+    border-radius: 1.2rem;
+  }
+}
+
+.km-event-close {
+  position: absolute;
+  right: 0.6rem;
+  top: 0.6rem;
+  z-index: 1;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a3d42;
+}
+
+.km-event-dialog-media {
+  aspect-ratio: 16 / 9;
+  background: #dfe9ea;
+}
+
+.km-event-dialog-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.km-event-dialog-body {
+  padding: 1rem 1.1rem 1.3rem;
+}
+
+.km-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--km-card-c2, #0d7377);
+}
+
+.km-event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.km-event-dialog-title {
+  margin-top: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1a3d42;
+}
+
+.km-event-dialog-text {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(26, 61, 66, 0.85);
+  white-space: pre-line;
+}
+
+/* ---- Bank ads ---- */
+.km-poster {
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: #f1eee8;
+  border-radius: 0.9rem;
+  overflow: hidden;
+}
+
+.km-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.km-small-ads {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.km-small-ad {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid rgba(26, 61, 66, 0.1);
+  border-radius: 0.8rem;
+  background: #fff;
+  overflow: hidden;
+  color: inherit;
+}
+
+.km-small-ad-media {
+  aspect-ratio: 1 / 1;
+  background: #f1eee8;
+}
+
+.km-small-ad-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.km-small-ad-body {
+  padding: 0.55rem 0.65rem 0.7rem;
+}
+
+.km-small-ad-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1a3d42;
+}
+
+.km-small-ad-desc {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(26, 61, 66, 0.65);
+}
+
+.km-poster-thumb,
+.km-small-thumb {
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  background: #f1eee8 center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: rgba(26, 61, 66, 0.4);
+}
+
+.km-poster-thumb {
+  width: 4.4rem;
+  height: 5.5rem;
+}
+
+.km-small-thumb {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+/* ---- Featured videos (thumbnail + tap to play) ---- */
+.km-video-card {
+  aspect-ratio: 16 / 9;
+  background: #0b1f22;
+  border-radius: 0.9rem;
+  overflow: hidden;
+}
+
+.km-video-card iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.km-video-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.km-video-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.km-video-poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(8, 30, 34, 0.45), rgba(8, 30, 34, 0.05) 60%);
+}
+
+.km-video-play {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 3.4rem;
+  height: 3.4rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--km-card-c2, #0d7377);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(255, 255, 255, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.km-video-play svg {
+  font-size: 2rem;
+}
+
+.km-video-poster:active .km-video-play {
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+/* Organisation header inside the Office / Bank sections */
+.km-org-sub {
+  margin-top: 0.25rem;
+  padding-left: 1.85rem;
+  font-size: 0.82rem;
+  color: rgba(26, 61, 66, 0.62);
+}
+
+.km-org-heading {
+  margin: 1.1rem 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(26, 61, 66, 0.5);
 }

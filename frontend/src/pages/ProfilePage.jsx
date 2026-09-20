@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
@@ -6,17 +6,25 @@ import { getCardThemeVars } from '../utils/cardTheme.js';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import FlagIcon from '@mui/icons-material/Flag';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import EventIcon from '@mui/icons-material/Event';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SocialLinks from '../components/SocialLinks.jsx';
 import ContactMethodIcon from '../components/ContactMethodIcon.jsx';
 import { AppointmentLink, YoutubeVideos } from '../components/ProfileExtras.jsx';
 import ResearcherSection, { hasResearchContent } from '../components/ResearcherSection.jsx';
-import { BankerProfile, BankerServices, hasBankerServices } from '../components/BankerSection.jsx';
+import { BankerAds, BankerServices, hasBankerAds, hasBankerServices } from '../components/BankerSection.jsx';
+import { GovernmentEvents, GovernmentOffice, hasGovernmentEvents, hasGovernmentOffice } from '../components/GovernmentSection.jsx';
 import { categoryLabel, parseCategories } from '../utils/cardCategories.js';
 
 const ProfilePage = ({ demoProfile = null }) => {
   const { slug } = useParams();
   const [profile, setProfile] = useState(demoProfile);
   const [tab, setTab] = useState('profile');
+  const [dir, setDir] = useState('next');
+  const swipeStart = useRef(null);
+  const bodyRef = useRef(null);
   const [loading, setLoading] = useState(!demoProfile);
   const [error, setError] = useState('');
   const [photoFailed, setPhotoFailed] = useState(false);
@@ -76,12 +84,66 @@ const ProfilePage = ({ demoProfile = null }) => {
     );
   }
 
+  // The bottom bar never has more than 3 tabs:
+  //   Profile  – identity, contact rows, socials, videos
+  //   Events / Ads – auto-sliding government events, or bank poster + small ads
+  //   More     – office, services and research, stacked when a card has several categories
+  const isGov = hasGovernmentEvents(profile);
+  const isBank = hasBankerAds(profile);
+  const moreSections = [
+    hasGovernmentOffice(profile) && { label: 'Office', Icon: FlagIcon },
+    hasBankerServices(profile) && { label: 'Bank', Icon: AccountBalanceIcon },
+    hasResearchContent(profile) && { label: 'Research', Icon: SchoolIcon }
+  ].filter(Boolean);
   const tabs = [
     { id: 'profile', label: 'Profile', Icon: PersonIcon },
-    hasBankerServices(profile) && { id: 'services', label: 'Services', Icon: AccountBalanceIcon },
-    hasResearchContent(profile) && { id: 'research', label: 'Research', Icon: SchoolIcon }
+    (isGov || isBank) && {
+      id: 'updates',
+      label: isGov && isBank ? 'Updates' : isGov ? 'Events' : 'Ads',
+      Icon: isGov && !isBank ? EventIcon : CampaignIcon
+    },
+    moreSections.length > 0 && {
+      id: 'more',
+      label: moreSections.length === 1 ? moreSections[0].label : 'Details',
+      Icon: moreSections.length === 1 ? moreSections[0].Icon : InfoOutlinedIcon
+    }
   ].filter(Boolean);
   const showTabs = tabs.length > 1;
+  const activeIndex = Math.max(0, tabs.findIndex((t) => t.id === tab));
+
+  const changeTab = (id) => {
+    const next = tabs.findIndex((t) => t.id === id);
+    if (next < 0 || id === tab) return;
+    setDir(next > activeIndex ? 'next' : 'prev');
+    setTab(id);
+    // Keep the new tab's content in view if the reader had scrolled far down.
+    requestAnimationFrame(() => {
+      const body = bodyRef.current;
+      if (body && body.getBoundingClientRect().top < 0) body.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  };
+
+  // Swipe left/right anywhere on the card to move between tabs (carousels keep their own swipe).
+  const onSwipeStart = (e) => {
+    if (!showTabs || e.target.closest?.('.km-slider, input, textarea, [data-no-swipe]')) {
+      swipeStart.current = null;
+      return;
+    }
+    const t = e.touches[0];
+    swipeStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onSwipeEnd = (e) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      const target = tabs[activeIndex + (dx < 0 ? 1 : -1)];
+      if (target) changeTab(target.id);
+    }
+  };
 
   const rows = [
     profile.email && { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, icon: 'mail' },
@@ -106,6 +168,8 @@ const ProfilePage = ({ demoProfile = null }) => {
       <article
         className="km-card mx-auto w-full max-w-[400px] overflow-clip bg-white sm:rounded-[1.75rem]"
         style={getCardThemeVars(profile)}
+        onTouchStart={onSwipeStart}
+        onTouchEnd={onSwipeEnd}
       >
         <header className="km-card-hero km-fade-in">
           <div className="km-card-hero-pattern" aria-hidden="true" />
@@ -135,7 +199,7 @@ const ProfilePage = ({ demoProfile = null }) => {
           </svg>
         </header>
 
-        <div className="km-card-body relative px-6 pb-7 pt-1">
+        <div ref={bodyRef} className="km-card-body relative px-6 pb-7 pt-1">
           {logoSrc && (
             <img src={logoSrc} alt="" className="km-card-logo km-fade-up" />
           )}
@@ -166,6 +230,7 @@ const ProfilePage = ({ demoProfile = null }) => {
             <AppointmentLink profile={profile} />
           </div>
 
+          <div key={tab} className={`km-tab-panel km-tab-panel--${dir}`}>
           {tab === 'profile' && (
           <>
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">
@@ -197,8 +262,6 @@ const ProfilePage = ({ demoProfile = null }) => {
             })}
           </ul>
 
-          <BankerProfile profile={profile} className="mt-6" />
-
           <SocialLinks
             profile={profile}
             whatsappUrl={wa ? `https://wa.me/${wa}` : ''}
@@ -208,18 +271,43 @@ const ProfilePage = ({ demoProfile = null }) => {
           </>
           )}
 
-          {tab === 'services' && <BankerServices profile={profile} className="mt-6" />}
-          {tab === 'research' && <ResearcherSection profile={profile} className="mt-6 !border-0 !pt-0" />}
+          {tab === 'updates' && (
+            <div className="km-card-stack mt-6">
+              <GovernmentEvents profile={profile} />
+              <BankerAds profile={profile} />
+            </div>
+          )}
+
+          {tab === 'more' && (
+            <div className="km-card-stack mt-6">
+              <GovernmentOffice profile={profile} />
+              <BankerServices profile={profile} />
+              <ResearcherSection profile={profile} />
+            </div>
+          )}
+          </div>
         </div>
 
         {showTabs && (
           <nav className="km-card-tabbar" aria-label="Card sections">
-            {tabs.map(({ id, label, Icon }) => (
-              <button key={id} type="button" className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>
-                <Icon aria-hidden="true" />
-                <span>{label}</span>
-              </button>
-            ))}
+            <div className="km-card-tabbar-pill" role="tablist" style={{ '--tabs': tabs.length, '--i': activeIndex }}>
+              <span className="km-tab-indicator" aria-hidden="true" />
+              {tabs.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === id}
+                  className={tab === id ? 'is-active' : ''}
+                  onClick={() => changeTab(id)}
+                >
+                  <span className="km-tab-icon">
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <span className="km-tab-label">{label}</span>
+                </button>
+              ))}
+            </div>
           </nav>
         )}
       </article>

@@ -122,7 +122,7 @@ const AdminCardsPage = () => {
         ))}
       </div>
 
-      <section className="admin-panel overflow-hidden">
+      <section className="admin-panel">
         <form onSubmit={onSearch} className="border-b border-black/5 px-4 py-4 sm:px-5">
           <div className="flex flex-wrap gap-2">
             <div className="admin-input-wrap min-w-[220px] flex-1">

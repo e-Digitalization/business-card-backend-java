@@ -95,7 +95,7 @@ const AdminLayout = () => {
     if (location.pathname.startsWith('/admin/setups/nmb')) return 'Setups · NMB';
     if (location.pathname.startsWith('/admin/setups')) return 'Setups';
     if (location.pathname.startsWith('/admin/admins')) return 'Admin Accounts';
-    return 'Dashibodi';
+    return 'Dashboard';
   }, [location.pathname]);
 
   const onLogout = () => {
@@ -139,7 +139,7 @@ const AdminLayout = () => {
           className={({ isActive }) => `snav-item ${isActive ? 'is-active' : ''}`}
         >
           <span className="snav-item-icon">{icons.dashboard}</span>
-          <span className="flex-1">Dashibodi</span>
+          <span className="flex-1">Dashboard</span>
         </NavLink>
 
         <div className={`snav-group ${openSection === 'cards' ? 'is-open' : ''}`}>

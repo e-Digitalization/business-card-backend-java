@@ -3719,9 +3719,22 @@ a.km-card-row:hover {
 }
 
 .km-card-research-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(26, 61, 66, 0.16);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(26, 61, 66, 0.08);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--km-card-c2, #0d7377);
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.km-card-research-link:active {
+  background: #f1eee8;
 }
 
 .km-card-research-tags {
@@ -4685,4 +4698,21 @@ a.km-card-row:hover {
 
 .km-event-dialog-body .km-event-meta {
   margin-top: 0.4rem;
+}
+
+/* Public card: keep the page behind the card light (also in dark mode) */
+html.km-card-view,
+html.km-card-view body {
+  background: #f0e9df !important;
+}
+
+/* On larger screens the card can be shorter than the window; no white fade over the page there */
+@media (min-width: 640px) {
+  .km-card-tabbar {
+    background: none;
+  }
+}
+
+.km-card-research .km-card-videos-head {
+  margin-bottom: 0.9rem;
 }

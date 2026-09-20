@@ -1,9 +1,24 @@
 import React, { useMemo, useState } from 'react';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SchoolIcon from '@mui/icons-material/School';
 import { cleanResearcher, hasCategory } from '../utils/cardCategories.js';
 import { safeExternalUrl } from '../utils/profileLinks.js';
 
 const PREVIEW_COUNT = 5;
+
+// Name the destination instead of a generic "Full profile ↗" (the ↗ character turns into a blue emoji on iOS).
+const profileLinkLabel = (href) => {
+  try {
+    const host = new URL(href).hostname.replace(/^www\./, '');
+    if (host.includes('scholar.google')) return 'Google Scholar';
+    if (host.endsWith('orcid.org')) return 'ORCID';
+    if (host.endsWith('openalex.org')) return 'OpenAlex';
+    if (host.endsWith('researchgate.net')) return 'ResearchGate';
+  } catch {
+    /* fall through */
+  }
+  return 'Full profile';
+};
 const CHART_YEARS = 10;
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
@@ -35,7 +50,8 @@ const ResearcherSection = ({ profile, className = '' }) => {
         </h2>
         {scholarHref && (
           <a href={scholarHref} target="_blank" rel="noreferrer" className="km-card-research-link">
-            Full profile ↗
+            <span>{profileLinkLabel(scholarHref)}</span>
+            <OpenInNewIcon aria-hidden="true" sx={{ fontSize: 15 }} />
           </a>
         )}
       </div>

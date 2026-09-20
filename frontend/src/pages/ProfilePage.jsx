@@ -29,6 +29,13 @@ const ProfilePage = ({ demoProfile = null }) => {
   const [error, setError] = useState('');
   const [photoFailed, setPhotoFailed] = useState(false);
 
+  // The public card is always a light design; keep the page behind it (overscroll, area under
+  // Safari's toolbar) in the same tone even when the visitor's phone is in dark mode.
+  useEffect(() => {
+    document.documentElement.classList.add('km-card-view');
+    return () => document.documentElement.classList.remove('km-card-view');
+  }, []);
+
   useEffect(() => {
     if (demoProfile) return undefined;
     let mounted = true;
@@ -164,9 +171,9 @@ const ProfilePage = ({ demoProfile = null }) => {
   ].filter(Boolean);
 
   return (
-    <div className="km-card-page min-h-screen px-0 pb-12 sm:px-4 sm:py-10">
+    <div className="km-card-page min-h-screen px-0 pb-0 sm:px-4 sm:py-10">
       <article
-        className="km-card mx-auto w-full max-w-[400px] overflow-clip bg-white sm:rounded-[1.75rem]"
+        className="km-card mx-auto min-h-[100dvh] w-full max-w-[400px] overflow-clip bg-white sm:min-h-0 sm:rounded-[1.75rem]"
         style={getCardThemeVars(profile)}
         onTouchStart={onSwipeStart}
         onTouchEnd={onSwipeEnd}

@@ -38,6 +38,7 @@ const AppShell = () => {
     !pathname.startsWith('/admin') &&
     !pathname.startsWith('/me') &&
     !pathname.startsWith('/u/') &&
+    !pathname.startsWith('/demo/') &&
     pathname !== '/' &&
     pathname !== '/login' &&
     pathname !== '/claim';

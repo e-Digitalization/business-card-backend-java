@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import BrandLogo from '../components/BrandLogo.jsx';
 import api from '../services/api.js';
-import { notify } from '../utils/toast.js';
+import { notify } from '../utils/toast.jsx';
+import { startLinkedInLogin } from '../utils/linkedin.js';
 
 const loginAdverts = [
   {
@@ -106,6 +107,7 @@ const LoginPage = () => {
   const [role, setRole] = useState(initialRole);
   const [mode, setMode] = useState(location.state?.mode === 'signup' ? 'signup' : 'login');
   const [googleEnabled, setGoogleEnabled] = useState(Boolean(googleClientId));
+  const [linkedin, setLinkedin] = useState({ enabled: false, clientId: '' });
   const [slide, setSlide] = useState(0);
   const [sliderPaused, setSliderPaused] = useState(false);
 
@@ -155,6 +157,13 @@ const LoginPage = () => {
       })
       .catch(() => setGoogleEnabled(Boolean(googleClientId)));
   }, [googleClientId]);
+
+  useEffect(() => {
+    api
+      .get('/api/auth/linkedin/status')
+      .then((res) => setLinkedin({ enabled: Boolean(res.data?.enabled), clientId: res.data?.clientId || '' }))
+      .catch(() => setLinkedin({ enabled: false, clientId: '' }));
+  }, []);
 
   const finishClient = (data) => {
     localStorage.setItem('clientToken', data.token);
@@ -430,7 +439,22 @@ const LoginPage = () => {
               </div>
             )}
 
-            {role === 'account' && googleEnabled && !isOtpStep && (
+            {role === 'account' && linkedin.enabled && !isOtpStep && (
+              <div className={`flex justify-center ${googleEnabled && mode === 'login' ? 'mt-3' : 'mt-6'}`}>
+                <button
+                  type="button"
+                  onClick={() => startLinkedInLogin(linkedin.clientId, fromAccount)}
+                  className="flex w-full max-w-[360px] items-center justify-center gap-2.5 rounded-md bg-[#0a66c2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#004182]"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
+                  </svg>
+                  {mode === 'signup' ? 'Sign up with LinkedIn' : 'Continue with LinkedIn'}
+                </button>
+              </div>
+            )}
+
+            {role === 'account' && (googleEnabled || linkedin.enabled) && !isOtpStep && (
               <div className="my-6 flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/35">
                 <span className="h-px flex-1 bg-black/10" />
                 or continue with email
@@ -443,7 +467,7 @@ const LoginPage = () => {
               onSubmit={onSubmit}
               autoComplete={isOtpStep ? 'off' : 'on'}
               data-form-type={isOtpStep ? 'other' : undefined}
-              className={`space-y-5 ${role === 'account' && googleEnabled && !isOtpStep ? '' : 'mt-7'}`}
+              className={`space-y-5 ${role === 'account' && (googleEnabled || linkedin.enabled) && !isOtpStep ? '' : 'mt-7'}`}
             >
               {isOtpStep ? (
                 <>

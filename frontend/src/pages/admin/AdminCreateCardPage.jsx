@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createWorker } from 'tesseract.js';
 import api from '../../services/api.js';
-import CategoryPicker from '../../components/CategoryPicker.jsx';
 import GovernmentEditor from '../../components/GovernmentEditor.jsx';
 import BankerEditor from '../../components/BankerEditor.jsx';
 import ResearcherEditor from '../../components/ResearcherEditor.jsx';
+import CardDetailsFields from '../../components/CardDetailsFields.jsx';
+import CardLookFields from '../../components/CardLookFields.jsx';
+import notify from '../../utils/toast.jsx';
 import { hasCategory } from '../../utils/cardCategories.js';
 import { parseBusinessCardText, preprocessCardImage } from '../../utils/ocrCard.js';
 
@@ -20,6 +22,19 @@ const empty = {
   whatsapp: '+255',
   photoUrl: '',
   logoUrl: '',
+  youtubeChannel: '',
+  youtubeVideos: '',
+  bookingUrl: '',
+  podcastUrl: '',
+  tiktok: '',
+  telegram: '',
+  wechat: '',
+  weibo: '',
+  douyin: '',
+  xiaohongshu: '',
+  theme: 'lagoon',
+  primaryColor: '',
+  accentColor: '',
   linkedin: '',
   twitter: '',
   github: '',
@@ -30,23 +45,6 @@ const empty = {
   governmentData: '',
   active: true
 };
-
-const fields = [
-  ['fullName', 'Full Name', 'Joseph Ng\'ang\'a'],
-  ['title', 'Title / Position', 'Founder & Systems Architect'],
-  ['company', 'Organisation', 'Swahili Systems'],
-  ['location', 'Location', 'Dar es Salaam, Tanzania'],
-  ['phone', 'Phone', '+255 714 076 404'],
-  ['email', 'Email', 'name@company.co.tz'],
-  ['website', 'Website', 'https://'],
-  ['whatsapp', 'WhatsApp', '+255714076404'],
-  ['photoUrl', 'Photo URL', 'https://...'],
-  ['logoUrl', 'Logo URL', '/logos/swahili-systems.svg'],
-  ['linkedin', 'LinkedIn', 'https://linkedin.com/in/...'],
-  ['twitter', 'Twitter / X', 'https://x.com/...'],
-  ['github', 'GitHub', 'https://github.com/...'],
-  ['instagram', 'Instagram', 'https://instagram.com/...']
-];
 
 const AdminCreateCardPage = () => {
   const navigate = useNavigate();
@@ -72,7 +70,7 @@ const AdminCreateCardPage = () => {
     };
   }, []);
 
-  const onChange = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
+  const setField = (key, value) => setForm((p) => ({ ...p, [key]: value }));
 
   const applyScan = (data) => {
     setForm((prev) => ({
@@ -121,6 +119,7 @@ const AdminCreateCardPage = () => {
         });
         applyScan(res.data.data || {});
         setMessage('Fields filled from AI scan — review before creating.');
+        notify.success('Card scanned — review the fields.');
       } else {
         setProgress('Local OCR…');
         const processed = await preprocessCardImage(file);
@@ -129,10 +128,13 @@ const AdminCreateCardPage = () => {
         await worker.terminate();
         applyScan(parseBusinessCardText(data.text || ''));
         setMessage('Fields filled from local OCR — review carefully before creating.');
+        notify.success('Card scanned — review the fields.');
       }
       setScanPercent(100);
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not scan this card. Fill the form manually.');
+      const msg = err.response?.data?.message || 'Could not scan this card. Fill the form manually.';
+      setError(msg);
+      notify.error(msg);
     } finally {
       stopTicker();
       setScanning(false);
@@ -148,9 +150,12 @@ const AdminCreateCardPage = () => {
     try {
       const res = await api.post('/api/admin/cards', form);
       const created = res.data.data;
+      notify.success('Card created successfully.');
       navigate(created?.publicId ? `/admin/cards/${created.publicId}` : '/admin/cards');
-    } catch {
-      setError('Could not create card. Check required fields and try again.');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Could not create card. Check required fields and try again.';
+      setError(msg);
+      notify.error(msg);
     } finally {
       setSaving(false);
     }
@@ -214,23 +219,20 @@ const AdminCreateCardPage = () => {
 
       <form onSubmit={onSubmit} className="admin-panel p-5 sm:p-7">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {fields.map(([key, label, placeholder]) => (
-            <label key={key} className="block">
-              <span className="mb-1.5 block text-sm font-medium text-[#1a3d42]/70">{label}</span>
-              <input
-                value={form[key]}
-                onChange={onChange(key)}
-                placeholder={placeholder}
-                required={key === 'fullName'}
-                className="admin-input"
-              />
-            </label>
-          ))}
           <div className="sm:col-span-2 lg:col-span-3">
-            <CategoryPicker
-              value={form.categories}
-              onChange={(next) => setForm((p) => ({ ...p, categories: next }))}
+            <CardDetailsFields card={form} setField={setField} wide />
+          </div>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">Logo URL</span>
+            <input
+              value={form.logoUrl}
+              onChange={(e) => setField('logoUrl', e.target.value)}
+              placeholder="https://…/logo.png (or upload after creating)"
+              className="admin-input"
             />
+          </label>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <CardLookFields card={form} setField={setField} />
           </div>
           {hasCategory(form, 'government') && (
             <div className="sm:col-span-2 lg:col-span-3">

@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface ClientUserRepository extends JpaRepository<ClientUser, Long> {
     Optional<ClientUser> findByGoogleSub(String googleSub);
 
+    Optional<ClientUser> findByLinkedinSub(String linkedinSub);
+
     Optional<ClientUser> findByEmailIgnoreCase(String email);
 
     Optional<ClientUser> findByCard_Id(Long cardId);

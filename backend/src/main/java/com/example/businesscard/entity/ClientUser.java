@@ -17,6 +17,9 @@ public class ClientUser {
     @Column(unique = true)
     private String googleSub;
 
+    @Column(unique = true)
+    private String linkedinSub;
+
     @Column(unique = true, nullable = false)
     @Email
     @NotBlank
@@ -54,6 +57,14 @@ public class ClientUser {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getLinkedinSub() {
+        return linkedinSub;
+    }
+
+    public void setLinkedinSub(String linkedinSub) {
+        this.linkedinSub = linkedinSub;
     }
 
     public String getGoogleSub() {

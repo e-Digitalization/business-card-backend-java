@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../../utils/media.js';
 import { getCardThemeVars } from '../../utils/cardTheme.js';
-import { notify } from '../../utils/toast.js';
+import { notify } from '../../utils/toast.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import ContactCardVisual from './ContactCardVisual.jsx';
 import NfcCardVisual from '../../components/NfcCardVisual.jsx';

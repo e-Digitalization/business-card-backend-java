@@ -7,7 +7,7 @@ import EditCardDialog from './EditCardDialog.jsx';
 import NfcPrintModal from '../../components/NfcPrintModal.jsx';
 import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
 import { copyToClipboard } from '../../components/CopyButton.jsx';
-import { notify } from '../../utils/toast.js';
+import { notify } from '../../utils/toast.jsx';
 
 const AdminCardsPage = () => {
   const location = useLocation();

@@ -4716,3 +4716,13 @@ html.km-card-view body {
 .km-card-research .km-card-videos-head {
   margin-bottom: 0.9rem;
 }
+
+@keyframes toast-progress {
+  from { width: 100%; }
+  to { width: 0; }
+}
+.toast-progress {
+  animation-name: toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}

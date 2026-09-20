@@ -35,6 +35,7 @@ public class ClientAuthService {
     private final ClientUserRepository clientUserRepository;
     private final CardRepository cardRepository;
     private final GoogleTokenVerifier googleTokenVerifier;
+    private final LinkedInAuthService linkedInAuthService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final PrivateSlugService privateSlugService;
@@ -46,6 +47,7 @@ public class ClientAuthService {
     public ClientAuthService(ClientUserRepository clientUserRepository,
                              CardRepository cardRepository,
                              GoogleTokenVerifier googleTokenVerifier,
+                             LinkedInAuthService linkedInAuthService,
                              PasswordEncoder passwordEncoder,
                              JwtTokenProvider tokenProvider,
                              PrivateSlugService privateSlugService,
@@ -56,6 +58,7 @@ public class ClientAuthService {
         this.clientUserRepository = clientUserRepository;
         this.cardRepository = cardRepository;
         this.googleTokenVerifier = googleTokenVerifier;
+        this.linkedInAuthService = linkedInAuthService;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.privateSlugService = privateSlugService;
@@ -71,6 +74,38 @@ public class ClientAuthService {
 
     public String googleClientId() {
         return googleTokenVerifier.clientId();
+    }
+
+    public boolean isLinkedInConfigured() {
+        return linkedInAuthService.isConfigured();
+    }
+
+    public String linkedInClientId() {
+        return linkedInAuthService.clientId();
+    }
+
+    @Transactional
+    public ClientAuthResponse loginWithLinkedIn(String code, String redirectUri) {
+        LinkedInAuthService.LinkedInProfile profile = linkedInAuthService.exchange(code, redirectUri);
+
+        ClientUser user = clientUserRepository.findByLinkedinSub(profile.sub())
+            .or(() -> clientUserRepository.findByEmailIgnoreCase(profile.email()))
+            .orElseGet(ClientUser::new);
+
+        user.setLinkedinSub(profile.sub());
+        user.setEmail(profile.email().toLowerCase(Locale.ROOT));
+        if (profile.name() != null) {
+            user.setFullName(profile.name());
+        } else if (user.getFullName() == null || user.getFullName().isBlank()) {
+            user.setFullName(profile.email().split("@")[0]);
+        }
+        if (profile.pictureUrl() != null) {
+            user.setPictureUrl(profile.pictureUrl());
+        }
+
+        ensureCard(user, true);
+        clientUserRepository.save(user);
+        return toAuthResponse(user);
     }
 
     @Transactional

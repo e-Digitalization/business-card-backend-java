@@ -50,7 +50,7 @@ const Bootstrap = () => {
     <MuiThemeProvider>
       <BrowserRouter>
         <App />
-        <Toaster position="top-right" reverseOrder={false} />
+        <Toaster position="top-right" reverseOrder={false} containerStyle={{ zIndex: 99999 }} />
       </BrowserRouter>
     </MuiThemeProvider>
   );

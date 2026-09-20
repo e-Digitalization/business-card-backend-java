@@ -4,7 +4,7 @@ import PaginationBar from '../../components/PaginationBar.jsx';
 import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import NfcPrintModal from '../../components/NfcPrintModal.jsx';
 import { requestToPrintContact } from '../../utils/nfcPrintDocument.js';
-import { notify } from '../../utils/toast.js';
+import { notify } from '../../utils/toast.jsx';
 
 const formatMoney = (amount, currency = 'TZS') => {
   if (amount == null) return '—';

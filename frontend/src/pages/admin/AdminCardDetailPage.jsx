@@ -5,7 +5,7 @@ import ProfileAvatar from '../../components/ProfileAvatar.jsx';
 import NfcPrintModal from '../../components/NfcPrintModal.jsx';
 import CopyButton from '../../components/CopyButton.jsx';
 import { cardToPrintContact } from '../../utils/nfcPrintDocument.js';
-import { notify } from '../../utils/toast.js';
+import { notify } from '../../utils/toast.jsx';
 
 const AdminCardDetailPage = () => {
   const { id } = useParams();

@@ -1,38 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../services/api.js';
-import { CARD_THEME_OPTIONS, CARD_THEME_PRESETS } from '../../utils/cardTheme.js';
+import CardDetailsFields from '../../components/CardDetailsFields.jsx';
+import CardLookFields from '../../components/CardLookFields.jsx';
+import notify from '../../utils/toast.jsx';
 import { resolveMediaUrl } from '../../utils/media.js';
-import VideoListEditor from '../../components/VideoListEditor.jsx';
-import CategoryPicker from '../../components/CategoryPicker.jsx';
 import GovernmentEditor from '../../components/GovernmentEditor.jsx';
 import BankerEditor from '../../components/BankerEditor.jsx';
 import ResearcherEditor from '../../components/ResearcherEditor.jsx';
 import { hasCategory } from '../../utils/cardCategories.js';
-
-const fieldDefs = [
-  ['fullName', 'Full Name'],
-  ['title', 'Title / Position'],
-  ['company', 'Organisation'],
-  ['location', 'Location'],
-  ['phone', 'Phone (+255…)'],
-  ['email', 'Email'],
-  ['website', 'Website'],
-  ['whatsapp', 'WhatsApp'],
-  ['photoUrl', 'Photo URL'],
-  ['linkedin', 'LinkedIn'],
-  ['twitter', 'Twitter / X'],
-  ['github', 'GitHub'],
-  ['instagram', 'Instagram'],
-  ['youtubeChannel', 'YouTube channel'],
-  ['bookingUrl', 'Appointment booking link'],
-  ['podcastUrl', 'Podcast link'],
-  ['tiktok', 'TikTok'],
-  ['telegram', 'Telegram'],
-  ['wechat', 'WeChat profile link'],
-  ['weibo', 'Weibo'],
-  ['douyin', 'Douyin'],
-  ['xiaohongshu', 'Xiaohongshu / RED']
-];
 
 const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
   const [loading, setLoading] = useState(false);
@@ -107,10 +82,13 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
     setError('');
     try {
       await api.put(`/api/admin/cards/${cardId}`, { ...card });
+      notify.success('Card updated successfully.');
       onSaved?.();
       onClose();
-    } catch {
-      setError('Could not save changes.');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Could not save changes.';
+      setError(msg);
+      notify.error(msg);
     } finally {
       setSaving(false);
     }
@@ -136,9 +114,12 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setCardField('logoUrl', response.data.data.logoUrl);
+      notify.success('Logo uploaded.');
       onSaved?.();
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not upload logo.');
+      const msg = err.response?.data?.message || 'Could not upload logo.';
+      setError(msg);
+      notify.error(msg);
     } finally {
       setLogoBusy(false);
       event.target.value = '';
@@ -151,9 +132,12 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
     try {
       await api.delete(`/api/admin/cards/${cardId}/logo`);
       setCardField('logoUrl', null);
+      notify.success('Logo removed.');
       onSaved?.();
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not remove logo.');
+      const msg = err.response?.data?.message || 'Could not remove logo.';
+      setError(msg);
+      notify.error(msg);
     } finally {
       setLogoBusy(false);
     }
@@ -162,14 +146,24 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
   const onAssignTag = async (e) => {
     e.preventDefault();
     if (!tagCode.trim()) return;
-    await api.post(`/api/admin/cards/${cardId}/tag`, { tagCode: tagCode.trim() });
-    setTagCode('');
-    await refresh();
+    try {
+      await api.post(`/api/admin/cards/${cardId}/tag`, { tagCode: tagCode.trim() });
+      setTagCode('');
+      await refresh();
+      notify.success('NFC tag assigned.');
+    } catch (err) {
+      notify.error(err.response?.data?.message || 'Could not assign tag.');
+    }
   };
 
   const onDeactivateTag = async (tagId) => {
-    await api.put(`/api/admin/tags/${tagId}/deactivate`);
-    await refresh();
+    try {
+      await api.put(`/api/admin/tags/${tagId}/deactivate`);
+      await refresh();
+      notify.success('NFC tag deactivated.');
+    } catch (err) {
+      notify.error(err.response?.data?.message || 'Could not deactivate tag.');
+    }
   };
 
   return (
@@ -237,8 +231,13 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                   type="button"
                   onClick={async () => {
                     if (!window.confirm('Generate a new private link? The old /u/… URL will stop working.')) return;
-                    await api.post(`/api/admin/cards/${cardId}/regenerate-slug`);
-                    await refresh();
+                    try {
+                      await api.post(`/api/admin/cards/${cardId}/regenerate-slug`);
+                      await refresh();
+                      notify.success('New private link generated.');
+                    } catch {
+                      notify.error('Could not regenerate link.');
+                    }
                   }}
                   className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#1a3d42]"
                 >
@@ -246,29 +245,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                 </button>
               </div>
               <div className="sm:col-span-2">
-                <CategoryPicker
-                  value={card.categories || ''}
-                  onChange={(next) => setCardField('categories', next)}
-                />
-              </div>
-
-              {fieldDefs.map(([key, label]) => (
-                <label key={key} className="block">
-                  <span className="mb-1 block text-sm font-medium text-[#1a3d42]/70">{label}</span>
-                  <input
-                    value={card[key] || ''}
-                    onChange={onChange(key)}
-                    required={key === 'fullName'}
-                    className="admin-input"
-                  />
-                </label>
-              ))}
-
-              <div className="sm:col-span-2">
-                <VideoListEditor
-                  value={card.youtubeVideos || ''}
-                  onChange={(next) => setCardField('youtubeVideos', next)}
-                />
+                <CardDetailsFields card={card} setField={setCardField} />
               </div>
             </form>
           )}
@@ -357,56 +334,7 @@ const EditCardDialog = ({ open, cardId, onClose, onSaved }) => {
                 />
               </label>
 
-              <p className="mb-2 text-sm font-medium text-[#1a3d42]/70">Theme</p>
-              <div className="flex flex-wrap gap-2">
-                {CARD_THEME_OPTIONS.map((option) => {
-                  const preset = CARD_THEME_PRESETS[option.value];
-                  const isActive = (card.theme || 'lagoon') === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setCardField('theme', option.value)}
-                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition ${
-                        isActive ? 'border-[#0d7377] bg-[#e7f5f4] text-[#1a3d42]' : 'border-black/10 text-[#1a3d42]/70'
-                      }`}
-                    >
-                      <span
-                        className="h-4 w-4 rounded-full"
-                        style={{
-                          background: preset
-                            ? `linear-gradient(135deg, ${preset.c1}, ${preset.accent})`
-                            : `linear-gradient(135deg, ${card.primaryColor || '#0d7377'}, ${card.accentColor || '#e8913a'})`
-                        }}
-                      />
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {card.theme === 'custom' && (
-                <div className="mt-3 flex flex-wrap gap-4">
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-[#1a3d42]/70">Primary color</span>
-                    <input
-                      type="color"
-                      value={card.primaryColor || '#0d7377'}
-                      onChange={(e) => setCardField('primaryColor', e.target.value)}
-                      className="h-9 w-16 rounded border border-black/10"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-[#1a3d42]/70">Accent color</span>
-                    <input
-                      type="color"
-                      value={card.accentColor || '#e8913a'}
-                      onChange={(e) => setCardField('accentColor', e.target.value)}
-                      className="h-9 w-16 rounded border border-black/10"
-                    />
-                  </label>
-                </div>
-              )}
+              <CardLookFields card={card} setField={setCardField} />
             </form>
           )}
 

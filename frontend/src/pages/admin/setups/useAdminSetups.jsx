@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../../../services/api.js';
-import { notify } from '../../../utils/toast.js';
+import { notify } from '../../../utils/toast.jsx';
 
 export function useAdminSetups() {
   const [loading, setLoading] = useState(true);

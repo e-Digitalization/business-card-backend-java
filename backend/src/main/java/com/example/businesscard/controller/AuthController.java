@@ -63,6 +63,25 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/linkedin/status")
+    public Map<String, Object> linkedInStatus() {
+        return Map.of(
+            "enabled", clientAuthService.isLinkedInConfigured(),
+            "clientId", clientAuthService.linkedInClientId()
+        );
+    }
+
+    @PostMapping("/linkedin")
+    public ResponseEntity<ClientAuthResponse> linkedIn(@Valid @RequestBody LinkedInAuthRequest request) {
+        try {
+            return ResponseEntity.ok(clientAuthService.loginWithLinkedIn(request.getCode(), request.getRedirectUri()));
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody ClientRegisterRequest request) {
         // Step 1: emails a verification code; the account is created on /register/verify.

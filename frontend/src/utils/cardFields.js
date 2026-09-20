@@ -1,0 +1,25 @@
+// Single source of truth for the card detail inputs, shared by the create page and the edit dialog.
+export const CARD_FIELDS = [
+  ['fullName', 'Full Name', "Joseph Ng'ang'a"],
+  ['title', 'Title / Position', 'Founder & Systems Architect'],
+  ['company', 'Organisation', 'Swahili Systems'],
+  ['location', 'Location', 'Dar es Salaam, Tanzania'],
+  ['phone', 'Phone (+255…)', '+255 714 076 404'],
+  ['email', 'Email', 'name@company.co.tz'],
+  ['website', 'Website', 'https://'],
+  ['whatsapp', 'WhatsApp', '+255714076404'],
+  ['photoUrl', 'Photo URL', 'https://...'],
+  ['linkedin', 'LinkedIn', 'https://linkedin.com/in/...'],
+  ['twitter', 'Twitter / X', 'https://x.com/...'],
+  ['github', 'GitHub', 'https://github.com/...'],
+  ['instagram', 'Instagram', 'https://instagram.com/...'],
+  ['youtubeChannel', 'YouTube channel', 'https://youtube.com/@...'],
+  ['bookingUrl', 'Appointment booking link', 'https://...'],
+  ['podcastUrl', 'Podcast link', 'https://...'],
+  ['tiktok', 'TikTok', 'https://tiktok.com/@...'],
+  ['telegram', 'Telegram', 'https://t.me/...'],
+  ['wechat', 'WeChat profile link', 'https://...'],
+  ['weibo', 'Weibo', 'https://weibo.com/...'],
+  ['douyin', 'Douyin', 'https://douyin.com/...'],
+  ['xiaohongshu', 'Xiaohongshu / RED', 'https://xiaohongshu.com/...']
+];

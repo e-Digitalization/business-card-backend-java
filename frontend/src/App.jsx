@@ -4,6 +4,7 @@ import { SAMPLE_BANKER_PROFILE, SAMPLE_GOVERNMENT_PROFILE, SAMPLE_MULTI_PROFILE,
 import ProfilePage from './pages/ProfilePage.jsx';
 import RedirectPage from './pages/RedirectPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import LinkedInCallbackPage from './pages/LinkedInCallbackPage.jsx';
 import ClientLayout from './pages/client/ClientLayout.jsx';
 import ClientDashboardHome from './pages/client/ClientDashboardHome.jsx';
 import ClientCardPage from './pages/client/ClientCardPage.jsx';
@@ -55,6 +56,7 @@ const AppShell = () => {
         <Route path="/demo/researcher" element={<ProfilePage demoProfile={SAMPLE_PROFILE} />} />
         <Route path="/c/:tagCode" element={<RedirectPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/linkedin/callback" element={<LinkedInCallbackPage />} />
         <Route path="/claim" element={<ClaimAccountPage />} />
         <Route path="/signup" element={<Navigate to="/login" replace state={{ mode: 'signup' }} />} />
         <Route path="/admin/login" element={<Navigate to="/login" replace state={{ role: 'admin' }} />} />

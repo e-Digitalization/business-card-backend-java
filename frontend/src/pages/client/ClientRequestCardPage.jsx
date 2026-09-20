@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import api from '../../services/api.js';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
-import { notify } from '../../utils/toast.js';
+import { notify } from '../../utils/toast.jsx';
 import { ClientWorkspaceContext } from './ClientLayout.jsx';
 
 const formatMoney = (amount, currency = 'TZS') => {

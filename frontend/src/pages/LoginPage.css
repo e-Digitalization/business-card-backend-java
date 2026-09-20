@@ -1,0 +1,53 @@
+.km-auth-page { background: #faf8f3; }
+.km-auth-story { position: relative; overflow: hidden; padding: clamp(2rem, 4vw, 4.5rem); color: #fff; background: radial-gradient(ellipse at 0 0, #2c6962 0, transparent 60%), linear-gradient(145deg, #173d40, #0d5558); }
+.km-auth-story::before { content: ''; position: absolute; width: 700px; height: 700px; border: 1px solid #ffffff0b; border-radius: 50%; top: -400px; right: -300px; pointer-events: none; }
+.km-auth-story-inner { position: relative; display: flex; flex-direction: column; gap: 2rem; width: 100%; max-width: 650px; margin: auto; }
+.km-auth-story-heading { margin-top: .75rem; }
+.km-auth-eyebrow { font-size: .65rem; font-weight: 600; letter-spacing: .17em; text-transform: uppercase; color: #bcd4bd; }
+.km-auth-story-heading h2 { margin-top: 1rem; font-size: clamp(2.2rem, 3.3vw, 3.6rem); line-height: 1.1; font-weight: 500; letter-spacing: -.035em; }
+.km-auth-story-heading h2 span { color: #bcd9c7; }
+.km-auth-story-heading > p:last-child { margin-top: 1rem; font-size: .85rem; line-height: 1.8; color: #d0e0d9; }
+.km-auth-photo { position: relative; overflow: hidden; margin: 0; border-radius: 20px; border: 1px solid #ffffff25; box-shadow: 0 20px 40px #062a3325; }
+.km-auth-photo > img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.km-auth-photo figcaption { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.1rem; background: #ffffff0a; }
+.km-auth-photo-check { display: grid; place-items: center; height: 32px; width: 32px; flex-shrink: 0; border-radius: 50%; background: #bcd9c71a; color: #cae6cf; }
+.km-auth-photo strong { display: block; font-size: .8rem; font-weight: 500; }
+.km-auth-photo small { display: block; margin-top: .2rem; font-size: .65rem; color: #b7d2c9; }
+.km-auth-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.km-auth-benefits > span { border-top: 1px solid #ffffff25; padding-top: .9rem; font-size: .6rem; color: #b4d0be; }
+.km-auth-benefits strong { display: block; margin-top: .4rem; font-size: .7rem; font-weight: 400; color: #dfebe5; }
+.km-auth-story-footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: .75rem; font-size: .6rem; color: #b0c7be; }
+.km-auth-page .km-login-main { min-width: 0; background: #faf8f3; padding-block: 3rem; }
+.km-auth-page .km-login-main::before, .km-auth-page .km-login-main-glow { display: none; }
+.km-auth-page .km-login-card { padding: 2.25rem; border: 1px solid #193f4210; border-radius: 24px; background: #fff; box-shadow: 0 20px 70px #193f4206; }
+.km-auth-page .km-auth-role { padding: 4px; border: 1px solid #1a3d4209; background: #f3f5f1; border-radius: 12px; }
+.km-auth-page .km-auth-role button { font-size: .75rem; }
+.km-auth-page .km-login-card h1 { font-size: 2.25rem; }
+.km-auth-page .km-login-card > p:first-of-type { color: #0d7377; font-size: .65rem; letter-spacing: .16em; }
+.km-auth-page .km-login-card > h1 + p { font-size: .85rem; color: #657b76; }
+.km-auth-page .admin-input, .km-auth-page .admin-input-wrap { background: #fcfdfb; border-radius: 10px; min-height: 3rem; border-color: #dce3dd; font-size: .9rem; }
+.km-auth-page .admin-input::placeholder { color: #83968f; }
+.km-auth-page .admin-input-wrap > button { color: #0d7377; }
+.km-auth-page .admin-input:focus, .km-auth-page .admin-input-wrap:focus-within { border-color: #0d7377; box-shadow: 0 0 0 3px #0d737712; background: white; }
+.km-auth-page .km-login-submit { border-radius: 10px; background: #0d7377; box-shadow: 0 5px 14px #0d737718; }
+.km-auth-page .km-login-submit:hover:not(:disabled) { background: #105e62; box-shadow: 0 8px 20px #0d737725; }
+.km-auth-page .km-login-submit:focus-visible { outline-color: #0d737780; }
+.km-auth-page .km-auth-linkedin { border-radius: 8px; min-height: 42px; font-size: .8rem; }
+.km-auth-page .km-auth-divider { color: #758780; font-size: .58rem; letter-spacing: .1em; }
+.km-auth-page button:focus-visible, .km-auth-page a:focus-visible { outline: 2px solid #14919b; outline-offset: 4px; }
+@media (min-width: 1024px) and (max-height: 850px) {
+  .km-auth-story { padding-block: 2rem; }
+  .km-auth-story-inner { gap: 1.4rem; }
+  .km-auth-story-heading { margin-top: 0; }
+  .km-auth-story-heading h2 { font-size: 2.5rem; }
+}
+@media (max-width: 639px) {
+  .km-auth-page .km-login-main { padding: 1.5rem 1rem; }
+  .km-auth-page .km-login-card { padding: 1.5rem 1.15rem; border-radius: 18px; }
+  .km-auth-page .km-login-card h1 { font-size: 2rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .km-auth-story-heading { animation: kmAuthEntrance .65s ease both; }
+  .km-auth-photo { animation: kmAuthEntrance .8s .12s ease both; }
+  @keyframes kmAuthEntrance { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+}

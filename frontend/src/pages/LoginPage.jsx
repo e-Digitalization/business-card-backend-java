@@ -2,36 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import BrandLogo from '../components/BrandLogo.jsx';
+import './LoginPage.css';
 import api from '../services/api.js';
 import { notify } from '../utils/toast.jsx';
 import { startLinkedInLogin } from '../utils/linkedin.js';
-
-const loginAdverts = [
-  {
-    image: '/illustrations/compare-nfc.jpg',
-    eyebrow: 'Kadi Moja NFC',
-    title: 'One card. Every introduction.',
-    text: 'Tap once in Dar, Arusha, or Zanzibar — your full profile opens on their phone.'
-  },
-  {
-    image: '/illustrations/how-tap.jpg',
-    eyebrow: 'No app needed',
-    title: 'Works on iPhone & Android.',
-    text: 'NFC opens your live digital card instantly. QR is ready when tap isn’t.'
-  },
-  {
-    image: '/illustrations/how-share.jpg?v=3',
-    eyebrow: 'Always current',
-    title: 'Update without reprinting.',
-    text: 'Change phone, title, or photo once. Every Kadi Moja tag stays up to date.'
-  },
-  {
-    image: '/illustrations/how-saved.jpg',
-    eyebrow: 'AI Scan',
-    title: 'Paper cards, digitised.',
-    text: 'Photograph a paper card — Kadi Moja reads the details and saves the contact.'
-  }
-];
 
 const OtpInput = ({ value, onChange }) => {
   const inputRefs = useRef([]);
@@ -108,8 +82,8 @@ const LoginPage = () => {
   const [mode, setMode] = useState(location.state?.mode === 'signup' ? 'signup' : 'login');
   const [googleEnabled, setGoogleEnabled] = useState(Boolean(googleClientId));
   const [linkedin, setLinkedin] = useState({ enabled: false, clientId: '' });
-  const [slide, setSlide] = useState(0);
-  const [sliderPaused, setSliderPaused] = useState(false);
+  const googleContainer = useRef(null);
+  const [googleWidth, setGoogleWidth] = useState(280);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -264,102 +238,32 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    if (sliderPaused) return undefined;
-    const timer = window.setInterval(() => {
-      setSlide((i) => (i + 1) % loginAdverts.length);
-    }, 5200);
-    return () => window.clearInterval(timer);
-  }, [sliderPaused]);
-
-  const active = loginAdverts[slide];
-  const goSlide = (next) => {
-    setSliderPaused(true);
-    setSlide(next);
-  };
+    const element = googleContainer.current;
+    if (!element) return;
+    const resize = () => setGoogleWidth(Math.min(400, Math.floor(element.getBoundingClientRect().width)));
+    resize();
+    if (!('ResizeObserver' in window)) return;
+    const observer = new ResizeObserver(resize);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [googleEnabled, role, mode]);
 
   return (
-    <div className="admin-login min-h-screen lg:grid lg:grid-cols-[1.08fr_0.92fr]">
-      <aside className="km-login-showcase relative hidden overflow-hidden text-white lg:flex lg:flex-col">
-        <div className="absolute inset-0 admin-login-hero" />
-        <div className="km-login-orbit km-login-orbit-one" aria-hidden="true" />
-        <div className="km-login-orbit km-login-orbit-two" aria-hidden="true" />
-        <div className="relative z-10 flex h-full flex-col px-10 py-9 xl:px-16 xl:py-12">
-          <div>
-            <BrandLogo to="/" tone="light" textClassName="text-3xl" markClassName="h-10 w-10" />
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70">
-              Your professional identity, ready to share anywhere.
-            </p>
+    <div className="admin-login km-auth-page min-h-screen lg:grid lg:grid-cols-[1.08fr_0.92fr]">
+      <aside className="km-auth-story hidden lg:flex">
+        <div className="km-auth-story-inner">
+         
+          <div className="km-auth-story-heading">
+            
+            <h2 className="font-display">Your next connection<br /><span>starts with you.</span></h2>
+         
           </div>
+          <figure className="km-auth-photo">
+            <img src="/illustrations/compare-nfc-woman-profile-matched.png" width="1536" height="1024" alt="A professional holding her Kadi Moja NFC card and a phone displaying her matching digital profile" />
+            <figcaption><span className="km-auth-photo-check" aria-hidden="true">✓</span><span><strong>One card. Every introduction.</strong><small>Tap. Share. Stay connected.</small></span></figcaption>
+          </figure>
+          <div className="km-auth-benefits"><span>01 <strong>Share your profile</strong></span><span>02 <strong>Scan paper cards</strong></span><span>03 <strong>Stay in touch</strong></span></div>
 
-          <div className="km-login-slider my-auto w-full max-w-xl">
-            <div className="km-login-slider-media">
-              {loginAdverts.map((item, index) => (
-                <React.Fragment key={item.image}>
-                  <img
-                    src={item.image}
-                    alt=""
-                    aria-hidden="true"
-                    className={`km-login-slider-img-backdrop ${index === slide ? 'is-active' : ''}`}
-                  />
-                  <img
-                    src={item.image}
-                    alt=""
-                    className={`km-login-slider-img ${index === slide ? 'is-active' : ''}`}
-                  />
-                </React.Fragment>
-              ))}
-              <div className="km-login-slider-fade" aria-hidden="true" />
-            </div>
-
-            <div className="km-login-slider-body">
-              <p className="km-login-slider-eyebrow">{active.eyebrow}</p>
-              <p className="km-login-slider-title">{active.title}</p>
-              <p className="km-login-slider-text">{active.text}</p>
-
-              <div className="km-login-slider-nav">
-                <div className="km-login-slider-dots" role="tablist" aria-label="Adverts">
-                  {loginAdverts.map((item, index) => (
-                    <button
-                      key={item.image}
-                      type="button"
-                      role="tab"
-                      aria-selected={index === slide}
-                      aria-label={`Advert ${index + 1}`}
-                      onClick={() => goSlide(index)}
-                      className={`km-login-slider-dot ${index === slide ? 'is-active' : ''}`}
-                    />
-                  ))}
-                </div>
-                <div className="km-login-slider-arrows">
-                  <button
-                    type="button"
-                    aria-label="Previous advert"
-                    className="km-login-slider-arrow"
-                    onClick={() => goSlide((slide - 1 + loginAdverts.length) % loginAdverts.length)}
-                  >
-                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 4 6 10l6 6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Next advert"
-                    className="km-login-slider-arrow"
-                    onClick={() => goSlide((slide + 1) % loginAdverts.length)}
-                  >
-                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="m8 4 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between gap-6 text-xs text-white/50">
-            <p className="tracking-wide">Made for modern connections</p>
-            <p className="hidden xl:block">Dar es Salaam · Arusha · Mwanza · Dodoma · Zanzibar</p>
-          </div>
         </div>
       </aside>
 
@@ -374,7 +278,7 @@ const LoginPage = () => {
           </div>
 
           <div className="km-login-card">
-            <div className="mb-8 flex rounded-xl bg-[#f3f1ec] p-1.5" role="tablist" aria-label="Sign in type">
+            <div className="km-auth-role mb-8 flex rounded-xl bg-[#f3f1ec] p-1.5" role="tablist" aria-label="Sign in type">
               <button
                 type="button"
                 role="tab"
@@ -423,18 +327,20 @@ const LoginPage = () => {
                 ? 'Manage digital cards and NFC tags.'
                 : isOtpStep
                   ? 'We emailed you a one-time code to confirm this address.'
-                  : 'Sign in to edit your card, scan cards, and manage contacts.'}
+                  : mode === 'signup'
+                    ? 'Create your account and start making lasting connections.'
+                    : 'Your cards, contacts, and next connections — all in one place.'}
             </p>
 
             {role === 'account' && googleEnabled && mode === 'login' && (
-              <div className="km-google-login mt-6 flex justify-center">
+              <div ref={googleContainer} className="km-google-login mt-6 flex justify-center">
                 <GoogleLogin
                   onSuccess={onGoogleSuccess}
                   onError={() => notify.error('Google sign-in was cancelled.')}
                   useOneTap={false}
                   text="signin_with"
                   shape="rectangular"
-                  width="360"
+                  width={String(googleWidth)}
                 />
               </div>
             )}
@@ -444,7 +350,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => startLinkedInLogin(linkedin.clientId, fromAccount)}
-                  className="flex w-full max-w-[360px] items-center justify-center gap-2.5 rounded-md bg-[#0a66c2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#004182]"
+                  className="km-auth-linkedin flex w-full max-w-[400px] items-center justify-center gap-2.5 rounded-md bg-[#0a66c2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#004182]"
                 >
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
                     <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
@@ -455,7 +361,7 @@ const LoginPage = () => {
             )}
 
             {role === 'account' && (googleEnabled || linkedin.enabled) && !isOtpStep && (
-              <div className="my-6 flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/35">
+              <div className="km-auth-divider my-6 flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#1a3d42]/35">
                 <span className="h-px flex-1 bg-black/10" />
                 or continue with email
                 <span className="h-px flex-1 bg-black/10" />
@@ -512,7 +418,8 @@ const LoginPage = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         required
                         className="admin-input"
-                        placeholder=""
+                        autoComplete="name"
+                        placeholder="Your full name"
                       />
                     </label>
                   )}
@@ -526,7 +433,8 @@ const LoginPage = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="admin-input"
-                        placeholder="you@email.com"
+                        placeholder="you@example.com"
+                        autoComplete="email"
                       />
                     </label>
                   ) : (
@@ -551,7 +459,7 @@ const LoginPage = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         minLength={role === 'account' ? 6 : 1}
-                        className="w-full bg-transparent outline-none"
+                        className="min-w-0 w-full bg-transparent outline-none"
                         autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                       />
                       <button

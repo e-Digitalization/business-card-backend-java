@@ -1,4 +1,5 @@
 import React from 'react';
+import { PROFESSION_SAMPLES } from './utils/professionSamples.js';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { SAMPLE_BANKER_PROFILE, SAMPLE_GOVERNMENT_PROFILE, SAMPLE_MULTI_PROFILE, SAMPLE_PROFILE } from './utils/cardCategories.js';
 import ProfilePage from './pages/ProfilePage.jsx';
@@ -50,6 +51,8 @@ const AppShell = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/u/:slug" element={<ProfilePage />} />
+        {PROFESSION_SAMPLES.map(sample => <Route key={`preview-${sample.id}`} path={`/demo/professions/${sample.id}/preview`} element={<ProfilePage key={sample.id} demoProfile={sample.profile} initialTab="more" />} />)}
+        {PROFESSION_SAMPLES.map(sample => <Route key={sample.id} path={`/demo/professions/${sample.id}`} element={<><div className="km-profession-demo-banner"><a href="/#samples">← All profession samples</a>Fictional demonstration · {sample.label} · No institutional affiliation</div><ProfilePage key={sample.id} demoProfile={sample.profile} /></>} />)}
         <Route path="/demo/multi" element={<ProfilePage demoProfile={SAMPLE_MULTI_PROFILE} />} />
         <Route path="/demo/government" element={<ProfilePage demoProfile={SAMPLE_GOVERNMENT_PROFILE} />} />
         <Route path="/demo/banker" element={<ProfilePage demoProfile={SAMPLE_BANKER_PROFILE} />} />

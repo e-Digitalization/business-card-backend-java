@@ -1,0 +1,4 @@
+Mode: built-in image_gen
+Asset: frontend/public/illustrations/professions-cards.png
+
+Use case: product-mockup. Create an elegant photorealistic product photograph for Kadi Moja digital business cards, landscape 3:2. Two premium thin NFC business cards on a pale cool grey stone tabletop, one deep forest teal card in foreground at a slight diagonal and a brushed silver card behind. Foreground card has tasteful small white text 'Kadi Moja' and below 'One tap. A lasting connection.' and a small contactless symbol. Precise realistic credit-card proportions, exquisite matte material, fine edges, natural window light from upper left with soft architectural shadows. Cards occupy central 65 percent, fully visible with generous margins. Quiet luxury contemporary commercial photography, crisp product focus. No phone, no people, no decorative objects, no gradients, no watermark. This is a product image within a professional website section.

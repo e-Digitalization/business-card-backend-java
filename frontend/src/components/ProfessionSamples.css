@@ -1,0 +1,90 @@
+.km-professions { background: #f7f9f7; color: #193e40; }
+.km-professions * { letter-spacing: 0; }
+.km-professions-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; }
+.km-professions-eyebrow { color: #577069; font-size: 11px; text-transform: uppercase; font-weight: 600; margin-bottom: 18px; }
+.km-professions-heading h2 { font-size: 42px; font-weight: 600; line-height: 1.16; }
+.km-professions-heading h2 span { color: #0d7377; }
+.km-professions-intro { max-width: 260px; font-size: 14px; line-height: 1.8; color: #60716d; padding-bottom: 4px; }
+.km-professions-tabs { display: flex; gap: 28px; margin-top: 38px; border-bottom: 1px solid #d9e2de; overflow-x: auto; }
+.km-professions-tabs button { display: inline-flex; align-items: center; justify-content: center; flex: 1 0 auto; gap: 9px; padding: 17px 6px; color: #657671; font-size: 13px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.km-professions-tabs button svg { font-size: 19px; }
+.km-professions-tabs button[aria-selected=true] { color: #0a666a; border-bottom-color: #0d7377; }
+.km-professions-tabs button:hover { color: #0a666a; background: #eaf1ed; }
+.km-professions-tabs button:focus-visible, .km-profession-panel:focus-visible, .km-professions a:focus-visible, .km-profession-link:focus-visible, .km-profession-phone-screen:focus-visible { outline: 2px solid #0d7377; outline-offset: -3px; }
+.km-profession-panel { padding-top: 36px; }
+.km-profession-content { display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; }
+.km-profession-story { min-width: 0; display: flex; flex-direction: column; }
+.km-profession-copy { min-height: 290px; padding-top: 8px; }
+.km-profession-label { display: flex; align-items: center; gap: 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--profession-color); }
+.km-profession-label > span { color: #798881; border-right: 1px solid #cbd6d0; padding-right: 16px; font-weight: 400; }
+.km-profession-copy h3 { margin-top: 18px; max-width: 420px; font-size: 30px; font-weight: 500; line-height: 1.18; }
+.km-profession-copy > p { max-width: 460px; margin-top: 16px; color: #60716d; font-size: 13px; line-height: 1.8; }
+.km-profession-copy ul { display: flex; flex-wrap: wrap; gap: 8px 17px; margin-top: 18px; list-style: none; padding: 0; }
+.km-profession-copy li { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #4e6560; }
+.km-profession-copy li svg { font-size: 15px; color: #0d7377; }
+.km-profession-link { display: inline-flex; align-items: center; gap: 24px; margin-top: 23px; padding-bottom: 7px; border-bottom: 1px solid #91aaa2; font-size: 13px; font-weight: 600; }
+.km-profession-link svg { font-size: 18px; }
+.km-profession-product { margin-top: 28px; }
+.km-profession-product img { width: 100%; height: auto; aspect-ratio: 1.5; object-fit: contain; border-radius: 4px; }
+.km-profession-product figcaption { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; color: #61716b; font-size: 10px; }
+.km-profession-product figcaption > span:last-child { white-space: nowrap; }
+.km-profession-preview { min-width: 0; padding: 0 34px; border-left: 1px solid #dce4de; }
+.km-profession-phone { width: 100%; max-width: 390px; margin: 0 auto; padding: 7px; border: 1px solid #66716e; border-radius: 40px; background: #1c2626; box-shadow: 0 24px 45px -20px #173e4060, inset 0 0 0 3px #394441; overflow: hidden; }
+.km-profession-phone-top { height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 21px; color: #fff; font-size: 10px; }
+.km-profession-phone-speaker { width: 65px; height: 5px; border-radius: 4px; background: #080e0e; }
+.km-profession-phone-screen { display: block; width: 100%; height: 660px; border: 0; background: white; border-radius: 24px; }
+.km-profession-phone-bottom { height: 18px; display: grid; place-items: center; }
+.km-profession-phone-bottom > span { width: 90px; height: 3px; border-radius: 3px; background: #c5ceca; }
+.km-profession-preview-caption { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 20px; font-size: 10px; color: #67776e; }
+.km-profession-preview-caption > span:last-child { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.km-profession-preview-caption > span:last-child::before { content: ''; width: 5px; height: 5px; background: #468469; border-radius: 50%; }
+.km-profession-digital { background: #fff; border: 1px solid #dfe4e0; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px -22px #173e403d; min-height: 510px; }
+.km-profession-digital-top { min-height: 110px; padding: 24px 24px 40px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: var(--profession-color); color: #fff; }
+.km-profession-digital-top > span:last-child { font-size: 10px; padding-top: 5px; }
+.km-profession-digital-body { position: relative; padding: 0 24px 22px; }
+.km-profession-avatar { position: relative; margin-top: -25px; margin-bottom: 14px; display: grid; place-items: center; width: 55px; height: 55px; border: 4px solid white; border-radius: 50%; color: var(--profession-color); background: #f0efed; font: 21px Georgia, serif; }
+.km-profession-digital-body h4 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+.km-profession-digital-body > p { margin-top: 5px; font-size: 11px; line-height: 1.6; color: #536a62; }
+.km-profession-digital-body > small { display: block; margin-top: 3px; font-size: 10px; color: #6b7c75; }
+.km-profession-location { display: flex; align-items: center; gap: 4px; margin-top: 12px; font-size: 10px; color: #6b7c75; }
+.km-profession-location svg { font-size: 13px; }
+.km-profession-detail-heading { margin-top: 22px; font-size: 10px; text-transform: uppercase; color: var(--profession-color); font-weight: 600; }
+.km-profession-metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin: 14px 0; }
+.km-profession-metrics > div + div { border-left: 1px solid #e5e9e5; padding-left: 18px; }
+.km-profession-metrics strong { display: block; font-size: 24px; line-height: 1.2; font-weight: 500; color: var(--profession-color); }
+.km-profession-metrics span { font-size: 9px; color: #67766f; }
+.km-profession-digital-body ul { list-style: none; padding: 0; margin-top: 10px; }
+.km-profession-digital-body li { display: flex; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 1px solid #edf0ed; font-size: 11px; }
+.km-profession-digital-body li > span { color: #8a9690; font-size: 9px; }
+.km-profession-profile-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 11px 14px; border-radius: 4px; background: var(--profession-color); color: white; font-size: 11px; }
+.km-profession-profile-link svg { font-size: 16px; }
+.km-profession-note { margin-top: 18px; text-align: center; color: #758279; font-size: 10px; }
+.km-profession-demo-banner { padding: 1rem; background: #f3f5ef; color: #254a43; text-align: center; font-size: .7rem; line-height: 1.7; }
+.km-profession-demo-banner a { display: inline-block; margin-right: 1rem; text-decoration: underline; }
+@media (max-width: 1023px) {
+  .km-professions-heading h2 { font-size: 36px; }
+  .km-profession-content { gap: 30px; }
+  .km-profession-preview { padding: 0 0 0 25px; }
+  .km-profession-copy { min-height: 320px; }
+}
+@media (max-width: 767px) {
+  .km-professions-heading { display: block; }
+  .km-professions-heading h2 { font-size: 30px; }
+  .km-professions-intro { max-width: 360px; margin-top: 18px; font-size: 13px; }
+  .km-professions-tabs { gap: 22px; margin-top: 24px; }
+  .km-professions-tabs button { flex: 0 0 auto; font-size: 12px; }
+  .km-profession-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .km-profession-copy { min-height: 0; }
+  .km-profession-copy h3 { font-size: 28px; }
+  .km-profession-preview { border-left: 0; padding: 0; width: 100%; max-width: 420px; justify-self: center; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .km-profession-copy { animation: kmProfessionEnter .45s ease both; }
+  .km-profession-phone-screen { animation: kmProfessionEnter .4s ease both; }
+  .km-professions a, .km-professions a svg, .km-professions-tabs button, .km-profession-link svg { transition: color .2s, background .2s, transform .2s; }
+  .km-profession-link:hover svg { transform: translate(2px, -2px); }
+  .km-professions a:hover svg { transform: translate(2px, -2px); }
+  .km-profession-profile-link:hover { background: #193e40; }
+  @keyframes kmProfessionEnter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes kmProfessionFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+}

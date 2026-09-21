@@ -53,7 +53,7 @@ export default function HowItWorks({ person }) {
     <section id="how" aria-labelledby="how-title" className="km-journey px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
         <header className="mx-auto max-w-2xl text-center">
-          <p className="km-journey-eyebrow">How it works</p>
+         
           <h2 id="how-title" className="mt-4 font-display text-4xl font-semibold sm:text-5xl">A small tap.<br /><span className="text-km-lagoon">A lasting introduction.</span></h2>
           <p className="mt-5 leading-relaxed text-km-ink/65">Three simple steps from hello to staying in touch.</p>
         </header>

@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import { initialsFromName, resolveMediaUrl } from '../utils/media.js';
 import { getCardThemeVars } from '../utils/cardTheme.js';
+import { sampleVcard } from '../utils/professionSamples.js';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -18,10 +19,10 @@ import ResearcherSection, { hasResearchContent } from '../components/ResearcherS
 import { BankerAds, BankerServices, hasBankerAds, hasBankerServices } from '../components/BankerSection.jsx';
 import { GovernmentEvents, GovernmentOffice, hasGovernmentEvents, hasGovernmentOffice } from '../components/GovernmentSection.jsx';
 
-const ProfilePage = ({ demoProfile = null }) => {
+const ProfilePage = ({ demoProfile = null, initialTab = 'profile' }) => {
   const { slug } = useParams();
   const [profile, setProfile] = useState(demoProfile);
-  const [tab, setTab] = useState('profile');
+  const [tab, setTab] = useState(initialTab);
   const [dir, setDir] = useState('next');
   const swipeStart = useRef(null);
   const bodyRef = useRef(null);
@@ -60,7 +61,7 @@ const ProfilePage = ({ demoProfile = null }) => {
     };
   }, [slug, demoProfile]);
 
-  const vcardUrl = `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/profile/${slug}/vcard`;
+  const vcardUrl = demoProfile ? sampleVcard(demoProfile) : `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/profile/${slug}/vcard`;
 
   const phoneList = useMemo(
     () =>
@@ -224,7 +225,7 @@ const ProfilePage = ({ demoProfile = null }) => {
           </div>
 
           <div className="km-fade-up km-fade-up-delay mt-5 flex flex-col gap-2">
-            <a href={vcardUrl} className="km-card-cta text-center">
+            <a href={vcardUrl} download={demoProfile ? "kadi-moja-sample.vcf" : undefined} className="km-card-cta text-center">
               Save contact details
             </a>
             <AppointmentLink profile={profile} />

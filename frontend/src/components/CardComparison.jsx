@@ -61,7 +61,7 @@ export default function CardComparison() {
             </div>
           </article>
         </div>
-        <p className="km-comparison-footer"><span aria-hidden="true">↗</span> Less paper. More possibility.</p>
+        
       </div>
     </section>
   );

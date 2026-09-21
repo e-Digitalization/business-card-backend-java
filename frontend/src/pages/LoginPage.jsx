@@ -252,7 +252,14 @@ const LoginPage = () => {
     <div className="admin-login km-auth-page min-h-screen lg:grid lg:grid-cols-[1.08fr_0.92fr]">
       <aside className="km-auth-story hidden lg:flex">
         <div className="km-auth-story-inner">
-         
+          <Link to="/" aria-label="Back to home" className="km-auth-back group">
+            <span className="km-auth-back-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M11 6l-6 6 6 6" />
+              </svg>
+            </span>
+            Back to home
+          </Link>
           <div className="km-auth-story-heading">
             
             <h2 className="font-display">Your next connection<br /><span>starts with you.</span></h2>
@@ -272,7 +279,7 @@ const LoginPage = () => {
         <Link
           to="/"
           aria-label="Back to home"
-          className="group absolute left-5 top-5 z-20 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 py-2 pl-3 pr-4 text-sm font-medium text-[#1a3d42] shadow-sm backdrop-blur transition hover:border-[#0d7377]/40 hover:text-[#0d7377] sm:left-8 sm:top-7"
+          className="group absolute left-5 top-5 z-20 inline-flex lg:hidden items-center gap-2 rounded-full border border-black/10 bg-white/80 py-2 pl-3 pr-4 text-sm font-medium text-[#1a3d42] shadow-sm backdrop-blur transition hover:border-[#0d7377]/40 hover:text-[#0d7377] sm:left-8 sm:top-7"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M19 12H5M11 6l-6 6 6 6" />

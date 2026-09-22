@@ -199,7 +199,25 @@ const ClientDashboardHome = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="client-dashboard-home space-y-6">
+      <section className="client-dashboard-hero">
+        <div className="client-dashboard-hero-copy">
+          <p className="client-dashboard-kicker">Your digital workspace</p>
+          <h1 className="font-display">Good to see you, {user?.fullName?.split(' ')[0] || 'there'}.</h1>
+          <p>Manage your profile, share your card, and keep every connection up to date.</p>
+          <div className="client-dashboard-quick-actions">
+            <Link to="/me/card" className="is-primary">Edit my card <span aria-hidden="true">→</span></Link>
+            {card?.slug && <a href={`/u/${card.slug}`} target="_blank" rel="noreferrer">View live profile ↗</a>}
+          </div>
+        </div>
+        <div className="client-dashboard-progress" aria-label={`Profile ${completeness}% complete`}>
+          <div className="client-progress-ring" style={{ '--progress': `${completeness * 3.6}deg` }}>
+            <span><strong>{completeness}%</strong><small>complete</small></span>
+          </div>
+          <p>{completeness === 100 ? 'Your profile is ready to share' : 'Complete your profile to make a stronger impression'}</p>
+        </div>
+      </section>
+
       {welcomeOpen && (
         <div className="km-fade-in flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
           <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">
@@ -214,8 +232,9 @@ const ClientDashboardHome = () => {
         </div>
       )}
 
-      <section className="km-fade-up grid gap-4 lg:grid-cols-2">
-        <div className="client-panel p-5">
+      <section className="client-dashboard-services grid gap-4 lg:grid-cols-2">
+        <div className="client-panel client-service-card client-service-card--scan p-5">
+          <span className="client-service-number" aria-hidden="true">01</span>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">Subscription</p>
           <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">AI Scan Monthly</h2>
           {subscription?.subscribed ? (
@@ -257,7 +276,8 @@ const ClientDashboardHome = () => {
           )}
         </div>
 
-        <div className="client-panel p-5">
+        <div className="client-panel client-service-card client-service-card--nfc p-5">
+          <span className="client-service-number" aria-hidden="true">02</span>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9a6b45]">NFC card</p>
           <h2 className="mt-1 font-display text-xl font-semibold text-[#1a3d42]">Physical card</h2>
           {latestNfc ? (
@@ -284,9 +304,14 @@ const ClientDashboardHome = () => {
         </div>
       </section>
 
-      <div className="km-fade-up km-fade-up-delay grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {stats.map((stat) => (
-          <div key={stat.label} className="client-stat-card">
+      <section className="client-dashboard-metrics">
+        <div className="client-dashboard-section-heading">
+          <div><p>At a glance</p><h2 className="font-display">Profile performance</h2></div>
+          <span>Live overview</span>
+        </div>
+        <div className="client-dashboard-stat-grid">
+        {stats.map((stat, index) => (
+          <div key={stat.label} className="client-stat-card" style={{ animationDelay: `${160 + index * 55}ms` }}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-3xl font-semibold text-[#1a3d42]">{stat.value}</p>
@@ -299,7 +324,8 @@ const ClientDashboardHome = () => {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      </section>
 
       <section className="km-fade-up km-fade-up-delay-2 client-panel overflow-hidden">
         {completeness < 70 ? (

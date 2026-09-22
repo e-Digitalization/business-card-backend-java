@@ -43,12 +43,7 @@ const slides = [
     description: 'New role, number, or location? Update your profile in seconds. Every tap and shared link instantly shows your latest details.',
     action: 'Create your profile', href: '/login',
     secondary: { label: 'See how it works', href: '#how' },
-    features: [
-      'Edit your details at any time',
-      'One profile across NFC and QR',
-      'No reprinting when details change',
-      'Always ready for the next introduction'
-    ], theme: 'current'
+    image: '/illustrations/hero/always-current.png', theme: 'current'
   }
 ];
 
@@ -126,7 +121,6 @@ export default function HeroSlider() {
       <div className="km-promo-inner relative z-10 mx-auto max-w-6xl px-5 lg:px-8">
         <div className="km-promo-stage" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">
           <div className="km-promo-copy" role="group" aria-roledescription="slide" aria-label={`${active + 1} of ${slides.length}: ${slide.label}`}>
-            <span className="km-promo-eyebrow">{slide.label}</span>
             <TypedHeadline key={slide.theme} text={`${slide.lead}\n${slide.end}`} reducedMotion={reducedMotion} />
             <p className="km-promo-description">{slide.description}</p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -146,7 +140,7 @@ export default function HeroSlider() {
                   {item.features.map((feature) => <li key={feature}><span aria-hidden="true">→</span>{feature}</li>)}
                 </ul>
               )
-              : <img key={item.theme} src={item.image} alt={index === active ? `${item.label} product illustration` : ''} aria-hidden={index !== active} width="1536" height="1024" className={index === active ? 'is-active' : ''} />)}
+              : <img key={item.theme} src={item.image} alt={index === active ? `${item.label} product illustration` : ''} aria-hidden={index !== active} width="1536" height="1024" loading={index === 0 ? 'eager' : 'lazy'} className={index === active ? 'is-active' : ''} />)}
           </div>
         </div>
         <div className="km-promo-controls">

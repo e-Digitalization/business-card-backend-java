@@ -834,6 +834,52 @@ body {
   flex-shrink: 0;
 }
 
+.km-brand-showcase-panel {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 380px;
+  align-items: center;
+  justify-content: center;
+  padding: 2.75rem 1.75rem;
+  border-radius: 2rem;
+  background: linear-gradient(150deg, #e4d5ae 0%, #cdbb84 100%);
+  box-shadow: 0 32px 60px rgba(26, 61, 66, 0.14);
+}
+
+.km-brand-showcase-card {
+  width: 100%;
+  max-width: 300px;
+  transform: rotate(-2deg);
+  transition: transform 0.4s ease;
+}
+
+.km-brand-showcase-card:hover {
+  transform: rotate(0deg) translateY(-4px);
+}
+
+.km-brand-showcase-chip {
+  position: absolute;
+  right: 0.5rem;
+  bottom: -1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 14px 28px rgba(26, 61, 66, 0.18);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--km-lagoon);
+}
+
+@media (max-width: 640px) {
+  .km-brand-showcase-panel {
+    padding: 2.25rem 1.25rem;
+  }
+}
+
 .km-showcase-nfc-row {
   position: relative;
   display: flex;

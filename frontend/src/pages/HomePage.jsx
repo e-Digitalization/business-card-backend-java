@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Check from '@mui/icons-material/Check';
 import BrandLogo from '../components/BrandLogo.jsx';
 import CardComparison from '../components/CardComparison.jsx';
 import HowItWorks from '../components/HowItWorks.jsx';
@@ -122,6 +123,36 @@ const faqs = [
     a: 'Photograph any paper business card and Kadi Moja reads the details for you—name, phone, email, company, and more—then saves them to your contacts. You get free scans to start, then a low monthly Selcom subscription for unlimited use.'
   }
 ];
+
+const onBrandPoints = [
+  'Fully customize your card',
+  'Add unlimited links',
+  'Create multiple digital business cards',
+  'Make instant updates'
+];
+
+const brandSample = {
+  fullName: 'Amara Joseph',
+  title: 'Founder & CEO',
+  company: 'Studio Bahari',
+  email: 'amara@studiobahari.co.tz',
+  phone: '+255 786 220 410',
+  whatsapp: '+255 786 220 410',
+  website: 'studiobahari.co.tz',
+  location: 'Zanzibar, Tanzania',
+  photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+  // resolveMediaUrl() prefixes any leading-slash path with the backend API base
+  // (it's built for uploaded profile media), so a frontend /public asset needs
+  // an absolute URL to survive that resolution unchanged.
+  logoUrl: `${window.location.origin}/logos/studio-bahari.svg`
+};
+
+const brandThemeVars = {
+  '--km-card-c1': '#2b0b5e',
+  '--km-card-c2': '#6d28d9',
+  '--km-card-c3': '#1a1033',
+  '--km-card-accent': '#f5a623'
+};
 
 const sampleCard = {
   tag: 'TAG12345',
@@ -350,6 +381,50 @@ const HomePage = () => {
                 Digital card
               </p>
               <DigitalCardSample person={sampleCard} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Always on-brand */}
+      <section id="brand" aria-labelledby="brand-title" className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+          
+            <h2 id="brand-title" className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              Kadi Moja makes sure your digital business card is always on-brand
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-km-ink/65">
+              Kadi Moja gives you the power to build a customizable digital business card that turns first meetings
+              into lasting connections.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {onBrandPoints.map((point) => (
+                <li key={point} className="flex items-center gap-3 text-base text-km-ink">
+                  <span
+                    className="flex h-6 w-6 flex-none items-center justify-center rounded-md bg-km-sand text-km-ink"
+                    aria-hidden="true"
+                  >
+                    <Check style={{ fontSize: 16 }} />
+                  </span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9">
+              <Link to="/login" state={{ mode: 'signup' }} className="km-btn-dark">
+                Create my free digital business card
+              </Link>
+            </div>
+          </div>
+          <div className="km-brand-showcase relative mx-auto flex w-full max-w-md items-center justify-center lg:max-w-none">
+            <div className="km-brand-showcase-panel">
+              <div className="km-brand-showcase-card">
+                <ContactCardVisual contact={brandSample} variant="lagoon" themeVars={brandThemeVars} />
+              </div>
+              <span className="km-brand-showcase-chip">
+                <Check style={{ fontSize: 14 }} aria-hidden="true" /> Matches your brand
+              </span>
             </div>
           </div>
         </div>

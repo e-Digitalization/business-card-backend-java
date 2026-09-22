@@ -114,9 +114,7 @@ export default function HeroSlider() {
           </div>
         </div>
         <div className="km-promo-controls">
-          <div className="km-promo-tabs" aria-label="Choose a promotion">
-            {slides.map((item, index) => <button type="button" key={item.theme} aria-label={`Show slide ${index + 1}: ${item.label}`} aria-current={index === active ? 'true' : undefined} className={index === active ? 'is-active' : ''} onClick={() => select(index)}><span className="km-promo-indicator" /><span className="km-promo-tab-label">{item.label}</span></button>)}
-          </div>
+         
           <div className="km-promo-buttons">
             <span className="km-promo-count">0{active + 1} <span>/ 03</span></span>
             <button type="button" className="km-promo-play" aria-label={playing ? 'Pause automatic slides' : 'Start automatic slides'} onClick={() => {

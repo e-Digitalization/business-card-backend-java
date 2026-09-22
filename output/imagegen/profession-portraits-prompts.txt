@@ -1,0 +1,17 @@
+Mode: built-in image_gen
+Destination: frontend/public/demo/
+
+zawadi.png
+Use case: photorealistic-natural. Generate a single square professional headshot portrait of Dr. Zawadi Mollel, fictional Tanzanian woman environmental researcher in her early forties, natural short hair, light blouse and forest green blazer, coastal university garden. This is a fictional sample digital business card identity, not a real person. Warm approachable confident expression, looking at camera. Head and shoulders centered, entire head visible with ample space above, natural daylight, realistic skin texture, softly out of focus background. Polished editorial portrait, not glamour retouching. No text, logos, flags, watermarks or collage.
+
+neema.png
+Use case: photorealistic-natural. Generate a single square professional headshot portrait of Neema Mwakalinga, fictional Tanzanian woman corporate banking manager in her thirties, neat braided hair tied back, tailored navy blazer and ivory blouse, bright contemporary office. This is a fictional sample digital business card identity, not a real person. Warm approachable confident expression, looking at camera. Head and shoulders centered, entire head visible with ample space above, natural daylight, realistic skin texture, softly out of focus background. Polished editorial portrait, not glamour retouching. No text, logos, flags, watermarks or collage.
+
+baraka.png
+Use case: photorealistic-natural. Generate a single square professional headshot portrait of Baraka Mtenzi, fictional Tanzanian man public service director in his late forties, close cropped hair, charcoal suit and green tie, bright civic office. This is a fictional sample digital business card identity, not a real person. Warm approachable confident expression, looking at camera. Head and shoulders centered, entire head visible with ample space above, natural daylight, realistic skin texture, softly out of focus background. Polished editorial portrait, not glamour retouching. No text, logos, flags, watermarks or collage.
+
+leila.png
+Use case: photorealistic-natural. Generate a single square professional headshot portrait of Leila Mwinyi, fictional East African woman diplomat in her early forties, elegant light grey hijab, burgundy blazer, bright international conference foyer. This is a fictional sample digital business card identity, not a real person. Warm approachable confident expression, looking at camera. Head and shoulders centered, entire head visible with ample space above, natural daylight, realistic skin texture, softly out of focus background. Polished editorial portrait, not glamour retouching. No text, logos, flags, watermarks or collage.
+
+samuel.png
+Use case: photorealistic-natural. Generate a single square professional headshot portrait of Samuel Okello, fictional Kenyan man development programme officer in his late thirties, short natural hair, light blue shirt and navy jacket without tie, sunlit community programme office. This is a fictional sample digital business card identity, not a real person. Warm approachable confident expression, looking at camera. Head and shoulders centered, entire head visible with ample space above, natural daylight, realistic skin texture, softly out of focus background. Polished editorial portrait, not glamour retouching. No text, logos, flags, watermarks or collage.

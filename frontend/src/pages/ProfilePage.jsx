@@ -71,7 +71,7 @@ const ProfilePage = ({ demoProfile = null, initialTab = 'profile' }) => {
     [profile]
   );
   const primaryPhone = phoneList[0];
-  const wa = profile?.whatsapp?.replace(/[^0-9]/g, '') || primaryPhone?.replace(/[^0-9]/g, '');
+  const wa = demoProfile ? '' : profile?.whatsapp?.replace(/[^0-9]/g, '') || primaryPhone?.replace(/[^0-9]/g, '');
   const initials = initialsFromName(profile?.fullName);
   const photoSrc = resolveMediaUrl(profile?.photoUrl);
   const logoSrc = resolveMediaUrl(profile?.logoUrl);
@@ -234,6 +234,21 @@ const ProfilePage = ({ demoProfile = null, initialTab = 'profile' }) => {
           <div key={tab} className={`km-tab-panel km-tab-panel--${dir}`}>
           {tab === 'profile' && (
           <>
+          {demoProfile?.bio && (
+            <section className="mt-6 space-y-4 text-sm leading-relaxed text-[#1a3d42]" aria-label="About">
+              <h2 className="font-semibold">About {profile.fullName.replace(/^Dr\.\s*/, '').split(' ')[0]}</h2>
+              <p>{profile.bio}</p>
+              <div><h3 className="mb-2 font-semibold">Expertise</h3><div className="km-card-research-tags">{profile.expertise.map(item => <span key={item}>{item}</span>)}</div></div>
+              <div><h3 className="mb-2 font-semibold">Education & qualifications</h3><ul className="space-y-1">{profile.qualifications.map(item => <li key={item}>{item}</li>)}</ul></div>
+              <dl className="space-y-3">
+                <div><dt className="font-semibold">Languages</dt><dd>{profile.languages.join(' · ')}</dd></div>
+                <div><dt className="font-semibold">Office</dt><dd>{profile.officeAddress}</dd></div>
+                <div><dt className="font-semibold">Office hours</dt><dd>{profile.officeHours}</dd></div>
+              </dl>
+              <p className="text-xs text-[#1a3d42]/60">Fictional sample profile. Portrait is AI-generated; contact details are illustrative.</p>
+            </section>
+          )}
+          {demoProfile?.bio && <h2 className="mt-6 text-sm font-semibold text-[#1a3d42]">Contact details</h2>}
           <ul className="km-fade-up km-fade-up-delay-2 mt-6 space-y-3.5">
             {rows.map((row) => {
               const inner = (
@@ -246,7 +261,7 @@ const ProfilePage = ({ demoProfile = null, initialTab = 'profile' }) => {
               );
               return (
                 <li key={row.label}>
-                  {row.href ? (
+                  {row.href && !demoProfile ? (
                     <a
                       href={row.href}
                       target={row.href.startsWith('http') ? '_blank' : undefined}

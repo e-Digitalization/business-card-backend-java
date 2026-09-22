@@ -52,7 +52,9 @@ export default function ProfessionSamples() {
                   phone.current?.focus({ preventScroll: true });
                 }}>Explore this profile <ArrowOutward aria-hidden="true" /></button>
               </div>
-              <figure className="km-profession-product"><img src="/illustrations/professions-cards.png" alt="Matte teal and brushed silver Kadi Moja contactless business cards" loading="lazy" width="1536" height="1024" /><figcaption><span>A small card. A lasting connection.</span><span>NFC + QR</span></figcaption></figure>
+              <figure className="km-profession-product"><img src="/illustrations/professions-cards.png" alt="Matte teal and brushed silver Kadi Moja contactless business cards" loading="lazy" width="1536" height="1024" /><figcaption>
+               
+                </figcaption></figure>
             </div>
             <div className="km-profession-preview">
               <div className="km-profession-preview-caption"><span>Your digital first impression</span><span>Sample profile</span></div>
@@ -61,7 +63,7 @@ export default function ProfessionSamples() {
                 <iframe key={sample.id} ref={phone} className="km-profession-phone-screen" src={`/demo/professions/${sample.id}/preview`} title={`${sample.label}: ${profile.fullName} interactive phone preview`} />
                 <div className="km-profession-phone-bottom" aria-hidden="true"><span /></div>
               </div>
-              <p className="km-profession-note">Fictional identity. Real possibilities.</p>
+              
             </div>
           </div>
         </div>

@@ -72,7 +72,6 @@ export default function HowItWorks({ person }) {
             </li>
           ))}
         </ol>
-        <div className="km-journey-footnotes"><span>✓ No app needed to receive your details</span><span>↗ QR sharing available too</span></div>
       </div>
     </section>
   );

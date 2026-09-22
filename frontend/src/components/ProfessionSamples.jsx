@@ -31,7 +31,8 @@ export default function ProfessionSamples() {
     <section id="samples" className="km-professions px-5 py-20 lg:px-8 lg:py-28" aria-labelledby="samples-title">
       <div className="mx-auto max-w-6xl">
         <header className="km-professions-heading">
-          <div><p className="km-professions-eyebrow">Made for your world</p><h2 id="samples-title" className="font-display">Different professions.<br /><span>Distinct first impressions.</span></h2></div>
+          <div>
+            <h2 id="samples-title" className="font-display">Different professions.<br /><span>Distinct first impressions.</span></h2></div>
           <p className="km-professions-intro">Your expertise deserves an introduction of its own. Find the profile that feels like you.</p>
         </header>
         <div className="km-professions-tabs" role="tablist" aria-label="Sample professions">

@@ -7,6 +7,7 @@ import HowItWorks from '../components/HowItWorks.jsx';
 import ProfessionSamples from '../components/ProfessionSamples.jsx';
 import '../components/AiScanShowcase.css';
 import '../components/HomeFinishing.css';
+import '../components/TeamShowcase.css';
 import HeroSlider from '../components/HeroSlider.jsx';
 import MobileMenu from '../components/MobileMenu.jsx';
 import ContactCardVisual from './client/ContactCardVisual';
@@ -125,10 +126,9 @@ const faqs = [
 ];
 
 const onBrandPoints = [
-  'Fully customize your card',
-  'Add unlimited links',
-  'Create multiple digital business cards',
-  'Make instant updates'
+  ['Your look', 'Logo, colours, and profile style'],
+  ['Your content', 'Links, contact details, and media'],
+  ['Always current', 'Update everything without reprinting']
 ];
 
 const brandSample = {
@@ -219,20 +219,21 @@ const NfcCardSample = ({ person, className = '' }) => (
   </div>
 );
 
-const DigitalCardSample = ({ person, className = '' }) => (
+const DigitalCardSample = ({ person, contact, className = '', themeVars, footerAccent = '#0d7377' }) => (
   <div className={`km-phone-frame km-sample-digital-phone ${className}`}>
     <div className="km-phone-notch" aria-hidden="true" />
     <div className="km-phone-screen km-sample-digital-screen">
       <div className="km-phone-card-scale km-sample-digital-scale">
         <ContactCardVisual
-          contact={toContact(person)}
+          contact={contact || toContact(person)}
           variant="lagoon"
+          themeVars={themeVars}
           footer={
             <div className="flex flex-col gap-2">
-              <div className="rounded-xl bg-[#0d7377] py-2.5 text-center text-[11px] font-semibold text-white">
+              <div style={{ background: footerAccent }} className="rounded-xl py-2.5 text-center text-[11px] font-semibold text-white">
                 Save contact details
               </div>
-              <div className="rounded-xl border border-[#0d7377]/35 bg-white py-2.5 text-center text-[11px] font-semibold text-[#0d7377]">
+              <div style={{ borderColor: `${footerAccent}59`, color: footerAccent }} className="rounded-xl border bg-white py-2.5 text-center text-[11px] font-semibold">
                 Save to my Contacts
               </div>
             </div>
@@ -295,37 +296,38 @@ const HomePage = () => {
   return (
     <div className="km-home bg-km-paper text-km-ink font-sans">
       <header
-        className={`sticky top-0 z-50 border-b border-km-ink/10 bg-white transition-shadow duration-300 ${
+        className={`km-site-header sticky top-0 z-50 ${
           scrolled
-            ? 'shadow-sm'
+            ? 'is-scrolled'
             : ''
         }`}
       >
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 lg:px-8">
+        <div className="km-site-header-inner mx-auto flex max-w-6xl items-center justify-between px-5 lg:px-8">
           <BrandLogo
             href="#top"
             tone="color"
-            textClassName="text-2xl"
-            markClassName="h-9 w-9"
+            className="km-site-logo"
+            textClassName="text-[1.7rem]"
+            markClassName="h-10 w-10"
           />
-          <nav aria-label="Main navigation" className="hidden items-center gap-5 xl:gap-7 lg:flex">
+          <nav aria-label="Main navigation" className="km-site-nav hidden items-center lg:flex">
             {navLinks.map(([href, label]) => (
               <a
                 key={href}
                 href={href}
-                className="text-sm font-medium text-km-ink transition-colors hover:text-km-lagoon"
+                className="km-site-nav-link"
               >
                 {label}
               </a>
             ))}
             <Link
               to="/login"
-              className="text-sm font-medium text-km-ink transition-colors hover:text-km-lagoon"
+              className="km-site-nav-link km-site-signin"
             >
               Sign in
             </Link>
-            <Link to="/login" className="km-btn-primary !px-5 !py-2.5">
-              Create account
+            <Link to="/login" state={{ mode: 'signup' }} className="km-btn-primary km-site-header-cta">
+              Create account <span aria-hidden="true">↗</span>
             </Link>
           </nav>
           <button
@@ -387,44 +389,39 @@ const HomePage = () => {
       </section>
 
       {/* Always on-brand */}
-      <section id="brand" aria-labelledby="brand-title" className="km-section-light px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-          
-            <h2 id="brand-title" className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
-              Kadi Moja makes sure your digital business card is always on-brand
+      <section id="brand" aria-labelledby="brand-title" className="km-brand-section px-5 py-20 lg:px-8 lg:py-28">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.12fr_0.88fr] lg:gap-20">
+          <div className="km-brand-showcase relative mx-auto flex w-full items-center justify-center">
+            <div className="km-brand-phone-stage">
+              <DigitalCardSample
+                contact={brandSample}
+                themeVars={brandThemeVars}
+                footerAccent="#6d28d9"
+                className="km-brand-showcase-phone"
+              />
+            </div>
+          </div>
+          <div className="km-brand-copy">
+            <p className="km-brand-eyebrow"><span aria-hidden="true">✦</span> Made to match you</p>
+            <h2 id="brand-title" className="mt-4 font-display text-4xl font-semibold leading-[1.08] sm:text-5xl">
+              Your card.<br /><span>Unmistakably yours.</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-km-ink/65">
-              Kadi Moja gives you the power to build a customizable digital business card that turns first meetings
-              into lasting connections.
+              Bring your identity into every introduction. Build a polished digital card that looks like your brand
+              and stays accurate as your work evolves.
             </p>
-            <ul className="mt-8 space-y-4">
-              {onBrandPoints.map((point) => (
-                <li key={point} className="flex items-center gap-3 text-base text-km-ink">
-                  <span
-                    className="flex h-6 w-6 flex-none items-center justify-center rounded-md bg-km-sand text-km-ink"
-                    aria-hidden="true"
-                  >
-                    <Check style={{ fontSize: 16 }} />
-                  </span>
-                  {point}
+            <ul className="km-brand-points mt-8">
+              {onBrandPoints.map(([title, detail]) => (
+                <li key={title}>
+                  <span aria-hidden="true"><Check style={{ fontSize: 15 }} /></span>
+                  <div><strong>{title}</strong><small>{detail}</small></div>
                 </li>
               ))}
             </ul>
             <div className="mt-9">
               <Link to="/login" state={{ mode: 'signup' }} className="km-btn-dark">
-                Create my free digital business card
+                Create my card <span aria-hidden="true">↗</span>
               </Link>
-            </div>
-          </div>
-          <div className="km-brand-showcase relative mx-auto flex w-full max-w-md items-center justify-center lg:max-w-none">
-            <div className="km-brand-showcase-panel">
-              <div className="km-brand-showcase-card">
-                <ContactCardVisual contact={brandSample} variant="lagoon" themeVars={brandThemeVars} />
-              </div>
-              <span className="km-brand-showcase-chip">
-                <Check style={{ fontSize: 14 }} aria-hidden="true" /> Matches your brand
-              </span>
             </div>
           </div>
         </div>
@@ -561,39 +558,73 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="teams" className="km-section-lagoon px-5 py-20 text-white lg:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-km-ember">For teams</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
-              One brand. Every teammate.
+      <section id="teams" aria-labelledby="teams-title" className="km-teams px-5 py-20 text-white lg:px-8 lg:py-28">
+        <div className="km-teams-glow" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-6xl gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-20">
+          <div className="km-teams-copy">
+            <p className="km-teams-eyebrow"><span aria-hidden="true" /> For teams</p>
+            <h2 id="teams-title" className="mt-5 font-display text-4xl font-semibold leading-[1.08] sm:text-5xl">
+              One brand.<br /><span>Every teammate.</span>
             </h2>
-            <p className="mt-5 max-w-md text-white/75 leading-relaxed">
-              Assign NFC cards, manage profiles, and keep everyone consistent—ideal for sales floors and growing
-              companies.
+            <p className="mt-6 max-w-md text-base leading-relaxed text-white/70">
+              Give every person a polished, on-brand profile—then manage the whole team from one simple place.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#contact" className="km-btn-primary">
-                Get team pricing
-              </a>
-              <Link to="/c/TAG12345" className="km-btn-ghost">
-                Explore a sample
+            <ul className="km-teams-benefits mt-8">
+              {[
+                ['01', 'Set the standard', 'Lock in logos, colours, and essential company details.'],
+                ['02', 'Stay current', 'Update roles or contact details without reprinting a card.'],
+                ['03', 'Scale with ease', 'Assign, pause, or reassign cards as your team changes.']
+              ].map(([number, title, body]) => (
+                <li key={number}>
+                  <span>{number}</span>
+                  <div><strong>{title}</strong><p>{body}</p></div>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link to="/login" state={{ mode: 'signup' }} className="km-teams-primary">
+                Get team pricing <span aria-hidden="true">↗</span>
               </Link>
+              <a href="#samples" className="km-teams-secondary">See team profiles</a>
             </div>
           </div>
-          <ul className="space-y-5 border border-white/15 bg-white/8 p-8 text-sm text-white/85 backdrop-blur-[2px]">
-            {[
-              'Centralised admin for all profiles',
-              'Instant updates when roles change',
-              'Reassign lost or returned cards',
-              'Consistent brand across the company'
-            ].map((item) => (
-              <li key={item} className="flex gap-3">
-                <span className="text-km-ember">→</span>
-                {item}
-              </li>
-            ))}
-          </ul>
+
+          <div className="km-team-console" role="img" aria-label="Preview of a branded team workspace showing members, active cards, and synced brand settings">
+            <div className="km-team-console-bar">
+              <div className="km-team-brand">
+                <span className="km-team-brand-mark">S</span>
+                <div><strong>Studio Bahari</strong><small>Team workspace</small></div>
+              </div>
+              <span className="km-team-live"><i /> Brand synced</span>
+            </div>
+            <div className="km-team-console-body">
+              <div className="km-team-summary">
+                <div><span>Team members</span><strong>24</strong><small><b>+3</b> this month</small></div>
+                <div><span>Active cards</span><strong>22</strong><small>92% assigned</small></div>
+                <div className="km-team-brand-swatch"><span>Brand colour</span><strong><i /> #6D28D9</strong><small>Applied to all</small></div>
+              </div>
+              <div className="km-team-list-head"><strong>People</strong><span>View all <i aria-hidden="true">→</i></span></div>
+              <ul className="km-team-members">
+                {[
+                  ['AJ', 'Amara Joseph', 'Founder & CEO', 'Active', '#f0b88f'],
+                  ['NO', 'Neema Omari', 'Partnerships Lead', 'Active', '#9abfb6'],
+                  ['DM', 'David Msuya', 'Creative Director', 'Invited', '#d9ae72']
+                ].map(([initials, name, role, status, color]) => (
+                  <li key={name}>
+                    <span className="km-team-avatar" style={{ '--avatar-color': color }}>{initials}</span>
+                    <div><strong>{name}</strong><small>{role}</small></div>
+                    <span className={`km-team-status ${status === 'Invited' ? 'is-invited' : ''}`}><i />{status}</span>
+                    <span className="km-team-member-more" aria-hidden="true">...</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="km-team-console-note">
+                <span aria-hidden="true">✓</span>
+                <p><strong>Everyone looks like one team.</strong><small>Your latest brand settings are applied automatically.</small></p>
+              </div>
+            </div>
+            <span className="km-team-floating-card" aria-hidden="true"><i>S</i><b>Studio<br />Bahari</b><small>Tap to connect</small></span>
+          </div>
         </div>
       </section>
 
@@ -615,27 +646,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="contact" className="km-landing-cta relative overflow-hidden px-5 py-24 text-white lg:px-8">
-        <div className="relative mx-auto max-w-3xl text-center">
-          <div className="flex flex-col items-center gap-3">
-            <img src="/logos/kadi-moja-icon-light.png" alt="" className="h-14 w-14 rounded-2xl object-contain" />
-            <p className="font-display text-5xl font-bold tracking-tight sm:text-6xl">Kadi Moja</p>
-          </div>
-          <h2 className="mt-5 font-display text-3xl font-semibold sm:text-4xl">
-            Ready to upgrade how you connect?
-          </h2>
-          <p className="mx-auto mt-4 max-w-lg text-white/75">Pay once. Share instantly. Stay up to date.</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/login" className="km-btn-primary">
-              Create your account
-            </Link>
-            <Link to="/login" className="km-btn-ghost">
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <footer ref={footerRef} className="km-footer-refresh px-5 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="km-footer-intro"><p className="font-display">Good connections.<br /><span>Great possibilities.</span></p><a href="#top" className="km-footer-top">Back to top <span aria-hidden="true">↑</span></a></div>
@@ -647,7 +657,7 @@ const HomePage = () => {
             </div>
             <nav aria-label="Explore Kadi Moja"><h3>Explore</h3><a href="#products">NFC cards</a><a href="#ai-scan">AI Scan</a><a href="#how">How it works</a><a href="#teams">For teams</a></nav>
             <nav aria-label="Account links"><h3>Your account</h3><Link to="/login" state={{ mode: 'signup' }}>Get started <span aria-hidden="true">↗</span></Link><Link to="/login">Sign in</Link><Link to="/me">My card</Link><Link to="/login" state={{ role: 'admin' }}>Admin</Link></nav>
-            <nav aria-label="Learn more"><h3>A little more</h3><a href="#samples">See a sample</a><a href="#faq">Common questions</a><a href="#contact">Start connecting</a></nav>
+            <nav aria-label="Learn more"><h3>A little more</h3><a href="#samples">See a sample</a><a href="#faq">Common questions</a><Link to="/login" state={{ mode: 'signup' }}>Start connecting</Link></nav>
           </div>
           <div className="km-footer-bottom"><p>© {new Date().getFullYear()} Kadi Moja. All rights reserved.</p><p>Less paper. More possibility.</p></div>
         </div>

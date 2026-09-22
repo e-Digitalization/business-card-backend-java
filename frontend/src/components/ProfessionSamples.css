@@ -73,10 +73,12 @@
   .km-professions-intro { max-width: 360px; margin-top: 18px; font-size: 13px; }
   .km-professions-tabs { gap: 22px; margin-top: 24px; }
   .km-professions-tabs button { flex: 0 0 auto; font-size: 12px; }
-  .km-profession-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .km-profession-content { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .km-profession-copy { min-height: 0; }
   .km-profession-copy h3 { font-size: 28px; }
+  .km-profession-link, .km-profession-product { display: none; }
   .km-profession-preview { border-left: 0; padding: 0; width: 100%; max-width: 420px; justify-self: center; }
+  .km-profession-phone { max-width: 100%; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .km-profession-copy { animation: kmProfessionEnter .45s ease both; }

@@ -58,7 +58,6 @@ export default function ProfessionSamples() {
                 </figcaption></figure>
             </div>
             <div className="km-profession-preview">
-              <div className="km-profession-preview-caption"><span>Your digital first impression</span><span>Sample profile</span></div>
               <div className="km-profession-phone">
                 <div className="km-profession-phone-top" aria-hidden="true"><span>9:41</span><span className="km-profession-phone-speaker" /><span>5G</span></div>
                 <iframe key={sample.id} ref={phone} className="km-profession-phone-screen" src={`/demo/professions/${sample.id}/preview`} title={`${sample.label}: ${profile.fullName} interactive phone preview`} />

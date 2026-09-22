@@ -14,7 +14,7 @@ const slides = [
     label: 'Your digital identity', eyebrow: 'Your next opportunity starts here.',
     lead: 'Your story.', accent: '', end: 'Beautifully shared.',
     description: 'Your photo, business, links, and contact details in one beautiful digital profile. Update anytime. Share everywhere.',
-    action: 'Explore a sample', href: '/c/TAG12345',
+    action: 'Explore a sample', href: '#samples',
     image: '/illustrations/hero/profile-cutout.png', theme: 'profile'
   },
   {
@@ -23,6 +23,32 @@ const slides = [
     description: 'Turn a paper business card into a saved contact. Snap a photo, let AI read the details, and keep your next opportunity close.',
     action: 'Discover AI Scan', href: '#ai-scan',
     image: '/illustrations/hero/scan-cutout.png', theme: 'scan'
+  },
+  {
+    label: 'For teams',
+    lead: 'One brand.', accent: '', end: 'Every teammate.',
+    description: 'Assign NFC cards, manage profiles, and keep everyone consistent — ideal for sales floors and growing companies.',
+    action: 'Get team pricing', href: '/login',
+    secondary: { label: 'Explore a sample', href: '#samples' },
+    features: [
+      'Centralised admin for all profiles',
+      'Instant updates when roles change',
+      'Reassign lost or returned cards',
+      'Consistent brand across the company'
+    ], theme: 'teams'
+  },
+  {
+    label: 'Always current',
+    lead: 'Change once.', accent: '', end: 'Share forever.',
+    description: 'New role, number, or location? Update your profile in seconds. Every tap and shared link instantly shows your latest details.',
+    action: 'Create your profile', href: '/login',
+    secondary: { label: 'See how it works', href: '#how' },
+    features: [
+      'Edit your details at any time',
+      'One profile across NFC and QR',
+      'No reprinting when details change',
+      'Always ready for the next introduction'
+    ], theme: 'current'
   }
 ];
 
@@ -100,23 +126,33 @@ export default function HeroSlider() {
       <div className="km-promo-inner relative z-10 mx-auto max-w-6xl px-5 lg:px-8">
         <div className="km-promo-stage" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">
           <div className="km-promo-copy" role="group" aria-roledescription="slide" aria-label={`${active + 1} of ${slides.length}: ${slide.label}`}>
-           
+            <span className="km-promo-eyebrow">{slide.label}</span>
             <TypedHeadline key={slide.theme} text={`${slide.lead}\n${slide.end}`} reducedMotion={reducedMotion} />
             <p className="km-promo-description">{slide.description}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               {slide.href.startsWith('#') ? <a href={slide.href} className="km-btn-primary km-landing-cta-primary">{slide.action} <span aria-hidden="true">→</span></a>
                 : <Link to={slide.href} className="km-btn-primary km-landing-cta-primary">{slide.action} <span aria-hidden="true">→</span></Link>}
-              <Link to="/login" className="km-btn-outline">Create account</Link>
+              {slide.secondary
+                ? (slide.secondary.href.startsWith('#')
+                  ? <a href={slide.secondary.href} className="km-btn-outline">{slide.secondary.label}</a>
+                  : <Link to={slide.secondary.href} className="km-btn-outline">{slide.secondary.label}</Link>)
+                : <Link to="/login" className="km-btn-outline">Create account</Link>}
             </div>
           </div>
-          <div className="km-promo-visual">
-            {slides.map((item, index) => <img key={item.theme} src={item.image} alt={index === active ? `${item.label} product illustration` : ''} aria-hidden={index !== active} width="1536" height="1024" className={index === active ? 'is-active' : ''} />)}
+          <div className={`km-promo-visual km-promo-visual--${slide.theme}`}>
+            {slides.map((item, index) => item.features
+              ? (
+                <ul key={item.theme} className={`km-promo-feature-box${index === active ? ' is-active' : ''}`} aria-hidden={index !== active}>
+                  {item.features.map((feature) => <li key={feature}><span aria-hidden="true">→</span>{feature}</li>)}
+                </ul>
+              )
+              : <img key={item.theme} src={item.image} alt={index === active ? `${item.label} product illustration` : ''} aria-hidden={index !== active} width="1536" height="1024" className={index === active ? 'is-active' : ''} />)}
           </div>
         </div>
         <div className="km-promo-controls">
          
           <div className="km-promo-buttons">
-            <span className="km-promo-count">0{active + 1} <span>/ 03</span></span>
+            <span className="km-promo-count">0{active + 1} <span>/ 0{slides.length}</span></span>
             <button type="button" className="km-promo-play" aria-label={playing ? 'Pause automatic slides' : 'Start automatic slides'} onClick={() => {
               if (playing) { setPaused(true); setExplicitPlay(false); }
               else { setExplicitPlay(true); setPaused(false); }
